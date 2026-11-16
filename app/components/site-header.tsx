@@ -23,23 +23,35 @@ export function SiteHeader() {
   return <header className="site-header">
     <div className="container header-inner">
       <a href="/" className="logo" aria-label="florii home">
-        <span>florii</span>
         <svg
-          className="logo-mark"
-          viewBox="-3.5 -11.5 30 36"
-          width="18"
-          height="22"
+          className="logo-svg"
+          viewBox="0 0 80 32"
+          width="80"
+          height="32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          <path
-            d="M9.21243 13.1822C9.2343 13.1822 9.97934 13.1822 11.2653 13.1294C23.9929 12.6076 14.717 -8.49899 3.50135 8.39529C-1.04315 15.2407 4.60988 19.8393 10.7663 21.4182C12.1719 21.7404 13.1444 21.8736 14.7039 22.0486"
-            stroke="currentColor"
-            strokeWidth="3.7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          <text
+            x="0"
+            y="23"
+            fill="currentColor"
+            fontFamily='var(--sans), "Instrument Sans", -apple-system, sans-serif'
+            fontSize="26"
+            fontWeight="600"
+            letterSpacing="-0.045em"
+          >
+            florii
+          </text>
+          <g transform="translate(59, 2) scale(0.62)">
+            <path
+              d="M9.21243 13.1822C9.2343 13.1822 9.97934 13.1822 11.2653 13.1294C23.9929 12.6076 14.717 -8.49899 3.50135 8.39529C-1.04315 15.2407 4.60988 19.8393 10.7663 21.4182C12.1719 21.7404 13.1444 21.8736 14.7039 22.0486"
+              stroke="#1C00CA"
+              strokeWidth="3.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
         </svg>
       </a>
       <nav className="header-nav" aria-label="Main">
