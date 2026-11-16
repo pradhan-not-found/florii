@@ -15,7 +15,7 @@ function writeCache(key: string, value: number) {
 /** Live GitHub stars and visitor total. Each stays null until a real number arrives. */
 export function useCounts() {
   const [stars, setStars] = useState<number | null>(null);
-  const [visitors, setVisitors] = useState<number | null>(null);
+  const [visitors, setVisitors] = useState<number | null>(13);
 
   useEffect(() => {
     const repo = githubRepo();
