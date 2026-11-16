@@ -70,9 +70,9 @@ export function Hero() {
       <span className={s.tag}><span className={s.stack} aria-hidden="true">{people.slice(0, 4).map(person => <Avatar key={person.name} person={person} className={s.stackAvatar} />)}</span>built by developers everywhere</span>
       <h1 id="hero-title">make the web bloom.</h1>
       <p className={s.lede}>
-        hand-painted flowers for react. drop a <Chip name="Daisy" onClick={() => setSelected("Daisy")}>daisy</Chip> into a hero,
-        a <Chip name="Tulip" onClick={() => setSelected("Tulip")}>tulip</Chip> into an empty state, or a <Chip name="Sunflower" onClick={() => setSelected("Sunflower")}>sunflower</Chip> into
-        a loading screen. they sway, bloom and wear your colors.
+        hand-painted flowers for react. drop a&nbsp;<Chip name="Daisy" onClick={() => setSelected("Daisy")}>daisy</Chip> into a&nbsp;hero,
+        a&nbsp;<Chip name="Tulip" onClick={() => setSelected("Tulip")}>tulip</Chip> into an&nbsp;empty state, or&nbsp;a&nbsp;<Chip name="Sunflower" onClick={() => setSelected("Sunflower")}>sunflower</Chip> into
+        a&nbsp;loading screen. they sway, bloom and wear your colors.
       </p>
       <div className={s.actions}>
         <button className={s.installCommand} onClick={() => copy("npm i florii@latest", "Install command copied")} aria-label="Copy npm install command"><code>npm i florii@latest</code><Icon name="copy" size={17} /></button>
