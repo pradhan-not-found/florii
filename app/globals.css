@@ -278,8 +278,8 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 .footer-top{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;padding:48px 0 0}
 .footer-col{display:flex;flex-direction:column;gap:9px;font-size:14px}
 .footer-col h3{font-size:13px;font-weight:600;color:#0b0f1a;margin-bottom:4px}
-.footer-col a{color:var(--text);transition:color .15s}
-.footer-col a:hover{color:var(--blue)}
+.footer-col a{color:var(--muted);transition:color .15s}
+.footer-col a:hover{color:#0b0f1a}
 .footer-col span{color:#a9b2c7;cursor:default}
 .wordmark{display:block;width:100%;height:auto;margin-top:44px;font-family:var(--sans);user-select:none}
 .footer-fine{padding:22px 0 28px;font-size:12.5px;color:var(--muted)}
