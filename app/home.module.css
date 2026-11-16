@@ -315,44 +315,40 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   vertical-align: baseline;
   cursor: pointer;
   color: var(--ink);
   font-weight: 600;
-  padding: 1px 4px;
+  padding: 0;
   margin: 0 1px;
-  border-radius: 6px;
-  transition: color .15s ease, background-color .15s ease;
+  background: none;
+  border: 0;
   user-select: none;
+  text-decoration: none;
 }
 .chip:hover {
   color: var(--navy, #0b1f4d);
-  background: rgba(19, 19, 22, .05);
 }
 .chipIcon {
   display: inline-flex;
   align-items: center;
   line-height: 0;
-  vertical-align: -0.2em;
-  transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+  vertical-align: -0.22em;
+  transition: transform .2s ease;
 }
 .chipIcon svg {
   display: block;
   flex-shrink: 0;
 }
 .chip:hover .chipIcon {
-  transform: scale(1.22) rotate(6deg);
+  transform: scale(1.2) rotate(6deg);
 }
 .chipText {
   display: inline;
-  text-decoration: underline;
-  text-decoration-color: rgba(19, 19, 22, .25);
-  text-underline-offset: 3px;
-  transition: text-decoration-color .15s ease;
-}
-.chip:hover .chipText {
-  text-decoration-color: var(--navy, #0b1f4d);
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none !important;
 }
 
 /* developer pill sits below the buttons */

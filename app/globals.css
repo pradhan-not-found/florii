@@ -410,11 +410,8 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 .sponsor-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
 .sponsor-head p{margin-top:6px;color:var(--muted,#6b7896)}
 
-/* navbar logo: handwritten script with delicate heart */
-.logo{font-family:"Patrick Hand",cursive,sans-serif!important;font-size:33px!important;font-weight:400!important;letter-spacing:0.01em!important;line-height:1!important;color:var(--navy)!important;display:inline-flex!important;align-items:center!important;gap:4px!important;transition:opacity .15s ease}
-.logo:hover{opacity:.85}
-.logo-heart{display:inline-flex;align-items:center;color:var(--blue);margin-top:-10px;rotate:12deg;transition:transform .2s ease}
-.logo:hover .logo-heart{transform:scale(1.15) rotate(16deg)}
+/* navbar logo: bold Instrument Sans */
+.logo{font-family:var(--sans),"Instrument Sans",sans-serif !important;font-size:26px !important;font-weight:600 !important;letter-spacing:-.045em !important;line-height:1 !important;color:var(--navy) !important}
 /* sponsor plots sit above the grass */
 .sponsor-garden{height:250px !important}
 .plot-row{align-items:flex-start !important;padding-top:44px !important}
