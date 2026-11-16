@@ -25,7 +25,7 @@ function Cloud({ className }: { className: string }) {
 function Chip({ name, children }: { name: BotanicalName; tint: string; children: string }) {
   return (
     <span className={s.chip}>
-      <Botanical name={name} size={20} title="" />
+      <Botanical name={name} size={17} title="" />
       <span className={s.chipName}>{children}</span>
     </span>
   );

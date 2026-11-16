@@ -25,6 +25,12 @@ export default function DocsPage() {
         <span className={s.eyebrow}>the florii handbook</span>
         <h1 id="docs-title">a little code.<br />a little bloom.</h1>
         <p>Everything you need to bring hand-painted flowers to your React app. Start small, make it yours, and let it grow.</p>
+        <div className={s.cmdBar}>
+          <span className={s.cmdCode}><span>$</span> npm i florii@latest</span>
+          <button className={s.cmdCopy} onClick={() => copy("npm i florii@latest", "Install command copied")} aria-label="Copy install command"><Icon name="copy" size={15} /></button>
+          <span className={s.cmdDivider} />
+          <a className={s.cmdGithub} href="https://github.com/pradhan-not-found/florii" target="_blank" rel="noreferrer" aria-label="View on GitHub"><Icon name="github" size={17} /></a>
+        </div>
         <div className={s.links}><a href="#quickstart">quick start <Icon name="arrow" size={15} /></a><a href="#props">props reference</a></div>
       </section>
       <div className={`container ${s.examples}`}><div className={s.examplesHead}><span>try a flower</span><span>click to preview, customize, and copy</span></div><div className={s.exampleGrid}>{(["Daisy", "Tulip", "Sunflower"] as BotanicalName[]).map(name => <button key={name} onClick={() => setSelected(name)} aria-label={`Preview ${name}`}><Botanical name={name} size={76} title="" /><span>{name.toLowerCase()}</span><Icon name="arrow" size={16} /></button>)}</div></div>

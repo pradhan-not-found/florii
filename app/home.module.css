@@ -317,11 +317,12 @@
   display: inline-flex;
   align-items: center;
   position: relative;
-  vertical-align: middle;
-  margin: 0 3px;
+  vertical-align: -0.2em;
+  margin: 0 1px;
   cursor: default;
+  line-height: 1;
 }
-.chip svg { flex-shrink: 0; }
+.chip svg { flex-shrink: 0; display: block; }
 
 /* floating name tooltip */
 .chipName {
