@@ -6,6 +6,7 @@ import type { BotanicalName } from "@/packages/florii/src";
 import { projectLinks } from "@/config/project";
 import { Garden } from "./garden";
 import { Icon } from "./icons";
+import { useCopy } from "./copy";
 import s from "../home.module.css";
 
 /** A flower set into a line of large text, like a sticker on the page. */
@@ -20,12 +21,18 @@ function Cloud({ className }: { className: string }) {
   return <svg className={className} viewBox="0 0 240 120"><g fill="#ffffff"><circle cx="72" cy="76" r="34" /><circle cx="122" cy="60" r="46" /><circle cx="170" cy="74" r="36" /><rect x="34" y="72" width="172" height="36" rx="18" /></g></svg>;
 }
 
-/** A small inline chip with a flower icon, set into running text. */
-function Chip({ name, tint, children }: { name: BotanicalName; tint: string; children: string }) {
-  return <span className={s.chip} style={{ background: tint }}><Botanical name={name} size={16} title="" />{children}</span>;
+/** A flower icon inline in text; hover reveals the name as a floating label. */
+function Chip({ name, children }: { name: BotanicalName; tint: string; children: string }) {
+  return (
+    <span className={s.chip}>
+      <Botanical name={name} size={20} title="" />
+      <span className={s.chipName}>{children}</span>
+    </span>
+  );
 }
 
 export function Hero() {
+  const { copy, toast } = useCopy();
   return <section className={s.hero} aria-labelledby="hero-title">
     <div className={s.backdrop} aria-hidden="true">
       <span className={`${s.blur} ${s.blurA}`} />
@@ -43,13 +50,12 @@ export function Hero() {
       a loading screen. they sway, bloom and wear your colors.
     </p>
     <div className={s.actions}>
-      <a className={`${s.btn} ${s.dark} ${s.split}`} href="/flowers/"><span>browse the flowers</span><span className={s.splitMore} aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></span></a>
-      {github
-        ? <a className={`${s.btn} ${s.wash}`} href={github} target="_blank" rel="noreferrer"><Icon name="github" size={16} /> star on github</a>
-        : <a className={`${s.btn} ${s.wash}`} href="/docs/">read the docs</a>}
+      <button className={s.installCommand} onClick={() => copy("npm i florii@latest", "Install command copied")} aria-label="Copy npm install command"><code>npm i florii@latest</code><Icon name="copy" size={17} /></button>
+      <a className={`${s.btn} ${s.wash}`} href="/flowers/">browse the flowers <Icon name="arrow" size={16} /></a>
     </div>
     <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
     <Garden height={320} plants={30} className={s.field} />
+    {toast}
   </section>;
 }
 
