@@ -50,14 +50,15 @@ In a Next.js App Router project, import the CSS once from `app/layout.tsx`. See 
 
 ## Project links
 
-GitHub and sponsorship destinations are intentionally unset until the owner supplies them. Configure them in an untracked `.env.local` file:
+GitHub defaults to this project's repository, `https://github.com/pradhan-not-found/florii`, and the navbar reads its live star count. Override it or configure optional integrations in an untracked `.env.local` file:
 
 ```dotenv
 NEXT_PUBLIC_GITHUB_URL=
 NEXT_PUBLIC_SPONSOR_URL=
+NEXT_PUBLIC_VISITOR_COUNTER_URL=
 ```
 
-Set each to the actual public HTTPS URL when available, then restart the development server or rebuild the static site. `config/project.ts` validates these URLs and returns an empty string for missing or invalid values. These variables are public configuration, so do not put secrets in them. No repository, contributor count, or donation destination is fabricated.
+Set each to the actual public HTTPS URL when available, then restart the development server or rebuild the static site. Omit `NEXT_PUBLIC_GITHUB_URL` to use the default repository; an explicitly empty value disables the link. The optional visitor endpoint must allow browser requests and return a numeric `count`, `value`, or `data.up_count`. Until configured, the visitor total displays an unavailable dash. `config/project.ts` validates URLs. These variables are public configuration, so do not put secrets in them.
 
 ## Contributing and license
 

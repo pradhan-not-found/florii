@@ -30,14 +30,16 @@ code{font-family:var(--mono);font-size:13px}
 .header-nav{display:flex;gap:30px;font-size:15px;color:var(--text)}
 .header-nav a{transition:color .15s}
 .header-nav a:hover{color:var(--navy)}
-.header-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
-.visitors{display:inline-flex;white-space:nowrap;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--muted);box-shadow:0 1px 2px rgba(11,31,77,.05)}
-.visitors i{width:8px;height:8px;border-radius:50%;background:#16b364;box-shadow:0 0 0 3px #16b36422}
-.visitors strong{font-family:var(--mono);font-weight:600;color:var(--navy)}
-.star-button{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 8px 0 14px;border-radius:10px;background:#111318;color:#fff;font-size:14px;font-weight:600;transition:background .15s}
-.star-button:hover{background:#262a33}
-.star-icon{color:#f5b301;display:flex}
-.star-count{font-family:var(--mono);font-size:12px;font-weight:500;background:#2b2f39;border-radius:7px;padding:3px 8px}
+.header-actions{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.visitors{display:inline-flex;white-space:nowrap;align-items:center;gap:7px;min-height:38px;padding:0 12px;border:1px solid #e7e9ee;border-radius:8px;background:#fafbfc;font-size:12.5px;line-height:1;color:#697386}
+.visitors>svg{margin-right:1px;color:#7b8494;flex-shrink:0}
+.visitors strong{font-weight:600;font-variant-numeric:tabular-nums;color:#303846}
+.star-button{display:inline-flex;white-space:nowrap;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #1d222b;border-radius:8px;background:#171b23;color:#fff;font-size:12.5px;line-height:1;font-weight:600;box-shadow:0 1px 2px #10182814;transition:background .15s,border-color .15s,box-shadow .15s}
+.star-button>svg{flex-shrink:0}
+a.star-button:hover{background:#2b323e;border-color:#2b323e;box-shadow:0 2px 4px #1018281a}
+.star-button[aria-disabled="true"]{background:#f7f8fa;border-color:#e7e9ee;color:#697386;box-shadow:none;cursor:default}
+.star-count{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding-left:10px;border-left:1px solid #ffffff30;font-size:12px;line-height:18px;font-weight:500;font-variant-numeric:tabular-nums;color:#e0e4eb}
+.star-count svg{color:#b5bdcb}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:10px;font-size:14.5px;font-weight:600;transition:background .15s,border-color .15s,color .15s}
@@ -144,18 +146,7 @@ h1{font-size:clamp(44px,6.4vw,92px);line-height:.98;letter-spacing:-.045em;font-
 .prose ul{padding-left:20px}
 .prose li{margin-top:6px}
 
-/* sponsor wall */
-.sponsor-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
-.sponsor-head p{margin-top:6px;color:var(--muted)}
-.tree{display:block;width:100%;height:auto;margin:8px 0 0;font-family:var(--sans)}
-.branch-tree{max-width:1320px}
-.spot{cursor:pointer;outline:none}
-.spot circle{fill:#fff;transition:transform .2s ease;transform-box:fill-box;transform-origin:center}
-.spot:hover circle,.spot:focus-visible circle{transform:scale(1.08)}
-.spot:focus-visible circle{stroke:#0b0f1a;stroke-width:3}
-.spot text{text-anchor:middle;fill:#2f9160;pointer-events:none}
-.spot-plus{font-size:20px;font-weight:500}
-.spot-label{font-size:11.5px;font-weight:600}
+/* sponsor checkout */
 .checkout{width:min(440px,calc(100% - 32px));padding:0;border:0;border-radius:22px;box-shadow:0 30px 80px -20px rgba(11,15,26,.45)}
 .checkout::backdrop{background:rgba(11,15,26,.45);backdrop-filter:blur(3px)}
 .checkout-body{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding:30px}
@@ -296,6 +287,9 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
   .sponsor-wall{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:860px){
+  .header-inner{gap:24px}
+  .header-nav{gap:22px}
+  .star-label-detail{display:none}
   .header-nav a:nth-child(3){display:none}
   .use-panel{grid-template-columns:1fr}
   .use-code{border-left:0;border-top:1px solid var(--line)}
@@ -309,14 +303,16 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 }
 @media(max-width:640px){
   .features>.feature{grid-column:span 12;min-height:300px}
-  .visitors{display:none}
+  .header-inner{height:auto;min-height:68px;flex-wrap:wrap;gap:12px 18px;padding-block:14px 10px}
+  .header-nav{order:3;width:100%;justify-content:center}
+  .header-actions{gap:8px}
+  .visitors{padding-inline:9px}
   .footer-top{grid-template-columns:1fr 1fr}
   .use-preview{min-height:260px;padding:16px}
   .plant:nth-child(2n){display:none}
 
 
   .container{width:calc(100% - 32px)}
-  .header-inner{gap:18px}
   .header-nav{gap:16px;font-size:14px}
   .header-nav a:nth-child(3){display:none}
   .star-button{padding:0 10px}
@@ -327,11 +323,11 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
   .sponsor-wall{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sponsor-band,.one-time{padding:24px}
 }
-@media(max-width:420px){.header-nav a:nth-child(4){display:none}.star-button{font-size:0;gap:4px}.star-button svg{font-size:14px}}
+@media(max-width:420px){.star-label{display:none}.star-button{min-height:38px;gap:4px}.star-count{margin-left:1px;padding-left:7px}}
 /* Scroll-in motion, CSS only: browsers without scroll timelines simply show everything. Nothing is ever hidden by script. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .section-head,.sponsor-head,.feature,.use-panel,.props-card,.steps>li,.tree,.footer-col,.wordmark{animation:rise-in linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+    .section-head,.feature,.use-panel,.props-card,.steps>li,.footer-col,.wordmark{animation:rise-in linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
   }
 }
 @keyframes rise-in{from{opacity:0;translate:0 28px}to{opacity:1;translate:0 0}}

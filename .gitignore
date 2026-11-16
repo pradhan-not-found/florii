@@ -9,4 +9,6 @@ out/
 !.env.example
 packages/florii/dist/
 *.tgz
-.openai/
+.commandcode/
+.openai/*
+!.openai/hosting.json

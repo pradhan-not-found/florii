@@ -1,4 +1,4 @@
-type IconName = "arrow" | "copy" | "check" | "github" | "star" | "heart" | "search" | "external" | "download";
+type IconName = "arrow" | "copy" | "check" | "github" | "star" | "heart" | "search" | "external" | "download" | "visitors";
 
 const paths: Record<IconName, string> = {
   arrow: "M4 12h15m-6-6 6 6-6 6",
@@ -10,6 +10,7 @@ const paths: Record<IconName, string> = {
   search: "m16 16 5 5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
   external: "M14 4h6v6m0-6-9 9M10 6H5v13h13v-5",
   download: "M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4",
+  visitors: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
 };
 
 export function Icon({ name, size = 16, filled = false }: { name: IconName; size?: number; filled?: boolean }) {

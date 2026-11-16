@@ -1,0 +1,147 @@
+.section {
+  scroll-margin-top: 92px;
+}
+
+.panel {
+  padding: 36px;
+  border: 1px solid #e3e8e5;
+  border-radius: 18px;
+  background: #f8faf8;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.intro {
+  max-width: 540px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: #52715c;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.intro h2 {
+  color: #15231b;
+  font-size: clamp(26px, 3vw, 32px);
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+
+.intro p {
+  margin-top: 10px;
+  color: #626e66;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.cta {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.spaces {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.space {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 92px;
+  padding: 16px;
+  border: 1px solid #e2e7e3;
+  border-radius: 10px;
+  background: #fff;
+  color: #66736b;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.space:hover {
+  border-color: #a9bdb0;
+  background: #fdfefd;
+  color: #294c35;
+}
+
+.space:focus-visible {
+  outline-color: #52715c;
+  outline-offset: 3px;
+}
+
+.plus {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 27px;
+  height: 27px;
+  border: 1px solid #e8ece8;
+  border-radius: 50%;
+  color: #7d8e81;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.note {
+  margin-top: 17px;
+  color: #66736b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .panel {
+    padding: 28px;
+  }
+
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .spaces {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 420px) {
+  .panel {
+    padding: 22px 18px;
+    border-radius: 14px;
+  }
+
+  .spaces {
+    gap: 8px;
+  }
+
+  .space {
+    flex-direction: column;
+    gap: 7px;
+    padding: 14px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space {
+    transition: none;
+  }
+}
