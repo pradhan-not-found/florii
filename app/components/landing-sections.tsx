@@ -37,7 +37,20 @@ const cases: UseCase[] = [
   {
     id: "card", label: "Card corner", blurb: "Tuck a flourish into the corner of a card.",
     code: `import { FlowerCorner } from "florii";\n\n<article className="card" style={{ position: "relative" }}>\n  <FlowerCorner size={96} position="bottom-right"\n    style={{ position: "absolute", right: 0, bottom: 0 }} />\n  …\n</article>`,
-    preview: <div className="mock mock-card"><b>Weekly notes</b><i /><i /><i className="short" /><span className="mock-corner"><FlowerCorner size={92} position="bottom-right" title="" /></span></div>,
+    preview: (
+      <div className="mock mock-card">
+        <span className="mock-tag">Design</span>
+        <b>Weekly notes</b>
+        <i style={{ width: "88%" }} />
+        <i style={{ width: "72%" }} />
+        <i className="short" />
+        <div className="mock-card-footer">
+          <span className="mock-avatar" /><span className="mock-avatar" /><span className="mock-avatar" />
+          <span className="mock-pill">3 updates</span>
+        </div>
+        <span className="mock-corner"><FlowerCorner size={96} position="bottom-right" title="" /></span>
+      </div>
+    ),
   },
   {
     id: "celebrate", label: "Celebration", blurb: "Shower petals when something good happens.",
