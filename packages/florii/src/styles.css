@@ -1,0 +1,29 @@
+/* Florii's original SVG components. Import this stylesheet once in your app. */
+.florii-botanical{display:inline-block;vertical-align:middle;flex-shrink:0;overflow:visible;max-width:100%;color:inherit}
+/* Animations move the whole <svg>, so the browser paints the artwork (and its paint filter) once and only moves the result. */
+.florii-botanical{transform-origin:50% 50%}
+.florii-botanical:not(.florii--none){will-change:transform}
+.florii-botanical.florii--bloom{animation:florii-bloom var(--florii-duration,4s) ease-in-out infinite}
+.florii-botanical.florii--sway{transform-origin:50% 90%;animation:florii-sway var(--florii-duration,4s) ease-in-out infinite}
+.florii-botanical.florii--float{animation:florii-float var(--florii-duration,4s) ease-in-out infinite}
+.florii-botanical.florii--rotate{animation:florii-rotate var(--florii-duration,4s) linear infinite}
+.florii-botanical.florii--pulse{animation:florii-pulse var(--florii-duration,4s) ease-in-out infinite}
+.florii-botanical.florii--fall{animation:florii-fall var(--florii-duration,4s) ease-in-out infinite}
+.florii-botanical.florii--interactive:not(:hover):not(:focus-visible){animation-play-state:paused}
+.florii-botanical:focus-visible,.florii-effect:focus-visible{outline:2px solid currentColor;outline-offset:5px;border-radius:6px}
+.florii-effect{position:relative;overflow:hidden;max-width:100%;display:inline-block;vertical-align:middle;isolation:isolate}
+.florii-particle{position:absolute;display:block;pointer-events:none;transform:rotate(var(--florii-rotation,0deg));animation-delay:var(--florii-delay,0s)!important}
+.florii-particle>svg{display:block}
+.florii-effect--falling>.florii-particle{animation:florii-petal-fall var(--florii-duration,7s) linear infinite}
+.florii-effect--floating>.florii-particle{animation:florii-leaf-float var(--florii-duration,7s) ease-in-out infinite}
+.florii-effect--interactive:not(:hover):not(:focus-visible)>.florii-particle{animation-play-state:paused}
+@keyframes florii-bloom{0%,100%{transform:scale(.86) rotate(-6deg)}45%,60%{transform:scale(1.04) rotate(2deg)}}
+@keyframes florii-sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes florii-float{0%,100%{transform:translateY(5px) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+@keyframes florii-rotate{to{transform:rotate(360deg)}}
+@keyframes florii-pulse{0%,100%{transform:scale(.96)}50%{transform:scale(1.06)}}
+@keyframes florii-fall{0%{transform:translateY(-22px) rotate(-10deg);opacity:0}15%,75%{opacity:1}100%{transform:translateY(30px) rotate(14deg);opacity:0}}
+@keyframes florii-petal-fall{0%{transform:translate(0,-50px) rotate(var(--florii-rotation,0deg));opacity:0}15%,75%{opacity:.9}100%{transform:translate(var(--florii-drift,20px),120px) rotate(calc(var(--florii-rotation,0deg) + 100deg));opacity:0}}
+@keyframes florii-leaf-float{0%,100%{transform:translate(0,0) rotate(var(--florii-rotation,0deg));opacity:.65}50%{transform:translate(var(--florii-drift,20px),-22px) rotate(calc(var(--florii-rotation,0deg) + 24deg));opacity:1}}
+@media(prefers-reduced-motion:reduce){.florii-botanical,.florii-particle{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}
+

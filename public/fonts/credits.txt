@@ -1,0 +1,7 @@
+Fonts served locally for florii. It is free for commercial use under the SIL Open Font License 1.1.
+
+Instrument Sans, variable (weight 400-700, width 75-100%), Latin subset. UI and body text.
+https://fonts.google.com/specimen/Instrument+Sans
+License: Instrument-Sans-LICENSE.txt
+
+Downloaded from the Google Fonts CSS API (fonts.googleapis.com and fonts.gstatic.com).

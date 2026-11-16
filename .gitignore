@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.npm-cache/
+.sites-runtime/
+*.tsbuildinfo
+*.log
+.env*
+!.env.example
+packages/florii/dist/
+*.tgz
+.openai/

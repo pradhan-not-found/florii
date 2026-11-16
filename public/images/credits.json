@@ -1,0 +1,10 @@
+{
+  "license": "https://unsplash.com/license",
+  "photos": [
+    { "file": "hero-flowers.jpg", "photographer": "Valeriia Miller", "source": "https://unsplash.com/photos/-HwX8NR1UtI", "subject": "Sunlit pink peonies in a clear pitcher on a wooden table" },
+    { "file": "bouquet-peach.jpg", "photographer": "Liana S", "source": "https://unsplash.com/photos/o1jc5y3iHAY", "subject": "Pink, peach, and white dahlias in a glass vase" },
+    { "file": "bouquet-sunshine.jpg", "photographer": "feey", "source": "https://unsplash.com/photos/WMlKn-9wLAY", "subject": "Yellow and cream flowers in a large white vase" },
+    { "file": "bouquet-white.jpg", "photographer": "Tetiana Shadrina", "source": "https://unsplash.com/photos/tU3eNi8LPIY", "subject": "White narcissus and lily-of-the-valley in a ceramic pitcher" },
+    { "file": "bouquet-pink.jpg", "photographer": "Debby Hudson", "source": "https://unsplash.com/photos/ctzyCtDFU4U", "subject": "Three pink tulips against an airy white background" }
+  ]
+}
