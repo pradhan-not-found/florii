@@ -457,3 +457,7 @@ a.star-button:hover{background:#f5f5f3 !important}
 
 /* sponsor plots: rounded squares */
 .plot-cell{border-radius:16px !important}
+
+/* inner pages start below the navbar */
+.library-page,.docs-page{padding-top:124px !important}
+.prose{padding-top:132px !important}

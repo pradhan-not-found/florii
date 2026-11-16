@@ -24,10 +24,10 @@ export function SiteHeader() {
     <div className="container header-inner">
       <a href="/" className="logo" aria-label="florii home">florii</a>
       <nav className="header-nav" aria-label="Main">
-        <a href="/flowers/">Flowers</a>
-        <a href="/docs/">Docs</a>
+        <a href="/flowers/">flowers</a>
+        <a href="/docs/">docs</a>
         <a href={projectLinks.npm} target="_blank" rel="noreferrer">npm</a>
-        <a href="/#sponsors">Sponsor</a>
+        <a href="/#sponsors">sponsor</a>
       </nav>
       <div className="header-actions">
         <span className="visitors" title={visitors === null ? "Visitor statistics are currently unavailable" : `${format(visitors)} total visitors`}>
