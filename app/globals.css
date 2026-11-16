@@ -42,7 +42,7 @@ code{font-family:var(--mono);font-size:13px}
 a.star-button:hover{background:#1c2230;box-shadow:0 4px 12px -4px rgba(11,15,26,.4),inset 0 1px 0 rgba(255,255,255,.1)}
 a.star-button:active{transform:translateY(1px)}
 .star-button[aria-disabled="true"]{opacity:.7;cursor:default}
-.star-count{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.1);font-size:12px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;color:#e8ebf2}
+.star-count{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:999px;background:rgba(0,0,0,.28);box-shadow:inset 0 2px 4px rgba(0,0,0,.45),inset 0 1px 0 rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.07);font-size:12px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;color:#c8cdd8}
 .star-count svg{color:#f5b301}
 
 /* buttons */
