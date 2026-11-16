@@ -410,10 +410,10 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 .sponsor-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
 .sponsor-head p{margin-top:6px;color:var(--muted,#6b7896)}
 
-/* navbar logo: SVG art */
-.logo{display:inline-flex!important;align-items:center!important;color:var(--navy)!important;text-decoration:none!important;line-height:1!important}
-.logo-svg{display:block;height:30px;width:auto;overflow:visible;transition:transform .2s ease}
-.logo:hover .logo-svg{transform:scale(1.04)}
+/* navbar logo: hand-drawn SVG art */
+.logo{display:inline-flex!important;align-items:center!important;color:#1C00CA!important;text-decoration:none!important;line-height:1!important}
+.logo-art{display:block;height:32px;width:auto;overflow:visible;transition:transform .2s ease}
+.logo:hover .logo-art{transform:scale(1.05)}
 /* sponsor plots sit above the grass */
 .sponsor-garden{height:250px !important}
 .plot-row{align-items:flex-start !important;padding-top:44px !important}
