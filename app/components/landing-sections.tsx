@@ -81,11 +81,11 @@ export function Bento() {
   const [motion, setMotion] = useState<(typeof motions)[number]>("sway");
 
   return <section className="container section" aria-labelledby="features-title">
-    <div className="section-head"><div><h2 id="features-title">A whole garden in one package</h2><p>Flowers and decorations you can recolor, resize and set in motion.</p></div></div>
+    <div className="section-head"><div><h2 id="features-title">a whole garden in one package.</h2><p>flowers and decorations you can recolor, resize and set in motion.</p></div></div>
     <div className="features">
       <article className="feature f-shelf">
         <Corner name="Daisy" color="#ffd9c9" size={230} style={{ right: -70, top: -90 }} />
-        <div className="feature-text"><h3>{botanicalCatalog.length} flowers and counting</h3><p>Flowers from around the world, plus leaves, vines and a few small surprises.</p></div>
+        <div className="feature-text"><h3>{botanicalCatalog.length} flowers and counting</h3><p>flowers from around the world, plus leaves, vines and a few small surprises.</p></div>
         <div className="shelf" aria-hidden="true">
           <div className="shelf-track">
             {[...shelf, ...shelf].map((item, index) => <span key={index} className="seed"><Botanical name={item.id} size={72} title="" /><small>{item.name}</small></span>)}
@@ -95,7 +95,7 @@ export function Bento() {
 
       <article className="feature f-color">
         <Corner name="Fern" color="#ff8a1f" size={230} style={{ right: -40, top: -110, rotate: "160deg" }} />
-        <div className="feature-text"><h3>Any color you like</h3><p>One prop repaints the whole flower.</p></div>
+        <div className="feature-text"><h3>any color you like</h3><p>one prop repaints the whole flower.</p></div>
         <div className="feature-stage"><span className="disc"><Botanical name="Cosmos" size={132} color={color} title="" /></span></div>
         <div className="swatches" role="group" aria-label="Flower color">
           {swatches.map(value => <button key={value} aria-pressed={color === value} aria-label={"Use color " + value} style={{ background: value }} onClick={() => setColor(value)} />)}
@@ -104,7 +104,7 @@ export function Bento() {
 
       <article className="feature f-motion">
         <Corner name="Hibiscus" color="#f595bd" size={210} style={{ right: -70, top: -80 }} />
-        <div className="feature-text"><h3>Motion built in</h3><p>Five gentle animations, no extra library.</p></div>
+        <div className="feature-text"><h3>motion built in</h3><p>five gentle animations, no extra library.</p></div>
         <div className="feature-stage"><span className="disc"><Botanical key={motion} name="Dahlia" size={124} animate={motion} speed={motion === "rotate" ? 8 : 3} title="" /></span></div>
         <div className="segmented" role="group" aria-label="Animation">
           {motions.map(value => <button key={value} aria-pressed={motion === value} onClick={() => setMotion(value)}>{value}</button>)}
@@ -113,7 +113,7 @@ export function Bento() {
 
       <article className="feature f-deco">
         <Corner name="Lily" color="#e4572e" size={240} style={{ right: -70, top: -100, rotate: "20deg" }} />
-        <div className="feature-text"><h3>Decorations too</h3><p>Corners, dividers, borders and falling petals for cards and sections.</p></div>
+        <div className="feature-text"><h3>decorations too</h3><p>corners, dividers, borders and falling petals for cards and sections.</p></div>
         <div className="deco-stage" aria-hidden="true">
           <span className="deco-rain"><Petals size="100%" count={12} title="" /></span>
           <BotanicalDivider size={320} title="" />

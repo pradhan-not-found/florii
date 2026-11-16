@@ -50,7 +50,7 @@ function bendFor(distance: number) {
   return Math.sign(distance || 1) * amount * amount * MAX_BEND;
 }
 
-export function Garden({ height = 320, plants: plantCount = 11, density = 1, kind = "meadow", taper = false, className = "" }: {
+export function Garden({ height = 320, plants: plantCount = 11, density = 1, kind = "meadow", heads, taper = false, className = "" }: {
   /** Shrinks the grass toward both ends so the garden finishes as a natural tuft instead of a straight cut. */
   taper?: boolean;
   height?: number;
@@ -59,12 +59,14 @@ export function Garden({ height = 320, plants: plantCount = 11, density = 1, kin
   density?: number;
   /** "meadow" grows tall flowers on stems; "lawn" keeps short grass with mushrooms, clovers and leaves at ground level. */
   kind?: "meadow" | "lawn";
+  /** Override which flowers grow in a meadow. */
+  heads?: BotanicalName[];
   className?: string;
 }) {
   const lawn = kind === "lawn";
   const back = useMemo(() => makeBlades(Math.round(170 * density), height * 0.32, height * 0.52, backGreens, 1), [density, height]);
   const front = useMemo(() => makeBlades(Math.round(210 * density), height * 0.16, height * 0.36, frontGreens, 2), [density, height]);
-  const plants = useMemo(() => lawn ? makePlants(plantCount, 0, 0, lawnHeads) : makePlants(plantCount, height * 0.4, height * 0.68, meadowHeads), [lawn, plantCount, height]);
+  const plants = useMemo(() => lawn ? makePlants(plantCount, 0, 0, lawnHeads) : makePlants(plantCount, height * 0.4, height * 0.68, heads ?? meadowHeads), [lawn, plantCount, height, heads]);
   const butterflies = density >= 1 ? flyers : [];
 
   const root = useRef<HTMLDivElement>(null);
@@ -127,7 +129,7 @@ export function Garden({ height = 320, plants: plantCount = 11, density = 1, kin
         if (!node) return;
         const x = (fly.cx + fly.ax * Math.sin(time * fly.sx * 2 + fly.p)) * width;
         const y = (fly.cy + fly.ay * Math.sin(time * fly.sy * 2 + fly.p * 1.7)) * height;
-        const heading = Math.cos(time * fly.sx * 2 + fly.p) >= 0 ? 1 : -1;
+        const heading = Math.cos(time * fly.sx * 2 + fly.p);
         node.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scaleX(${heading})`;
       });
       if (!reduced && visible) raf = requestAnimationFrame(frame);

@@ -5,3 +5,5 @@ https://fonts.google.com/specimen/Instrument+Sans
 License: Instrument-Sans-LICENSE.txt
 
 Downloaded from the Google Fonts CSS API (fonts.googleapis.com and fonts.gstatic.com).
+
+Patrick Hand (regular), used only for the navbar logo. SIL Open Font License 1.1, see Patrick-Hand-LICENSE.txt.
