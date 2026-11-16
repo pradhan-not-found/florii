@@ -8,7 +8,7 @@
 
 /* ── Install command bar ──────────────────────────────────────────── */
 .cmdBar{display:inline-flex;align-items:center;gap:0;margin-top:28px;border:1px solid #e2e6ea;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden}
-.cmdCode{display:flex;align-items:center;gap:10px;padding:0 6px 0 20px;height:48px;font-family:var(--mono);font-size:14px;color:#44444d}
+.cmdCode{display:flex;align-items:center;gap:10px;padding:0 6px 0 20px;height:48px;font-family:var(--sans);font-size:14px;color:#44444d}
 .cmdCode span{color:#9ba3af}
 .cmdCopy{display:grid;place-items:center;width:40px;height:40px;margin:4px;border-radius:999px;color:#6b6b75;transition:background .15s,color .15s;flex-shrink:0}
 .cmdCopy:hover{background:#f4f4f2;color:#131316}

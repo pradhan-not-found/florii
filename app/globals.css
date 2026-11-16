@@ -184,7 +184,7 @@ h1{font-size:clamp(44px,6.4vw,92px);line-height:.98;letter-spacing:-.045em;font-
 .library-tabs{display:flex;gap:28px;margin-top:32px;border-bottom:1px solid var(--line)}
 .library-tabs button{display:inline-flex;align-items:center;gap:8px;padding:12px 0;margin-bottom:-1px;border-bottom:2px solid transparent;font-size:15px;font-weight:500;color:var(--muted)}
 .library-tabs button[aria-selected="true"]{color:#0b0f1a;border-color:#0b0f1a}
-.library-tabs span{font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--soft);color:var(--text)}
+.library-tabs span{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0}
 .library-page .toolbar{margin-top:18px}
 
 /* sections */
