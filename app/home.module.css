@@ -54,7 +54,6 @@
 .installCommand{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:48px;padding:0 22px 0 24px;border:1px solid rgba(19,19,22,.14);border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.42));backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 10px 24px -14px rgba(19,60,100,.35);color:#131316;transition:background .15s,border-color .15s,transform .15s}
 .installCommand:active{transform:scale(.97)}
 .installCommand code{font-size:15px}.installCommand:hover{background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.6));border-color:rgba(19,19,22,.22)}
-.hero :global(.toast){position:fixed;z-index:60}
 .hero { position: relative; padding: 72px 24px 300px; text-align: center; overflow: hidden; background: linear-gradient(#cfeeff, #e6f6ff 55%, #f4fbff); }
 .field { position: absolute !important; left: 0; right: 0; bottom: 0; width: 100% !important; z-index: 0; }
 .hero > *:not(.field):not(.backdrop) { position: relative; z-index: 1; }
@@ -312,41 +311,48 @@
 /* use card spans the same width as other sections */
 .card { max-width: none !important; margin: 0 !important; }
 
-/* inline flower chips, like the reference */
+/* inline flower chips in lede */
 .chip {
   display: inline-flex;
   align-items: center;
-  position: relative;
-  vertical-align: -0.2em;
-  margin: 0 1px;
-  cursor: default;
-  line-height: 1;
-}
-.chip svg { flex-shrink: 0; display: block; }
-
-/* floating name tooltip */
-.chipName {
-  position: absolute;
-  bottom: calc(100% + 7px);
-  left: 50%;
-  translate: -50% 0;
-  white-space: nowrap;
-  background: #131316;
-  color: #fff;
-  font-size: 12.5px;
+  gap: 4px;
+  vertical-align: baseline;
+  cursor: pointer;
+  color: var(--ink);
   font-weight: 600;
-  letter-spacing: -.01em;
-  padding: 5px 11px;
-  border-radius: 999px;
-  pointer-events: none;
-  opacity: 0;
-  translate: -50% 4px;
-  transition: opacity .18s ease, translate .18s ease;
-  z-index: 10;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  transition: color .15s ease, background-color .15s ease;
+  user-select: none;
 }
-.chip:hover .chipName {
-  opacity: 1;
-  translate: -50% 0;
+.chip:hover {
+  color: var(--navy, #0b1f4d);
+  background: rgba(19, 19, 22, .05);
+}
+.chipIcon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  vertical-align: -0.2em;
+  transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+.chipIcon svg {
+  display: block;
+  flex-shrink: 0;
+}
+.chip:hover .chipIcon {
+  transform: scale(1.22) rotate(6deg);
+}
+.chipText {
+  display: inline;
+  text-decoration: underline;
+  text-decoration-color: rgba(19, 19, 22, .25);
+  text-underline-offset: 3px;
+  transition: text-decoration-color .15s ease;
+}
+.chip:hover .chipText {
+  text-decoration-color: var(--navy, #0b1f4d);
 }
 
 /* developer pill sits below the buttons */

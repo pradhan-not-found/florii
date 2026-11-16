@@ -33,7 +33,7 @@ export default function DocsPage() {
         </div>
         <div className={s.links}><a href="#quickstart">quick start <Icon name="arrow" size={15} /></a><a href="#props">props reference</a></div>
       </section>
-      <div className={`container ${s.examples}`}><div className={s.examplesHead}><span>try a flower</span><span>click to preview, customize, and copy</span></div><div className={s.exampleGrid}>{(["Daisy", "Tulip", "Sunflower"] as BotanicalName[]).map(name => <button key={name} onClick={() => setSelected(name)} aria-label={`Preview ${name}`}><div className={s.artArea}><Botanical name={name} size={96} animate="sway" speed={4} title="" /></div><div className={s.metaArea}><span>{name.toLowerCase()}</span><Icon name="arrow" size={15} /></div></button>)}</div></div>
+      <div className={`container ${s.examples}`}><div className={s.examplesHead}><span>try a flower</span><span>click to preview, customize, and copy</span></div><div className={s.exampleGrid}>{(["Daisy", "Tulip", "Sunflower", "Peony", "Lavender", "Poppy"] as BotanicalName[]).map(name => <button key={name} onClick={() => setSelected(name)} aria-label={`Preview ${name}`}><div className={s.artArea}><Botanical name={name} size={96} animate="sway" speed={4} title="" /></div><div className={s.metaArea}><span>{name.toLowerCase()}</span><Icon name="arrow" size={15} /></div></button>)}</div></div>
       <section className="container docs-page" aria-labelledby="docs-title">
         <div className="section-head" id="quickstart"><div><span className={s.eyebrow}>01 / getting started</span><h2>from install to bloom.</h2><p>Three small steps. Your first flower is just a few lines away.</p></div></div>
         <div className="docs">

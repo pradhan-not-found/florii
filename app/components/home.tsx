@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
@@ -7,6 +8,7 @@ import { projectLinks } from "@/config/project";
 import { Garden } from "./garden";
 import { Icon } from "./icons";
 import { useCopy } from "./copy";
+import { FlowerPreview } from "./flower-preview";
 import s from "../home.module.css";
 
 /** A flower set into a line of large text, like a sticker on the page. */
@@ -21,42 +23,67 @@ function Cloud({ className }: { className: string }) {
   return <svg className={className} viewBox="0 0 240 120"><g fill="#ffffff"><circle cx="72" cy="76" r="34" /><circle cx="122" cy="60" r="46" /><circle cx="170" cy="74" r="36" /><rect x="34" y="72" width="172" height="36" rx="18" /></g></svg>;
 }
 
-/** A flower icon inline in text; hover reveals the name as a floating label. */
-function Chip({ name, children }: { name: BotanicalName; tint: string; children: string }) {
+/** An inline flower with its name; seamless with prose, click to preview/download SVG. */
+function Chip({
+  name,
+  children,
+  onClick,
+  color,
+  secondaryColor,
+}: {
+  name: BotanicalName;
+  children: string;
+  onClick?: () => void;
+  color?: string;
+  secondaryColor?: string;
+}) {
   return (
-    <span className={s.chip}>
-      <Botanical name={name} size={17} title="" />
-      <span className={s.chipName}>{children}</span>
+    <span
+      className={s.chip}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
+      title={`Click to preview, customize, or download ${name} SVG`}
+    >
+      <span className={s.chipIcon} aria-hidden="true">
+        <Botanical name={name} size={18} color={color} secondaryColor={secondaryColor} animate="sway" speed={4} title="" />
+      </span>
+      <span className={s.chipText}>{children}</span>
     </span>
   );
 }
 
 export function Hero() {
   const { copy, toast } = useCopy();
-  return <section className={s.hero} aria-labelledby="hero-title">
-    <div className={s.backdrop} aria-hidden="true">
-      <span className={`${s.blur} ${s.blurA}`} />
-      <span className={`${s.blur} ${s.blurB}`} />
-      <span className={`${s.blur} ${s.blurC}`} />
-      <Cloud className={`${s.cloud} ${s.cloudA}`} />
-      <Cloud className={`${s.cloud} ${s.cloudB}`} />
-      <Cloud className={`${s.cloud} ${s.cloudC}`} />
-    </div>
-    <span className={s.tag}><span className={s.stack} aria-hidden="true">{people.slice(0, 4).map(person => <Avatar key={person.name} person={person} className={s.stackAvatar} />)}</span>built by developers everywhere</span>
-    <h1 id="hero-title">make the web bloom.</h1>
-    <p className={s.lede}>
-      hand-painted flowers for react. drop a <Chip name="Daisy" tint="#f3f3f1">daisy</Chip> into a hero,
-      a <Chip name="Tulip" tint="#fdeeee">tulip</Chip> into an empty state, or a <Chip name="Sunflower" tint="#fdf6e3">sunflower</Chip> into
-      a loading screen. they sway, bloom and wear your colors.
-    </p>
-    <div className={s.actions}>
-      <button className={s.installCommand} onClick={() => copy("npm i florii@latest", "Install command copied")} aria-label="Copy npm install command"><code>npm i florii@latest</code><Icon name="copy" size={17} /></button>
-      <a className={`${s.btn} ${s.wash}`} href="/flowers/">browse the flowers <Icon name="arrow" size={16} /></a>
-    </div>
-    <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
-    <Garden height={320} plants={30} className={s.field} />
+  const [selected, setSelected] = useState<BotanicalName | null>(null);
+  return <>
+    <section className={s.hero} aria-labelledby="hero-title">
+      <div className={s.backdrop} aria-hidden="true">
+        <span className={`${s.blur} ${s.blurA}`} />
+        <span className={`${s.blur} ${s.blurB}`} />
+        <span className={`${s.blur} ${s.blurC}`} />
+        <Cloud className={`${s.cloud} ${s.cloudA}`} />
+        <Cloud className={`${s.cloud} ${s.cloudB}`} />
+        <Cloud className={`${s.cloud} ${s.cloudC}`} />
+      </div>
+      <span className={s.tag}><span className={s.stack} aria-hidden="true">{people.slice(0, 4).map(person => <Avatar key={person.name} person={person} className={s.stackAvatar} />)}</span>built by developers everywhere</span>
+      <h1 id="hero-title">make the web bloom.</h1>
+      <p className={s.lede}>
+        hand-painted flowers for react. drop a <Chip name="Daisy" color="#ffffff" secondaryColor="#f5b301" onClick={() => setSelected("Daisy")}>daisy</Chip> into a hero,
+        a <Chip name="Tulip" onClick={() => setSelected("Tulip")}>tulip</Chip> into an empty state, or a <Chip name="Sunflower" onClick={() => setSelected("Sunflower")}>sunflower</Chip> into
+        a loading screen. they sway, bloom and wear your colors.
+      </p>
+      <div className={s.actions}>
+        <button className={s.installCommand} onClick={() => copy("npm i florii@latest", "Install command copied")} aria-label="Copy npm install command"><code>npm i florii@latest</code><Icon name="copy" size={17} /></button>
+        <a className={`${s.btn} ${s.wash}`} href="/flowers/">browse the flowers <Icon name="arrow" size={16} /></a>
+      </div>
+      <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
+      <Garden height={320} plants={30} className={s.field} />
+    </section>
+    {selected && <FlowerPreview key={selected} name={selected} onClose={() => setSelected(null)} />}
     {toast}
-  </section>;
+  </>;
 }
 
 export function Stage() {

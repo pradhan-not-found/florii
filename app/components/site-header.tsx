@@ -22,7 +22,10 @@ export function SiteHeader() {
 
   return <header className="site-header">
     <div className="container header-inner">
-      <a href="/" className="logo" aria-label="florii home">florii</a>
+      <a href="/" className="logo" aria-label="florii home">
+        <span>florii</span>
+        <span className="logo-heart" aria-hidden="true"><Icon name="heart" size={14} /></span>
+      </a>
       <nav className="header-nav" aria-label="Main">
         <a href="/flowers/">flowers</a>
         <a href="/docs/">docs</a>

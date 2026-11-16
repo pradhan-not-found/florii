@@ -284,8 +284,8 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 .wordmark{display:block;width:100%;height:auto;margin-top:44px;font-family:var(--sans);user-select:none}
 .footer-fine{padding:22px 0 28px;font-size:12.5px;color:var(--muted)}
 
-.toast{position:fixed;left:50%;bottom:24px;translate:-50% 16px;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--navy);color:#fff;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s,translate .2s;z-index:40}
-.toast.is-visible{opacity:1;translate:-50% 0}
+.toast{position:fixed!important;left:50%!important;bottom:24px!important;translate:-50% 16px!important;width:max-content!important;max-width:calc(100vw - 32px)!important;display:inline-flex!important;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:#0b0f1a;color:#fff;font-size:13.5px;font-weight:500;box-shadow:0 12px 32px -8px rgba(11,15,26,.35);opacity:0;pointer-events:none;transition:opacity .2s ease,translate .2s ease;z-index:9999!important}
+.toast.is-visible{opacity:1;translate:-50% 0!important}
 
 @media(max-width:1024px){
   .f-shelf{grid-column:span 12}
@@ -410,8 +410,11 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 .sponsor-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
 .sponsor-head p{margin-top:6px;color:var(--muted,#6b7896)}
 
-/* navbar logo: bold Instrument Sans */
-.logo{font-family:var(--sans),"Instrument Sans",sans-serif !important;font-size:26px !important;font-weight:600 !important;letter-spacing:-.045em !important;line-height:1 !important;color:var(--navy) !important}
+/* navbar logo: handwritten script with delicate heart */
+.logo{font-family:"Patrick Hand",cursive,sans-serif!important;font-size:33px!important;font-weight:400!important;letter-spacing:0.01em!important;line-height:1!important;color:var(--navy)!important;display:inline-flex!important;align-items:center!important;gap:4px!important;transition:opacity .15s ease}
+.logo:hover{opacity:.85}
+.logo-heart{display:inline-flex;align-items:center;color:var(--blue);margin-top:-10px;rotate:12deg;transition:transform .2s ease}
+.logo:hover .logo-heart{transform:scale(1.15) rotate(16deg)}
 /* sponsor plots sit above the grass */
 .sponsor-garden{height:250px !important}
 .plot-row{align-items:flex-start !important;padding-top:44px !important}
