@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Botanical, botanicalCatalog, FlowerCorner, BotanicalDivider, VineBorder, Petals, LeafConfetti } from "@/packages/florii/src";
-import type { BotanicalVariant } from "@/packages/florii/src";
+import type { BotanicalName, BotanicalVariant } from "@/packages/florii/src";
+import { FlowerPreview } from "../components/flower-preview";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 import { Icon } from "../components/icons";
@@ -54,6 +55,7 @@ export default function FlowersPage() {
   const [variant, setVariant] = useState<BotanicalVariant>("doodle");
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<BotanicalName | null>(null);
   const needle = query.trim().toLowerCase();
   const flowers = botanicalCatalog.filter(item => (category === "all" || item.category === category) && item.name.toLowerCase().includes(needle));
   const decorationList = decorations.filter(item => item.name.toLowerCase().includes(needle));
@@ -78,7 +80,7 @@ export default function FlowersPage() {
 
       {tab === "flowers" ? <div className="flower-grid">
         {flowers.map(item => <article key={item.id} className="flower">
-          <button className="flower-hit" onClick={() => copy(code(item.id, variant), item.name + " copied")} aria-label={"Copy code for " + item.name} />
+          <button className="flower-hit" onClick={() => setSelected(item.id)} aria-label={"Preview " + item.name} />
           <div className="flower-art"><Botanical name={item.id} size={96} variant={variant} animate="sway" speed={4} interactive title="" /></div>
           <div className="flower-meta"><div><h3>{item.name}</h3><code>{"<" + item.id + " />"}</code></div><div className="flower-actions"><button onClick={() => copy(code(item.id, variant), item.name + " code copied")} aria-label={"Copy code for " + item.name} title="Copy code"><Icon name="copy" size={15} /></button><button onClick={event => { if (downloadSvg(event.currentTarget, item.id)) copy("", item.name + " SVG downloaded"); }} aria-label={"Download " + item.name + " as SVG"} title="Download SVG"><Icon name="download" size={15} /></button></div></div>
         </article>)}
@@ -93,6 +95,7 @@ export default function FlowersPage() {
       </div>}
     </main>
     <GardenFooter />
+    {selected && <FlowerPreview key={selected} name={selected} variant={variant} onClose={() => setSelected(null)} />}
     {toast}
   </>;
 }

@@ -17,7 +17,7 @@ export function SiteHeader() {
   const starContent = <>
     <Icon name="github" size={16} />
     <span className="star-label">Star<span className="star-label-detail"> on GitHub</span></span>
-    <span className="star-count" title={stars === null ? "Star count is currently unavailable" : `${format(stars)} GitHub stars`}><Icon name="star" size={13} />{stars === null ? "—" : compactCount(stars)}</span>
+    <span className="star-count" title={stars === null ? "Star count is currently unavailable" : `${format(stars)} GitHub stars`}><Icon name="star" size={12} filled />{stars === null ? "—" : compactCount(stars)}</span>
   </>;
 
   return <header className="site-header">
@@ -31,7 +31,7 @@ export function SiteHeader() {
       </nav>
       <div className="header-actions">
         <span className="visitors" title={visitors === null ? "Visitor statistics are currently unavailable" : `${format(visitors)} total visitors`}>
-          <Icon name="visitors" size={16} />
+          <i className="visitors-dot" aria-hidden="true" />
           <strong>{visitors === null ? "—" : compactCount(visitors)}</strong>
           <span>visitors</span>
         </span>

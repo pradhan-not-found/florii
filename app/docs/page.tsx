@@ -6,6 +6,10 @@ import { GardenFooter } from "../components/garden-footer";
 import { Icon } from "../components/icons";
 import { useCopy } from "../components/copy";
 import { UseCases } from "../components/landing-sections";
+import { Botanical } from "@/packages/florii/src";
+import type { BotanicalName } from "@/packages/florii/src";
+import { FlowerPreview } from "../components/flower-preview";
+import s from "./docs.module.css";
 
 const managers = { npm: "npm install florii", pnpm: "pnpm add florii", yarn: "yarn add florii", bun: "bun add florii" } as const;
 type Manager = keyof typeof managers;
@@ -13,11 +17,19 @@ type Manager = keyof typeof managers;
 export default function DocsPage() {
   const { copy, toast } = useCopy();
   const [manager, setManager] = useState<Manager>("npm");
+  const [selected, setSelected] = useState<BotanicalName | null>(null);
   return <>
     <SiteHeader />
-    <main>
+    <main className={s.page}>
+      <section className={s.hero} aria-labelledby="docs-title">
+        <span className={s.eyebrow}>the florii handbook</span>
+        <h1 id="docs-title">a little code.<br />a little bloom.</h1>
+        <p>Everything you need to bring hand-painted flowers to your React app. Start small, make it yours, and let it grow.</p>
+        <div className={s.links}><a href="#quickstart">quick start <Icon name="arrow" size={15} /></a><a href="#props">props reference</a></div>
+      </section>
+      <div className={`container ${s.examples}`}><div className={s.examplesHead}><span>try a flower</span><span>click to preview, customize, and copy</span></div><div className={s.exampleGrid}>{(["Daisy", "Tulip", "Sunflower"] as BotanicalName[]).map(name => <button key={name} onClick={() => setSelected(name)} aria-label={`Preview ${name}`}><Botanical name={name} size={76} title="" /><span>{name.toLowerCase()}</span><Icon name="arrow" size={16} /></button>)}</div></div>
       <section className="container docs-page" aria-labelledby="docs-title">
-        <div className="section-head"><div><h1 id="docs-title">Get started</h1><p>Three steps from install to bloom.</p></div></div>
+        <div className="section-head" id="quickstart"><div><span className={s.eyebrow}>01 / getting started</span><h2>from install to bloom.</h2><p>Three small steps. Your first flower is just a few lines away.</p></div></div>
         <div className="docs">
           <ol className="steps">
             <li>
@@ -40,9 +52,10 @@ export default function DocsPage() {
               </div>
             </li>
           </ol>
-          <div className="props-card">
-            <h3>Props</h3>
+          <div className="props-card" id="props">
+            <h3>make it yours.</h3>
             <table>
+              <thead><tr><th scope="col">prop</th><th scope="col">type</th><th scope="col">what it does</th></tr></thead>
               <tbody>
                 <tr><td><code>variant</code></td><td><code>&quot;doodle&quot; | &quot;filled&quot;</code></td><td>Painted, vivid look (default) or clean flat pastels.</td></tr>
                 <tr><td><code>color</code></td><td><code>string</code></td><td>Main color.</td></tr>
@@ -59,6 +72,7 @@ export default function DocsPage() {
       <UseCases copy={copy} />
     </main>
     <GardenFooter />
+    {selected && <FlowerPreview key={selected} name={selected} onClose={() => setSelected(null)} />}
     {toast}
   </>;
 }
