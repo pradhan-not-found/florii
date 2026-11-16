@@ -48,7 +48,7 @@ export const metadata: Metadata = {
       "Drop a daisy into a hero, a tulip into an empty state, or a sunflower into a loading screen. Sway, bloom, and wear your colors.",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/images/hero-flowers.jpg",
         width: 1200,
         height: 630,
         alt: "florii — hand-painted botanical components for React",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     description:
       "Drop a daisy into a hero, a tulip into an empty state, or a sunflower into a loading screen. Sway, bloom, and wear your colors.",
     creator: "@floriijs",
-    images: ["/opengraph-image"],
+    images: ["/images/hero-flowers.jpg"],
   },
   robots: {
     index: true,
