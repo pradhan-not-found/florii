@@ -210,8 +210,8 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 .flower-meta h3{font-size:14px;font-weight:600;color:var(--navy)}
 .flower-meta code,.flower-meta p{font-size:12px;color:var(--muted)}
 .flower-actions{position:relative;z-index:3;display:flex;gap:2px}
-.flower-actions button{display:flex;padding:7px;border-radius:8px;color:var(--muted);transition:background .15s,color .15s}
-.flower-actions button:hover{background:var(--soft);color:var(--blue)}
+.flower-actions button{display:flex;padding:7px;border-radius:8px;color:#c2c8d8;transition:background .15s,color .15s}
+.flower-actions button:hover{background:var(--soft);color:#44466e}
 .sub-head{font-size:18px;font-weight:600;color:var(--navy);margin:40px 0 16px}
 .empty{grid-column:1/-1;padding:40px 0;text-align:center;color:var(--muted)}
 
