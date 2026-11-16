@@ -75,6 +75,5 @@ export function GardenFooter() {
       </nav>)}
     </div>
     <div className="container"><Wordmark /></div>
-    <p className="container footer-fine">© {new Date().getFullYear()} florii. Code and artwork released under the MIT License.</p>
   </footer>;
 }
