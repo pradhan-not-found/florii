@@ -686,38 +686,6 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .f-deco .deco-stage>svg{position:relative;z-index:1;max-width:80%;height:auto}
 .f-deco .deco-corner{position:absolute;right:0;bottom:0;z-index:1;line-height:0}
 
-/* private payments page */
-.admin-page{min-height:100dvh;padding:40px 24px 80px;background:#fafaf8;width:100%}
-.admin-page>h1,.admin-head,.admin-stats,.admin-table-wrap,.admin-note,.admin-page>.pay-error{width:min(1180px,100%);margin-left:auto;margin-right:auto}
-.admin-head{display:flex;align-items:center;justify-content:space-between}
-.admin-logo{color:#131316;display:inline-flex}
-.admin-page>h1{margin-top:28px;font-size:44px;letter-spacing:-.04em;font-weight:500;color:#131316}
-.admin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
-.admin-stats div{padding:18px 20px;border:1px solid #ececea;border-radius:18px;background:#fff}
-.admin-stats span{display:block;font-size:13px;color:#8a8a93}
-.admin-stats strong{display:block;margin-top:6px;font-size:26px;font-weight:600;letter-spacing:-.02em;color:#131316;font-variant-numeric:tabular-nums}
-.admin-table-wrap{margin-top:18px;overflow-x:auto;border:1px solid #ececea;border-radius:18px;background:#fff}
-.admin-table{width:100%;border-collapse:collapse;font-size:14px}
-.admin-table th{text-align:left;padding:12px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#8a8a93;border-bottom:1px solid #ececea;white-space:nowrap}
-.admin-table td{padding:14px 16px;border-top:1px solid #f1f1ef;vertical-align:top;color:#131316}
-.admin-table td small{display:block;margin-top:4px;max-width:280px;color:#6b6b75;font-size:12.5px;line-height:1.45}
-.admin-table a{color:#131316;text-decoration:underline;text-underline-offset:3px}
-.admin-table code{font-family:var(--mono);font-size:12px;color:#55555f}
-.admin-amount{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.admin-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;background:#f1f1ef;color:#55555f}
-.admin-captured{background:#e7f7ec;color:#17803d}
-.admin-failed{background:#fdecec;color:#b42318}
-.admin-authorized{background:#fff6dc;color:#a15c00}
-.admin-empty{text-align:center;color:#8a8a93;padding:40px 16px !important}
-.admin-note{margin-top:12px;font-size:12.5px;color:#8a8a93}
-.admin-signin{width:min(380px,100%);margin:12vh auto 0;padding:32px;border:1px solid #ececea;border-radius:24px;background:#fff;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 70px -44px rgba(19,19,22,.35)}
-.admin-signin h1{font-size:30px;letter-spacing:-.03em;font-weight:500;color:#131316}
-.admin-signin p{color:#6b6b75;margin-top:-6px}
-.admin-signin input{height:46px;padding:0 14px;border:1px solid #e7e7e4;border-radius:12px;font:inherit;outline:0}
-.admin-signin input:focus{border-color:#131316}
-.admin-page .btn{border-radius:999px !important}
-@media (max-width:640px){.admin-stats{grid-template-columns:1fr}}
-
 /* ---------- gift page ---------- */
 .gift-page{padding:120px 24px 0;background:linear-gradient(#d4efff,#eaf7ff 30%,#fff 62%)}
 .gift-hero{text-align:center;max-width:640px;margin:0 auto}

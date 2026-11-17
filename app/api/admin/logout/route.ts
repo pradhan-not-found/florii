@@ -1,8 +1,0 @@
-import { NextResponse } from "next/server";
-import { SESSION_COOKIE } from "../../../admin/session";
-
-export async function POST(request: Request) {
-  const response = NextResponse.redirect(new URL("/admin", request.url), 303);
-  response.cookies.set(SESSION_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 });
-  return response;
-}
