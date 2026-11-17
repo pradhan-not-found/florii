@@ -26,6 +26,8 @@ createServer(async (request, response) => {
       return response.end();
     }
     let info = await stat(file).catch(() => null);
+    const page = await stat(file + ".html").catch(() => null);
+    if (page?.isFile() && !info?.isFile()) { file = file + ".html"; info = page; }
     if (info?.isDirectory()) { file = resolve(file, "index.html"); info = await stat(file).catch(() => null); }
     if (!info?.isFile()) {
       file = resolve(root, "404.html");

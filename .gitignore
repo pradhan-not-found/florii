@@ -12,3 +12,4 @@ packages/florii/dist/
 .commandcode/
 .openai/*
 !.openai/hosting.json
+next-env.d.ts

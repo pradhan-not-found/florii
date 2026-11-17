@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/florii"><img alt="npm version" src="https://img.shields.io/npm/v/florii?style=flat-square&color=131316&labelColor=f4f4f2&label=npm" /></a>
-  <a href="https://www.npmjs.com/package/florii"><img alt="bundle size" src="https://img.shields.io/bundlephobia/minzip/florii?style=flat-square&color=131316&labelColor=f4f4f2&label=size" /></a>
+  <a href="https://www.npmjs.com/package/florii"><img alt="npm downloads" src="https://img.shields.io/npm/dm/florii?style=flat-square&color=131316&labelColor=f4f4f2&label=downloads" /></a>
   <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-131316?style=flat-square&labelColor=f4f4f2" /></a>
   <a href="https://github.com/pradhan-not-found/florii/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/pradhan-not-found/florii?style=flat-square&color=131316&labelColor=f4f4f2" /></a>
 </p>

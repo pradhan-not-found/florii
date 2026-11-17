@@ -37,8 +37,8 @@ export function SiteHeader() {
         </svg>
       </a>
       <nav className="header-nav" aria-label="Main">
-        <a href="/flowers/">flowers</a>
-        <a href="/docs/">docs</a>
+        <a href="/flowers">flowers</a>
+        <a href="/docs">docs</a>
         <a href={projectLinks.npm} target="_blank" rel="noreferrer">npm</a>
         <a href="/#sponsors">sponsor</a>
       </nav>

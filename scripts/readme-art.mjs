@@ -26,30 +26,34 @@ const logo = (x, y, scale) => `<g transform="translate(${x} ${y}) scale(${scale}
 
 // ---------- banner ----------
 {
-  const W = 1280, H = 560;
-  const row = ["Tulip", "Sunflower", "Hibiscus", "Lavender", "Peony", "Daffodil", "Rose", "Lily", "Cosmos", "Iris", "Poppy", "Dahlia", "Bluebell", "Anemone"];
+  const W = 1280, H = 600;
+  const row = ["Daisy", "Hibiscus", "Poppy", "Dahlia", "Sunflower", "ForgetMeNot", "Cosmos", "Lily", "Anemone", "Peony", "Marigold", "Plumeria", "Daffodil", "CherryBlossom", "Camellia", "Zinnia"];
+  const hash = n => { let x = Math.imul(n + 0x9e3779b9, 0x85ebca6b); x ^= x >>> 13; x = Math.imul(x, 0xc2b2ae35); return ((x ^ (x >>> 16)) >>> 0) / 4294967296; };
+  const blade = (x, hgt, w, lean, fill) => `<path d="M${(x - w).toFixed(1)} ${H} Q${(x - w * 0.2 + lean * 0.45).toFixed(1)} ${(H - hgt * 0.55).toFixed(1)} ${(x + lean).toFixed(1)} ${(H - hgt).toFixed(1)} Q${(x + w * 0.4 + lean * 0.45).toFixed(1)} ${(H - hgt * 0.55).toFixed(1)} ${(x + w).toFixed(1)} ${H}Z" fill="${fill}"/>`;
+  const layer = (count, minH, maxH, greens, salt) => { let out = ""; for (let i = 0; i < count; i++) { const r = k => hash(i * 13 + salt * 1000 + k); out += blade(((i + r(1)) / count) * W, minH + r(2) * (maxH - minH), 2.4 + r(3) * 3, (r(4) - 0.5) * 30, greens[Math.floor(r(5) * greens.length)]); } return out; };
+  const back = layer(320, 70, 128, ["#2f7d32", "#3a8f2f", "#2a6e2c", "#3f9a36"], 1);
+  const front = layer(380, 34, 84, ["#4cad3b", "#5fbf45", "#3f9e35", "#76c84f", "#58b23f"], 2);
   let blooms = "";
   row.forEach((name, i) => {
-    const size = 92 + ((i * 37) % 44);
-    const x = 18 + i * ((W - 60) / row.length);
-    blooms += flower(name, x, H - size - 8 + ((i % 3) * 6), size);
+    const size = 64 + Math.round(hash(i + 7) * 30);
+    const x = 46 + i * ((W - 92) / (row.length - 1));
+    const stem = 110 + Math.round(hash(i + 3) * 80);
+    const top = H - stem;
+    const sway = (hash(i + 11) - 0.5) * 18;
+    blooms += `<path d="M${x} ${H} C${x - 4 + sway / 3} ${H - stem * 0.6} ${x + 4 - sway / 4} ${H - stem * 0.3} ${x + sway / 2} ${top}" stroke="#3f9a36" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    blooms += `<path d="M${x} ${H - stem * 0.45} c-16 -4 -24 -16 -22 -28 c14 2 22 12 22 28Z" fill="#4cad3b"/>`;
+    blooms += flower(name, x + sway / 2 - size / 2, top - size / 2 + 6, size);
   });
-  let grass = "";
-  for (let i = 0; i < 260; i++) {
-    const x = (i / 260) * W + ((i * 13) % 7);
-    const hgt = 28 + ((i * 29) % 46);
-    const lean = ((i * 17) % 13) - 6;
-    const fill = ["#3f9e35", "#4cad3b", "#5fbf45", "#2f7d32", "#76c84f"][i % 5];
-    grass += `<path d="M${x - 3} ${H} Q${x + lean * 0.4} ${H - hgt * 0.55} ${x + lean} ${H - hgt} Q${x + 2 + lean * 0.4} ${H - hgt * 0.55} ${x + 3} ${H}Z" fill="${fill}"/>`;
-  }
+  blooms = back + blooms + front;
+  const grass = "";
   const cloud = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})" fill="#fff" opacity=".95"><circle cx="72" cy="76" r="34"/><circle cx="122" cy="60" r="46"/><circle cx="170" cy="74" r="36"/><rect x="34" y="72" width="172" height="36" rx="18"/></g>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${fontFace}
 <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfeeff"/><stop offset=".6" stop-color="#e6f6ff"/><stop offset="1" stop-color="#f4fbff"/></linearGradient><clipPath id="r"><rect width="${W}" height="${H}" rx="28"/></clipPath></defs>
 <g clip-path="url(#r)"><rect width="${W}" height="${H}" fill="url(#sky)"/>
 ${cloud(90, 40, 0.8)}${cloud(1010, 70, 0.62)}${cloud(560, 8, 0.45)}
 ${logo(W / 2 - 157, 78, 4.5)}
-<text x="${W / 2}" y="268" text-anchor="middle" font-size="40" font-weight="600" letter-spacing="-1.4" fill="#131316">make the web bloom.</text>
-<text x="${W / 2}" y="310" text-anchor="middle" font-size="20" fill="#44444d">hand-painted flower components for react · free and open source</text>
+<text x="${W / 2}" y="258" text-anchor="middle" font-size="40" font-weight="600" letter-spacing="-1.4" fill="#131316">make the web bloom.</text>
+<text x="${W / 2}" y="298" text-anchor="middle" font-size="20" fill="#44444d">hand-painted flower components for react · free and open source</text>
 ${blooms}${grass}</g></svg>`;
   writeFileSync(new URL("banner.svg", out), svg);
 }

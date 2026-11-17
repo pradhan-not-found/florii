@@ -52,7 +52,7 @@ export default function DocsPage() {
             </li>
             <li>
               <span className="step-no">3</span>
-              <div><h3>Plant a flower</h3><p>Every flower is a named export. <a className="inline-link" href="/flowers/">Pick one</a> or start here.</p>
+              <div><h3>Plant a flower</h3><p>Every flower is a named export. <a className="inline-link" href="/flowers">Pick one</a> or start here.</p>
                 <div className="code-line"><code>{'<Tulip animate="sway" />'}</code><button onClick={() => copy('import { Tulip } from "florii";\n\n<Tulip animate="sway" />', "Example copied")} aria-label="Copy example"><Icon name="copy" size={14} /></button></div>
               </div>
             </li>

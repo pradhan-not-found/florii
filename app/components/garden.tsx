@@ -50,7 +50,7 @@ function bendFor(distance: number) {
   return Math.sign(distance || 1) * amount * amount * MAX_BEND;
 }
 
-export function Garden({ height = 320, plants: plantCount = 11, density = 1, kind = "meadow", heads, taper = false, className = "" }: {
+export function Garden({ height = 320, plants: plantCount = 11, density = 1, kind = "meadow", heads, flowerColor, taper = false, className = "" }: {
   /** Shrinks the grass toward both ends so the garden finishes as a natural tuft instead of a straight cut. */
   taper?: boolean;
   height?: number;
@@ -61,6 +61,8 @@ export function Garden({ height = 320, plants: plantCount = 11, density = 1, kin
   kind?: "meadow" | "lawn";
   /** Override which flowers grow in a meadow. */
   heads?: BotanicalName[];
+  /** Paint every flower head in one color, e.g. a field of white blooms. */
+  flowerColor?: string;
   className?: string;
 }) {
   const lawn = kind === "lawn";
@@ -157,7 +159,7 @@ export function Garden({ height = 320, plants: plantCount = 11, density = 1, kin
         <span className="plant-bend" ref={node => { plantRefs.current[i] = node; }}>
           <span className="plant-sway" style={{ animationDelay: `${plant.delay}s`, rotate: `${plant.tilt}deg` }}>
             {!lawn && <svg className="stem" width="40" height={plant.stem} viewBox={`0 0 40 ${plant.stem}`}><path d={`M20 ${plant.stem} C${18 + plant.tilt / 3} ${plant.stem * 0.6} ${22 - plant.tilt / 4} ${plant.stem * 0.3} 20 0`} stroke="#3f9a36" strokeWidth="4" strokeLinecap="round" fill="none" /><path d={`M20 ${plant.stem * 0.62} c-14 -4 -20 -14 -18 -24 c12 2 18 10 18 24Z`} fill="#4cad3b" /></svg>}
-            <span className={lawn ? "head on-ground" : "head"} style={{ width: plant.size, height: plant.size }}><Botanical name={plant.name} size={plant.size} title="" /></span>
+            <span className={lawn ? "head on-ground" : "head"} style={{ width: plant.size, height: plant.size }}><Botanical name={plant.name} size={plant.size} color={flowerColor} title="" /></span>
           </span>
         </span>
       </span>)}

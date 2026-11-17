@@ -329,12 +329,34 @@ function Decoration({ children, viewBox, defaultTitle, width, height, animate = 
   return <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width={width} height={height} fill="none" role={label ? "img" : undefined} aria-label={label || undefined} aria-hidden={label ? undefined : true} tabIndex={interactive && label ? 0 : undefined} className={`florii-botanical florii-decoration florii--${animate}${interactive ? " florii--interactive" : ""}${doodle.className} ${className}`.trim()} style={{ "--florii-duration": `${duration(speed)}s`, ...style } as CSSProperties}>{label && <title>{label}</title>}{doodle.filter}<g filter={doodle.filterUrl}><g className="florii-art">{children}</g></g></svg>;
 }
 
+/** Points along a quadratic curve, with the tangent angle at each point (degrees). */
+function along(p0: [number, number], p1: [number, number], p2: [number, number], t: number) {
+  const u = 1 - t;
+  const x = u * u * p0[0] + 2 * u * t * p1[0] + t * t * p2[0], y = u * u * p0[1] + 2 * u * t * p1[1] + t * t * p2[1];
+  const dx = 2 * u * (p1[0] - p0[0]) + 2 * t * (p2[0] - p1[0]), dy = 2 * u * (p1[1] - p0[1]) + 2 * t * (p2[1] - p1[1]);
+  return { x, y, angle: Math.atan2(dy, dx) * 180 / Math.PI };
+}
+
 export function FlowerCorner({ size = 200, color: colorProp, secondaryColor: secondaryProp, position = "bottom-left", ...props }: DecorativeProps) {
   const paint = props.variant !== "filled";
-  const color = colorProp ?? (paint ? vivid("#E4AF9D") : "#E4AF9D");
+  const color = colorProp ?? (paint ? vivid("#E9A59B") : "#E9A59B");
   const secondaryColor = secondaryProp ?? (paint ? vivid("#9AAD8B") : "#9AAD8B");
+  const blossom = paint ? vivid("#F0C9D2") : "#F0C9D2";
   const transform = position === "top-left" ? "translate(0 240) scale(1 -1)" : position === "top-right" ? "translate(240 240) scale(-1 -1)" : position === "bottom-right" ? "translate(240 0) scale(-1 1)" : undefined;
-  return <Decoration {...props} viewBox="0 0 240 240" width={dimension(size)} height={dimension(size)} defaultTitle="Botanical flower corner"><g transform={transform}><path d="M25 216C28 117 52 58 77 23M25 216c68 1 120-11 184-40" fill="none" stroke={secondaryColor} strokeWidth="3" />{ring(4).map(i => <g key={i} transform={`translate(${i * 9} ${-i * 37})`}><path d="M30 190c-20-13-24-29-16-45 20 12 25 29 16 45Zm3-16c23 1 35-9 38-28-23-1-35 9-38 28Z" fill={secondaryColor} /></g>)}{ring(4).map(i => <g key={i} transform={`translate(${i * 38} ${-i * 7})`}><path d="M62 214c1-25 14-37 33-38-1 25-13 37-33 38Z" fill={secondaryColor} /></g>)}<g transform="translate(-10 135) scale(.4)"><DaisyArt color={color} secondary="#D8AB6E" /></g><g transform="translate(44 139) scale(.3)"><CherryBlossomArt color={color} secondary="#BC8277" /></g><g transform="translate(9 80) scale(.25)"><DaisyArt color="#F0DBAE" secondary="#D8AB6E" /></g></g></Decoration>;
+  const stems: [[number, number], [number, number], [number, number]][] = [[[30, 214], [16, 122], [44, 26]], [[30, 214], [124, 228], [216, 196]]];
+  const leaf = "M0 0C-6.5-5.5-7.5-15 0-23C7.5-15 6.5-5.5 0 0Z";
+  return <Decoration {...props} viewBox="0 0 240 240" width={dimension(size)} height={dimension(size)} defaultTitle="Botanical flower corner"><g transform={transform}>
+    {stems.map(([a, b, c], k) => <path key={"s" + k} d={`M${a[0]} ${a[1]}Q${b[0]} ${b[1]} ${c[0]} ${c[1]}`} fill="none" stroke={secondaryColor} strokeWidth="3.2" strokeLinecap="round" />)}
+    {stems.flatMap(([a, b, c], k) => [0.32, 0.44, 0.56, 0.68, 0.8, 0.9].map((t, n) => {
+      const pt = along(a, b, c, t), side = n % 2 ? 1 : -1, scale = 1.25 - t * 0.6;
+      return <path key={"l" + k + n} d={leaf} fill={secondaryColor} opacity={n % 3 === 2 ? 0.8 : 1} transform={`translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) rotate(${(pt.angle + 90 + side * 52).toFixed(1)}) scale(${scale.toFixed(2)})`} />;
+    }))}
+    {stems.map(([a, b, c], k) => { const tip = along(a, b, c, 1); return <g key={"b" + k} transform={`translate(${tip.x} ${tip.y}) rotate(${tip.angle + 90})`}><ellipse cx="0" cy="-7" rx="5.5" ry="8.5" fill={color} /><path d="M-5 -2C-3 2 3 2 5 -2L0 3Z" fill={secondaryColor} /></g>; })}
+    <g transform="translate(70 150) scale(.18) translate(-120 -120)"><CherryBlossomArt color={blossom} secondary="#BC8277" /></g>
+    <g transform="translate(28 152) scale(.15) translate(-120 -120)"><CherryBlossomArt color={blossom} secondary="#BC8277" /></g>
+    <g transform="translate(46 192) scale(.36) translate(-120 -120)"><PeonyArt color={color} secondary={paint ? vivid("#DC8AA2") : "#DC8AA2"} /></g>
+    <g transform="translate(90 200) scale(.14) translate(-120 -120)"><DaisyArt color="#FFF7EC" secondary="#E8B867" /></g>
+  </g></Decoration>;
 }
 
 export function BotanicalDivider({ size = 400, color: colorProp, secondaryColor: secondaryProp, direction = "horizontal", ...props }: DecorativeProps) {
@@ -364,8 +386,22 @@ export function FlowerGarland({ size = 400, color: colorProp, secondaryColor: se
   const paint = props.variant !== "filled";
   const color = colorProp ?? (paint ? vivid("#E3A5BA") : "#E3A5BA");
   const secondaryColor = secondaryProp ?? (paint ? vivid("#9AAD8B") : "#9AAD8B");
-  const points = [40, 110, 180, 250, 320, 390];
-  return <Decoration {...props} viewBox="0 0 430 120" width={dimension(size, 400)} height={Math.round(Number(dimension(size, 400)) * 120 / 430) || 112} defaultTitle="Flower garland"><path d="M10 20C80 80 140 80 215 50S350 20 420 20" fill="none" stroke={secondaryColor} strokeWidth="3" strokeLinecap="round" />{points.map((x, i) => { const y = 20 + Math.sin((x / 430) * Math.PI) * 44; return <g key={x} transform={`translate(${x} ${y}) scale(.18) translate(-120 -120)`}><CosmosArt color={i % 2 ? color : vivid("#F0DCA3")} secondary="#D7AB61" /></g>; })}</Decoration>;
+  const gold = paint ? vivid("#F0DCA3") : "#F0DCA3";
+  const width = dimension(size, 400);
+  const swags: [[number, number], [number, number], [number, number]][] = [[[16, 18], [108, 112], [200, 18]], [[200, 18], [292, 112], [384, 18]]];
+  const leaf = "M0 0C-5-4.5-6-12 0-18C6-12 5-4.5 0 0Z";
+  return <Decoration {...props} viewBox="0 0 400 110" width={width} height={typeof width === "number" ? Math.round(width * 110 / 400) : "auto"} defaultTitle="Flower garland">
+    {swags.map(([a, b, c], k) => <path key={"r" + k} d={`M${a[0]} ${a[1]}Q${b[0]} ${b[1]} ${c[0]} ${c[1]}`} fill="none" stroke={secondaryColor} strokeWidth="3" strokeLinecap="round" />)}
+    {swags.flatMap(([a, b, c], k) => [0.12, 0.24, 0.38, 0.62, 0.76, 0.88].map((t, n) => {
+      const pt = along(a, b, c, t), side = n % 2 ? 1 : -1;
+      return <path key={"l" + k + n} d={leaf} fill={secondaryColor} transform={`translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) rotate(${(pt.angle + 90 + side * 60).toFixed(1)})`} />;
+    }))}
+    {swags.flatMap(([a, b, c], k) => [0.26, 0.5, 0.74].map((t, n) => {
+      const pt = along(a, b, c, t), big = n === 1;
+      return <g key={"f" + k + n} transform={`translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) scale(${big ? 0.17 : 0.12}) translate(-120 -120)`}>{big ? <PeonyArt color={color} secondary={paint ? vivid("#DC8AA2") : "#DC8AA2"} /> : <CosmosArt color={n ? gold : color} secondary="#D7AB61" />}</g>;
+    }))}
+    {[16, 200, 384].map(x => <g key={"p" + x}><circle cx={x} cy="18" r="6" fill={color} /><circle cx={x} cy="18" r="2.4" fill="#fff" opacity=".7" /></g>)}
+  </Decoration>;
 }
 
 export interface NatureEffectProps extends BotanicalProps {

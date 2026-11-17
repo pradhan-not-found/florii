@@ -77,7 +77,7 @@ export function Hero() {
       </p>
       <div className={s.actions}>
         <button className={`${s.installCommand} ${copied ? s.isCopied : ""}`} onClick={() => { copy("npm i florii@latest", "Install command copied"); setCopied(true); window.setTimeout(() => setCopied(false), 1600); }} aria-label={copied ? "Copied" : "Copy npm install command"}><code>npm i florii@latest</code><span className={s.copyIcon} key={copied ? "done" : "idle"}><Icon name={copied ? "check" : "copy"} size={17} /></span></button>
-        <a className={`${s.btn} ${s.wash}`} href="/flowers/">browse the flowers <Icon name="arrow" size={16} /></a>
+        <a className={`${s.btn} ${s.wash}`} href="/flowers">browse the flowers <Icon name="arrow" size={16} /></a>
       </div>
       <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
       <Garden height={320} plants={42} className={`${s.field} ${s.fieldWide}`} />
@@ -86,27 +86,6 @@ export function Hero() {
     {selected && <FlowerPreview key={selected} name={selected} onClose={() => setSelected(null)} />}
     {toast}
   </>;
-}
-
-export function Stage() {
-  return <section className={s.stage} aria-label="Live demo">
-    <div className={s.window}>
-      <div className={s.chrome}>
-        <span className={s.dots} aria-hidden="true"><i /><i /><i /></span>
-        <span className={s.url}>your-site.com</span>
-        <span className={s.note}>a live demo. move through the grass.</span>
-      </div>
-      <div className={s.screen}>
-        <div className={s.mockNav} aria-hidden="true"><b>acme</b><i /><i /><i /><span>sign up</span></div>
-        <div className={s.mockHero}>
-          <p className={s.mockEyebrow}>new this spring</p>
-          <p className={s.mockTitle}>everything grows<br />a little better here.</p>
-          <span className={s.mockBtn}>get started</span>
-        </div>
-        <Garden height={230} plants={18} taper className={s.stageGarden} />
-      </div>
-    </div>
-  </section>;
 }
 
 export function Statement() {
@@ -143,17 +122,6 @@ export function Uses() {
   </section>;
 }
 
-export function Free() {
-  return <section className={`${s.wrap} ${s.free} ${s.block}`} aria-label="Pricing">
-    <p className={s.freeOver}>for every project, florii is</p>
-    <ul>
-      <li>$0, forever</li>
-      <li>mit licensed, use it anywhere</li>
-      <li>no dependencies beyond react</li>
-    </ul>
-  </section>;
-}
-
 const steps: { title: string; text: string; tint: string; name: BotanicalName }[] = [
   { title: "install it", text: "one package from npm. pnpm, yarn and bun work too.", tint: "#fff5bf", name: "Daffodil" },
   { title: "import the styles", text: "add one stylesheet to your root layout, once.", tint: "#ffe7ef", name: "CherryBlossom" },
@@ -172,7 +140,7 @@ export function Steps() {
         <p>{step.text}</p>
       </li>)}
     </ol>
-    <a className={s.go} href="/docs/">read the docs <Icon name="arrow" size={16} /></a>
+    <a className={s.go} href="/docs">read the docs <Icon name="arrow" size={16} /></a>
   </section>;
 }
 
@@ -185,12 +153,14 @@ const questions: [string, string][] = [
   ["can i add a flower of my own?", "please do. draw an original one and send it in on github. the contribution guide shows how."],
 ];
 
+const whiteField: BotanicalName[] = ["Daisy", "Tulip", "CherryBlossom", "Cosmos", "Poppy", "ForgetMeNot"];
+
 export function Faq() {
   return <section className={`${s.wrap} ${s.faq} ${s.block}`} aria-labelledby="faq-title">
     <div className={s.faqSide}>
       <h2 id="faq-title">questions.</h2>
       <p>stuck on something else? {github ? <a href={github + "/issues"} target="_blank" rel="noreferrer">open an issue on github</a> : "open an issue on github once the repo is live"}.</p>
-      <span className={s.faqArt} aria-hidden="true"><Botanical name="Sunflower" size={110} animate="sway" speed={6} title="" /></span>
+      <div className={s.faqArt} aria-hidden="true"><Garden height={300} plants={9} density={0.55} heads={whiteField} taper /></div>
     </div>
     <div className={s.faqList}>
       {questions.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
@@ -204,8 +174,8 @@ export function End() {
       <h2 id="end-title" className={s.mega}>plant your first flower.</h2>
       <p>it takes about a minute. free for every project.</p>
       <div className={s.actions}>
-        <a className={`${s.btn} ${s.dark}`} href="/docs/">get started <Icon name="arrow" size={16} /></a>
-        <a className={`${s.btn} ${s.light}`} href="/flowers/">browse the flowers</a>
+        <a className={`${s.btn} ${s.dark}`} href="/docs">get started <Icon name="arrow" size={16} /></a>
+        <a className={`${s.btn} ${s.light}`} href="/flowers">browse the flowers</a>
       </div>
     </div>
     <Garden height={150} plants={14} kind="lawn" className={s.endGarden} />

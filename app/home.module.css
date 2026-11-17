@@ -378,3 +378,11 @@
 .isCopied { border-color: rgba(31, 184, 102, .5) !important; }
 .isCopied .copyIcon { color: #1fb866; }
 @keyframes copy-pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* faq: a small field of white flowers on a soft sky */
+.faqArt { display: block; position: relative; margin-top: 32px; height: 220px; border-radius: 24px; overflow: hidden; background: linear-gradient(#d4efff, #eaf7ff 70%, #f4fbff); line-height: normal; }
+.faqArt > div { position: absolute !important; inset: auto 0 0 0; width: 100% !important; }
+
+/* faq meadow: open field on white, no box */
+.faqArt { height: 300px !important; margin-top: 24px !important; border-radius: 0 !important; overflow: visible !important; background: none !important; }
+.faqArt .head svg { filter: drop-shadow(0 2px 3px rgba(19, 19, 22, .18)); }

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@/packages/florii/src/styles.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://florii.dev";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://floriii.vercel.app";
 
 export const viewport: Viewport = {
   themeColor: "#cfeeff",
@@ -21,8 +21,10 @@ export const metadata: Metadata = {
   authors: [{ name: "florii contributors" }],
   creator: "florii",
   alternates: { canonical: "/" },
-  openGraph: { type: "website", siteName: "florii", title: "florii · hand-painted flowers for React", description, url: "/", locale: "en_US" },
-  twitter: { card: "summary_large_image", title: "florii · hand-painted flowers for React", description },
+  openGraph: { type: "website", siteName: "florii", title: "florii · hand-painted flowers for React", description, url: "/", locale: "en_US", images: [{ url: "/og.png", width: 1200, height: 630, alt: "florii — make the web bloom. Hand-painted flower components for React." }] },
+  twitter: { card: "summary_large_image", title: "florii · hand-painted flowers for React", description, images: ["/og.png"] },
+  icons: { icon: "/icon.svg" },
+  formatDetection: { telephone: false },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   category: "technology",
 };

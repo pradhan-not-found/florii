@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   description:
     "Quickstart guide, installation options (npm, pnpm, yarn, bun), and complete props reference for florii React botanical components.",
   alternates: {
-    canonical: "/docs/",
+    canonical: "/docs",
   },
   openGraph: {
     title: "Documentation · florii",
     description: "Install florii, import the styles, and plant your first flower. Includes the full props reference.",
-    url: "/docs/",
+    url: "/docs",
   },
 };
 

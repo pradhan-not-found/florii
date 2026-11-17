@@ -8,8 +8,8 @@ const onGithub = (path: string) => (github ? github + path : "");
 
 const columns: { title: string; links: FooterLink[] }[] = [
   { title: "Product", links: [
-    { label: "Flowers", href: "/flowers/" },
-    { label: "Docs", href: "/docs/" },
+    { label: "Flowers", href: "/flowers" },
+    { label: "Docs", href: "/docs" },
     { label: "npm", href: projectLinks.npm, external: true },
     { label: "Releases", href: onGithub("/releases"), external: true },
   ] },
@@ -27,9 +27,9 @@ const columns: { title: string; links: FooterLink[] }[] = [
     { label: "Issues & Feedback", href: onGithub("/issues"), external: true },
   ] },
   { title: "Legal", links: [
-    { label: "Privacy Policy", href: "/privacy/" },
-    { label: "About the Design", href: "/about/" },
-    { label: "MIT License", href: onGithub("/blob/main/LICENSE") || "/about/#license", external: Boolean(github) },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "About the Design", href: "/about" },
+    { label: "MIT License", href: onGithub("/blob/main/LICENSE") || "/about#license", external: Boolean(github) },
   ] },
 ];
 
