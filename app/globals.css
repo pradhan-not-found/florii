@@ -799,6 +799,8 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 @media (prefers-reduced-motion:reduce){.env-flap,.env-card,.gift-reveal{transition:none;animation:none}}
 
 @media (max-width:960px){.gift-grid{grid-template-columns:1fr}.gift-side{position:static;order:-1}}
+@media (min-width:961px) and (max-height:920px){.gift-page{padding-top:96px}.gift-hero h1{margin-top:12px;font-size:clamp(40px,4.6vw,60px)}.gift-hero p{font-size:16px}.gift-maker{margin-top:28px}.gift-mode{margin-bottom:20px}.gift-side{top:16px}.gift-stage{padding:18px}}
+@media (min-width:961px) and (max-width:1200px){.gift-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px}.gift-picker{grid-template-columns:repeat(6,minmax(0,1fr))}.gift-step{padding:18px}}
 @media (max-width:760px){.gift-preview.is-both{grid-template-columns:1fr;justify-items:center}.gift-bouquet-wrap{min-height:0}.gift-bouquet{max-width:300px}}
 @media (max-width:600px){.gift-page{padding:96px 16px 0}.gift-maker{margin-top:28px}.gift-picker{grid-template-columns:repeat(5,minmax(0,1fr))}.gift-stage{padding:14px;border-radius:22px}.gift-step{padding:18px;border-radius:20px}.letter{padding:22px 18px 28px;min-height:0}.letter-body{margin-top:92px}.letter-sprig{width:64px;margin:-80px 0 0 -8px}.letter-to{font-size:19px}.gift-mode{width:100%}.gift-mode button{flex:1 1 auto;padding:0 10px;font-size:13px}.gift-actions .btn{flex:1 1 auto}.gift-wraps button{height:34px;font-size:13px}}
 
