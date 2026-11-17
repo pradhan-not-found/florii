@@ -54,6 +54,8 @@ function Chip({
   );
 }
 
+const cycleFlowers: BotanicalName[] = ["Daisy", "Tulip", "Sunflower", "Hibiscus", "Lavender"];
+
 export function Hero() {
   const { copy, toast } = useCopy();
   const [copied, setCopied] = useState(false);
@@ -77,7 +79,7 @@ export function Hero() {
       </p>
       <div className={s.actions}>
         <button className={`${s.installCommand} ${copied ? s.isCopied : ""}`} onClick={() => { copy("npm i florii@latest", "Install command copied"); setCopied(true); window.setTimeout(() => setCopied(false), 1600); }} aria-label={copied ? "Copied" : "Copy npm install command"}><code>npm i florii@latest</code><span className={s.copyIcon} key={copied ? "done" : "idle"}><Icon name={copied ? "check" : "copy"} size={17} /></span></button>
-        <a className={`${s.btn} ${s.wash}`} href="/flowers">browse the flowers <Icon name="arrow" size={16} /></a>
+        <a className={`${s.btn} ${s.wash}`} href="/flowers">browse the flowers <span className={s.cycle} aria-hidden="true">{cycleFlowers.map((name, i) => <span key={name} style={{ animationDelay: `${i * 1.2}s` }}><Botanical name={name} size={20} title="" /></span>)}</span></a>
       </div>
       <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
       <Garden height={320} plants={42} className={`${s.field} ${s.fieldWide}`} />
@@ -160,7 +162,7 @@ export function Faq() {
     <div className={s.faqSide}>
       <h2 id="faq-title">questions.</h2>
       <p>stuck on something else? {github ? <a href={github + "/issues"} target="_blank" rel="noreferrer">open an issue on github</a> : "open an issue on github once the repo is live"}.</p>
-      <div className={s.faqArt} aria-hidden="true"><Garden height={300} plants={9} density={0.55} heads={whiteField} taper /></div>
+      <div className={s.faqArt} aria-hidden="true"><Garden height={300} plants={9} density={0.55} heads={whiteField} taper className={s.fieldWide} /><Garden height={180} plants={7} density={0.4} heads={whiteField} taper className={s.fieldPhone} /></div>
     </div>
     <div className={s.faqList}>
       {questions.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}

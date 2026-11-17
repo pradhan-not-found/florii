@@ -587,3 +587,66 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 
 /* active tab count: plain text, no box */
 .library-tabs button span{background:none !important;padding:0 !important;color:inherit !important;opacity:.55;font-weight:500 !important}
+
+/* ---------- phones and tablets ---------- */
+@media (max-width:820px){
+  .sponsor-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:10px !important;margin-top:8px}
+  .sponsor-grid>.plot-cell:nth-child(n+13){display:none}
+  .plot-cell{border-radius:22% !important}
+  .sponsor-card{gap:24px !important}
+}
+@media (max-width:480px){
+  .sponsor-card{padding:26px 20px !important}
+  .sponsor-left h2{font-size:32px !important}
+  .plot-open{font-size:20px !important}
+  .library-tabs{flex-wrap:wrap}
+  .flower-meta{padding:12px 12px 14px !important}
+}
+
+/* sponsor checkout page */
+.pay-page{padding:120px 24px 0;background:linear-gradient(#d4efff,#eaf7ff 38%,#fff 70%)}
+.pay-hero{text-align:center;max-width:620px;margin:0 auto}
+.pay-logo{color:#131316;display:inline-block}
+.pay-hero h1{margin-top:18px;font-size:clamp(36px,5.4vw,60px);letter-spacing:-.045em;font-weight:500;color:#131316}
+.pay-hero p{margin-top:12px;font-size:17px;color:#55555f}
+.pay-card{width:min(560px,100%);margin:40px auto 0;padding:32px;border-radius:26px;background:#fff;border:1px solid #ececea;box-shadow:0 30px 70px -40px rgba(19,19,22,.35);display:flex;flex-direction:column;gap:14px}
+.pay-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.pay-label{font-size:13px;font-weight:600;color:#131316;letter-spacing:.01em}
+.pay-label em{font-style:normal;font-weight:500;color:#8a8a93;margin-left:4px}
+.pay-amounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:-4px}
+.pay-amounts button{height:48px;border:1px solid #e7e7e4;border-radius:14px;font-size:16px;font-weight:600;color:#131316;background:#fafaf8;transition:border-color .15s,background .15s}
+.pay-amounts button:hover{border-color:#131316}
+.pay-amounts button[aria-pressed="true"]{background:#131316;border-color:#131316;color:#fff}
+.pay-custom{display:flex;align-items:center;gap:4px;height:48px;padding:0 14px;border:1px solid #e7e7e4;border-radius:14px;background:#fafaf8;color:#8a8a93}
+.pay-custom:focus-within{border-color:#131316;background:#fff}
+.pay-custom input{width:100%;border:0;outline:0;background:none;font:inherit;font-weight:600;color:#131316}
+.pay-fields{display:grid;gap:12px;margin-top:4px}
+.pay-fields label{display:flex;flex-direction:column;gap:6px}
+.pay-fields input{height:46px;padding:0 14px;border:1px solid #e7e7e4;border-radius:12px;font:inherit;color:#131316;background:#fff;outline:0}
+.pay-fields input:focus{border-color:#131316}
+.pay-go{height:52px;margin-top:6px;border-radius:14px !important;font-size:16px !important}
+.pay-go:disabled{opacity:.6;cursor:wait}
+.pay-error{padding:10px 14px;border-radius:12px;background:#fff1f0;color:#b42318;font-size:14px}
+.pay-secure{display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:12.5px;color:#6b6b75}
+.pay-done{align-items:center;text-align:center}
+.pay-done h2{font-size:28px;letter-spacing:-.03em;font-weight:500;color:#131316}
+.pay-done p{color:#55555f}
+.pay-ref code{font-family:var(--mono);font-size:13px;color:#131316}
+@media (max-width:480px){.pay-card{padding:22px 18px}.pay-amounts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pay-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.pay-head h2{font-size:24px;font-weight:600;letter-spacing:-.025em;color:#131316}
+.pay-price{font-size:22px;font-weight:600;color:#131316;font-variant-numeric:tabular-nums}
+.pay-intro{margin-top:-6px;font-size:14.5px;color:#6b6b75}
+.pay-fields textarea{padding:12px 14px;border:1px solid #e7e7e4;border-radius:12px;font:inherit;color:#131316;background:#fff;outline:0;resize:vertical;min-height:84px}
+.pay-fields textarea:focus{border-color:#131316}
+.pay-count{align-self:flex-end;margin-top:-2px;font-size:12px;color:#8a8a93}
+
+/* sunflower row: left end tucked behind the card edge, right end tapers off naturally */
+.sponsor-sunflowers{left:-70px !important;width:calc(46% + 70px) !important}
+
+/* navbar: logo letters, links and pills share one centre line */
+.header-inner{align-items:center !important}
+.logo-art{height:36px;align-items:center}
+.logo-art svg{transform:translateY(-4px)}
+.header-nav{align-items:center;line-height:1}
+.header-nav a{display:inline-flex;align-items:center;height:36px}
