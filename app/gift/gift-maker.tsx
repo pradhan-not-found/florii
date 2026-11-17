@@ -57,28 +57,35 @@ function Crayon({ id }: { id: string }) {
 // ---------- bouquet: flowers on long stalks, wrapped in paper like a florist would ----------
 const BW = 420, BH = 600, GATHER: [number, number] = [210, 436];
 const slots: [number, number, number][] = [
-  [210, 196, 158], [132, 226, 140], [288, 226, 140], [168, 132, 138], [254, 128, 138],
-  [92, 290, 118], [328, 290, 118], [210, 292, 132], [212, 72, 122],
+  [210, 188, 146], [142, 224, 128], [280, 222, 128], [176, 134, 126], [246, 130, 126],
+  [104, 284, 108], [318, 282, 108], [212, 278, 120], [210, 104, 104],
 ];
 const stalkTones = ["#4f9a3f", "#5fa94a", "#468f39", "#6cb456"];
 const RIBBON = { fill: "#f6dccb", shade: "#e6bfa6", edge: "#d4a487" };
-const BACK = "M26 104Q210 64 394 92C396 226 342 340 240 440L180 440C78 340 24 226 26 104Z";
+const BACK = "M20 112Q38 92 60 106Q82 84 108 100Q132 78 158 94Q184 72 210 90Q236 72 262 94Q288 78 312 100Q336 84 358 104Q380 90 400 102C402 232 346 340 240 440L180 440C74 340 18 232 20 112Z";
 const LEFT_FLAP = "M66 318C126 352 196 370 266 368L238 440L182 440C128 396 92 360 66 318Z";
 const RIGHT_FLAP = "M362 286C330 338 266 376 158 392L182 440L238 440C292 392 336 346 362 286Z";
 const TAIL = "M182 436L238 436C244 486 256 536 266 584L262 590L254 584L246 591L238 585L229 592L220 586L211 592L202 586L193 592L184 586L175 591L166 585L158 590L154 584C164 536 176 486 182 436Z";
 
-/** The wrap: a wide back sheet, two front flaps crossing in a V, a pinch, and a long tail below. */
-function Wrap({ paper, filter, texture, part }: { paper: (typeof wraps)[number]; filter: string; texture: string; part: "back" | "front" }) {
-  const sheet = (d: string, fill: string) => <><path d={d} fill={fill} /><path d={d} fill={`url(#${texture})`} /></>;
+/** The wrap: a crinkled back sheet with a shaded inside, two front flaps crossing in a V, a pinch, and a long tail below. */
+function Wrap({ paper, filter, texture, part, uid }: { paper: (typeof wraps)[number]; filter: string; texture: string; part: "back" | "front"; uid: string }) {
+  const sheet = (d: string, fill: string, light = true) => <>
+    <path d={d} fill={fill} />
+    <path d={d} fill={`url(#${texture})`} />
+    {light && <path d={d} fill={`url(#sheen-${uid})`} />}
+  </>;
   if (part === "back") return <g filter={`url(#${filter})`}>
-    {sheet(BACK, paper.back)}
-    <path d="M42 116Q210 82 378 104" stroke={paper.fold} strokeWidth="2.4" fill="none" strokeLinecap="round" opacity=".55" />
+    {sheet(BACK, paper.back, false)}
+    <path d={BACK} fill={`url(#inside-${uid})`} />
+    <path d="M20 112Q38 92 60 106Q82 84 108 100Q132 78 158 94Q184 72 210 90Q236 72 262 94Q288 78 312 100Q336 84 358 104Q380 90 400 102" stroke={paper.fold} strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity=".7" />
   </g>;
   return <g filter={`url(#${filter})`}>
+    <path d="M66 322C126 356 196 374 266 372" stroke="#3a2a14" strokeWidth="6" fill="none" strokeLinecap="round" opacity=".12" transform="translate(0 4)" />
     {sheet(LEFT_FLAP, paper.front)}
-    <path d="M66 318C126 352 196 370 266 368" stroke={paper.fold} strokeWidth="2.6" fill="none" strokeLinecap="round" />
+    <path d="M66 318C126 352 196 370 266 368" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" opacity=".45" />
+    <path d="M362 290C330 342 266 380 158 396" stroke="#3a2a14" strokeWidth="6" fill="none" strokeLinecap="round" opacity=".12" transform="translate(0 4)" />
     {sheet(RIGHT_FLAP, paper.back)}
-    <path d="M362 286C330 338 266 376 158 392" stroke={paper.fold} strokeWidth="2.6" fill="none" strokeLinecap="round" />
+    <path d="M362 286C330 338 266 376 158 392" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" opacity=".45" />
     {sheet(TAIL, paper.front)}
     <path d="M200 446C198 490 192 540 186 582M222 446C226 490 232 540 238 582" stroke={paper.fold} strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".55" />
   </g>;
@@ -103,7 +110,9 @@ export function Bouquet({ flowers, wrap = "kraft", className = "gift-bouquet" }:
   const paper = wraps.find(w => w.id === wrap && w.back);
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const filter = "crayon-" + uid, texture = "weave-" + uid;
-  const items = flowers.map((name, i) => ({ name, slot: slots[i], i }));
+  // fewer flowers are drawn larger and spread wider, so a small bunch still fills the paper
+  const k = [1, 1.45, 1.4, 1.32, 1.22, 1.14, 1.08, 1.04, 1, 1][flowers.length] ?? 1;
+  const items = flowers.map((name, i) => { const [x, y, size] = slots[i]; return { name, slot: [210 + (x - 210) * k, 200 + (y - 200) * k, size * k] as [number, number, number], i }; });
   const n = items.length;
   const [gx, gy] = GATHER;
   return <svg className={className} viewBox={`0 0 ${BW} ${BH}`} role="img" aria-label={n ? `A bouquet of ${n} flowers` : "An empty bouquet"}>
@@ -112,8 +121,10 @@ export function Bouquet({ flowers, wrap = "kraft", className = "gift-bouquet" }:
       {paper && <pattern id={texture} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)">
         <path d="M0 3.5H7M3.5 0V7" stroke={paper.fold} strokeWidth=".9" opacity=".32" />
       </pattern>}
+      {paper && <linearGradient id={`inside-${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={paper.fold} stopOpacity=".5" /><stop offset=".45" stopColor={paper.fold} stopOpacity=".12" /><stop offset=".7" stopColor={paper.fold} stopOpacity="0" /></linearGradient>}
+      <linearGradient id={`sheen-${uid}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".28" /><stop offset=".5" stopColor="#fff" stopOpacity="0" /><stop offset="1" stopColor="#3a2a14" stopOpacity=".12" /></linearGradient>
     </defs>
-    {paper && n > 0 && <Wrap paper={paper} filter={filter} texture={texture} part="back" />}
+    {paper && n > 0 && <Wrap paper={paper} filter={filter} texture={texture} part="back" uid={uid} />}
     <g filter={`url(#${filter})`} fill="none" strokeLinecap="round">
       {items.map(({ slot: [x, y, size], i }) => {
         const top = y + size * 0.28, endX = gx + (i - (n - 1) / 2) * 5.5;
@@ -129,7 +140,7 @@ export function Bouquet({ flowers, wrap = "kraft", className = "gift-bouquet" }:
       })}
     </g>
     {[...items].sort((a, b) => a.slot[1] - b.slot[1]).map(({ name, slot: [x, y, size], i }) => <g key={name + i} transform={`translate(${x - size / 2} ${y - size / 2})`}><Botanical name={name} size={size} title="" /></g>)}
-    {paper && n > 0 && <><Wrap paper={paper} filter={filter} texture={texture} part="front" /><Ribbon filter={filter} /></>}
+    {paper && n > 0 && <><Wrap paper={paper} filter={filter} texture={texture} part="front" uid={uid} /><Ribbon filter={filter} /></>}
     {!paper && n > 0 && <g filter={`url(#${filter})`} fill="none" stroke="#b48a5a" strokeLinecap="round">
       <path d={`M${gx - 20} ${gy - 4} Q${gx} ${gy + 8} ${gx + 20} ${gy - 4}`} strokeWidth="5" />
       <path d={`M${gx - 20} ${gy + 6} Q${gx} ${gy + 18} ${gx + 20} ${gy + 6}`} strokeWidth="5" />
