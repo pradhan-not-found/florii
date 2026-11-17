@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { VisitorTracker } from "./components/visitor-tracker";
 import "./globals.css";
 import "@/packages/florii/src/styles.css";
 
@@ -66,7 +67,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body>{children}</body>
+      <body><VisitorTracker />{children}</body>
     </html>
   );
 }

@@ -9,17 +9,17 @@ export default function Page() {
     <SiteHeader />
     <main className="container prose">
       <h1>Privacy Policy</h1>
-      <p className="prose-lead">florii is a static website and an open-source package. We keep data collection to the minimum needed to run it.</p>
+      <p className="prose-lead">florii is a website and an open-source package. We keep data collection to the minimum needed to run it.</p>
       <h2>What we collect</h2>
       <p>The site has no accounts, no advertising, and no tracking cookies. Fonts and artwork are served from this site, not from third-party font or image services.</p>
       <h2>Requests to other services</h2>
       <ul>
         <li><strong>GitHub.</strong> When the star count is shown, your browser asks the public GitHub API for it. GitHub receives your IP address as it would for any web request.</li>
-        <li><strong>Visitor counter.</strong> When the visitor total is shown, your browser asks a counting service for the number. No name, email, or account is sent.</li>
+        <li><strong>Visitor counter.</strong> Your browser sends a random browser identifier and a random page-view identifier to our server. We use Upstash Redis to store approximate visitor totals and page-view counts. We do not send names, emails, IP addresses, page URLs, or referrers to Redis for analytics. Daily counts expire after 90 days; aggregate totals are retained. Duplicate page-view identifiers expire after five minutes. We respect Do Not Track and Global Privacy Control signals.</li>
         <li><strong>Sponsorship.</strong> Sponsor links open the sponsorship platform's own page, where payments happen. florii never sees or stores your card details.</li>
       </ul>
       <h2>Storage in your browser</h2>
-      <p>The site keeps the star and visitor numbers in session storage so pages load faster. It is cleared when you close the tab.</p>
+      <p>The site caches the GitHub star count in session storage, which clears when you close the tab. For visitor counting, it keeps a random identifier in local storage until you clear your browser data. It is used only on this site. If browser storage is unavailable or a privacy signal is enabled, we skip visitor tracking.</p>
       <h2>The npm package</h2>
       <p>The florii package runs entirely inside your app. It makes no network requests and collects nothing.</p>
       <h2>Questions</h2>
