@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { supabaseInsert } from "@/lib/supabase";
 
 /** The sponsorship price is fixed here, on the server, so it can't be changed from the browser. */
 const SPONSOR_PRICE = { amount: 4999, currency: "USD" } as const; // $49.99, in cents
@@ -24,5 +25,6 @@ export async function POST(request: Request) {
   const order = await response.json().catch(() => null) as { id?: string; amount?: number; currency?: string; error?: { description?: string } } | null;
   if (!response.ok || !order?.id) return NextResponse.json({ error: order?.error?.description || "Could not start the payment." }, { status: 502 });
 
+  await supabaseInsert("florii_sponsors", { product, link, description, email, amount: order.amount, currency: order.currency, razorpay_order_id: order.id, status: "created" });
   return NextResponse.json({ orderId: order.id, amount: order.amount, currency: order.currency, keyId });
 }

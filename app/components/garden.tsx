@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
@@ -50,7 +50,7 @@ function bendFor(distance: number) {
   return Math.sign(distance || 1) * amount * amount * MAX_BEND;
 }
 
-export function Garden({ height = 320, plants: plantCount = 11, density = 1, kind = "meadow", heads, flowerColor, taper = false, className = "" }: {
+function GardenScene({ height = 320, plants: plantCount = 11, density = 1, kind = "meadow", heads, flowerColor, taper = false, className = "" }: {
   /** Shrinks the grass toward both ends so the garden finishes as a natural tuft instead of a straight cut. */
   taper?: boolean;
   height?: number;
@@ -68,7 +68,7 @@ export function Garden({ height = 320, plants: plantCount = 11, density = 1, kin
   const lawn = kind === "lawn";
   const back = useMemo(() => makeBlades(Math.round(170 * density), height * 0.32, height * 0.52, backGreens, 1), [density, height]);
   const front = useMemo(() => makeBlades(Math.round(210 * density), height * 0.16, height * 0.36, frontGreens, 2), [density, height]);
-  const plants = useMemo(() => lawn ? makePlants(plantCount, 0, 0, lawnHeads) : makePlants(plantCount, height * 0.4, height * 0.68, heads ?? meadowHeads), [lawn, plantCount, height, heads]);
+  const plants = useMemo(() => lawn ? makePlants(plantCount, 0, 0, heads ?? lawnHeads) : makePlants(plantCount, height * 0.4, height * 0.68, heads ?? meadowHeads), [lawn, plantCount, height, heads]);
   const butterflies = density >= 1 ? flyers : [];
 
   const root = useRef<HTMLDivElement>(null);
@@ -167,4 +167,26 @@ export function Garden({ height = 320, plants: plantCount = 11, density = 1, kin
     <canvas ref={frontCanvas} className="grass" />
     {butterflies.map((fly, i) => <span key={i} className="butterfly" ref={node => { flyerRefs.current[i] = node; }}><span className="flap" style={{ animationDelay: `${-i * 0.07}s` }}><Botanical name="Butterfly" size={fly.size} title="" /></span></span>)}
   </div>;
+}
+
+type GardenProps = Parameters<typeof GardenScene>[0];
+
+/**
+ * Draws the garden only when it is about to be seen. The page's text paints first; gardens far
+ * below the screen, or hidden at this screen size, cost nothing until they scroll into view.
+ */
+export function Garden(props: GardenProps) {
+  const holder = useRef<HTMLDivElement>(null);
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const el = holder.current;
+    if (!el || show) return;
+    const seen = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { setShow(true); seen.disconnect(); }
+    }, { rootMargin: "400px 0px" });
+    seen.observe(el);
+    return () => seen.disconnect();
+  }, [show]);
+  if (show) return <div className="garden-fade"><GardenScene {...props} /></div>;
+  return <div ref={holder} className={"garden " + (props.className ?? "")} style={{ height: props.height ?? 320 }} aria-hidden="true" />;
 }

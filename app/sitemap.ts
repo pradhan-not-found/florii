@@ -6,5 +6,5 @@ const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://floriii.vercel.app").
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  return ["/", "/flowers", "/docs", "/sponsor", "/about", "/privacy"].map((path, index) => ({ url: site + path, lastModified: now, changeFrequency: "weekly", priority: index === 0 ? 1 : 0.7 }));
+  return ["/", "/flowers", "/docs", "/sponsor", "/gift", "/about", "/privacy"].map((path, index) => ({ url: site + path, lastModified: now, changeFrequency: "weekly", priority: index === 0 ? 1 : 0.7 }));
 }

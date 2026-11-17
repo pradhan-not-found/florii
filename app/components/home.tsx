@@ -170,6 +170,8 @@ export function Faq() {
   </section>;
 }
 
+const endBlooms: BotanicalName[] = ["Camellia", "Zinnia", "Pansy", "Carnation", "Iris", "Magnolia", "Orchid"];
+
 export function End() {
   return <section className={s.end} aria-labelledby="end-title">
     <div className={s.endText}>
@@ -180,7 +182,8 @@ export function End() {
         <a className={`${s.btn} ${s.light}`} href="/flowers">browse the flowers</a>
       </div>
     </div>
-    <Garden height={150} plants={14} kind="lawn" className={s.endGarden} />
+    <Garden height={300} plants={36} heads={endBlooms} className={`${s.endGarden} ${s.fieldWide}`} />
+    <Garden height={200} plants={14} density={0.6} heads={endBlooms} className={`${s.endGarden} ${s.fieldPhone}`} />
   </section>;
 }
 

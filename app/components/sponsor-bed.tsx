@@ -1,20 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { projectLinks } from "@/config/project";
 import { Icon } from "./icons";
+import { SponsorForm, saveSponsorDetails } from "../sponsor/checkout";
 import { Garden } from "./garden";
 
-const amounts = [10, 25, 50, 100];
 const sunflowers = ["Sunflower" as const];
 const plots = 6;
 
 /** Sponsor garden: a meadow with open plots at its centre. Each plot takes a logo and opens checkout. */
 export function SponsorBed() {
   const dialog = useRef<HTMLDialogElement>(null);
-  const [amount, setAmount] = useState(25);
-  const [custom, setCustom] = useState("");
-  const total = custom ? Math.max(1, Math.floor(Number(custom)) || 0) : amount;
   const open = () => dialog.current?.showModal();
 
   return <section className="container section" id="sponsors" aria-labelledby="sponsors-title">
@@ -32,17 +29,13 @@ export function SponsorBed() {
       </div>
     </div>
 
-    <dialog ref={dialog} className="checkout" aria-labelledby="checkout-title" onClick={event => { if (event.target === dialog.current) dialog.current?.close(); }}>
+    <dialog ref={dialog} onClose={() => { document.body.style.overflow = ""; document.documentElement.style.overflow = ""; }} className="checkout" aria-labelledby="checkout-title" onClick={event => { if (event.target === dialog.current) dialog.current?.close(); }}>
       <div className="checkout-body">
         <button className="checkout-close" onClick={() => dialog.current?.close()} aria-label="Close">×</button>
-        <h3 id="checkout-title">sponsor florii</h3>
-        <p>your logo grows in the garden, and your support funds new flowers.</p>
-        <div className="amounts" role="group" aria-label="Amount">
-          {amounts.map(value => <button key={value} aria-pressed={!custom && amount === value} onClick={() => { setAmount(value); setCustom(""); }}>${value}</button>)}
-          <label className="custom-amount"><span>$</span><input inputMode="numeric" placeholder="other" value={custom} onChange={event => setCustom(event.target.value.replace(/[^0-9]/g, ""))} aria-label="Custom amount in dollars" /></label>
-        </div>
-        <a className="btn btn-dark checkout-go" href={`/sponsor?amount=${total}`}>continue to checkout · ${total} <Icon name="arrow" size={14} /></a>
-        <p className="checkout-note">secure payment by Razorpay. international cards accepted.</p>
+        <svg className="checkout-logo" viewBox="0 0 70 30" width="76" height="33" fill="none" stroke="currentColor" strokeWidth="3.7" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="florii"><path d="M10 26V10C10 5.5 12.8 3 17 4.2" /><path d="M5.5 14H15" /><path d="M22 4V22C22 25 23.8 26.2 26.2 25.2" /><path d="M33 14C29.2 14 27 16.8 27 20.2C27 23.8 29.6 26 33 26C36.8 26 39 23.2 39 19.8C39 16.2 36.4 14 33 14Z" /><path d="M45 14.5V26" /><path d="M45 19.5C46.2 15.6 49 14 52.4 15" /><path d="M57.5 15V26" /><path d="M64.5 15V26" /><circle cx="57.5" cy="8.2" r="0.6" /><circle cx="64.5" cy="8.2" r="0.6" /></svg>
+        <div className="checkout-title-row"><h3 id="checkout-title">become a sponsor</h3><span className="pay-price">$49.99</span></div>
+                <p>tell us about your brand and pay on the next page. get featured in our sponsor section soon.</p>
+        <SponsorForm onSubmit={details => { saveSponsorDetails(details); window.location.href = "/sponsor"; }} />
       </div>
     </dialog>
   </section>;

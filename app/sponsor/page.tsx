@@ -20,8 +20,8 @@ export default function SponsorPage() {
           <path d="M45 14.5V26" /><path d="M45 19.5C46.2 15.6 49 14 52.4 15" /><path d="M57.5 15V26" /><path d="M64.5 15V26" />
           <circle cx="57.5" cy="8.2" r="0.6" /><circle cx="64.5" cy="8.2" r="0.6" />
         </svg>
-        <h1>get lifetime brand exposure<br />for just $49.99.</h1>
-        <p>showcase your product on florii and get a dedicated shoutout on X. one payment, featured for good.</p>
+        <h1>checkout</h1>
+        <p>get lifetime brand exposure for just $49.99. showcase your product on florii and get a dedicated shoutout on X.</p>
       </section>
       <SponsorCheckout />
     </main>

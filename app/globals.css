@@ -650,3 +650,159 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .logo-art svg{transform:translateY(-4px)}
 .header-nav{align-items:center;line-height:1}
 .header-nav a{display:inline-flex;align-items:center;height:36px}
+.checkout .pay-head{margin-top:-8px}
+.checkout .sponsor-form,.sponsor-form{display:flex;flex-direction:column;gap:14px;width:100%}
+.checkout{width:min(520px,calc(100% - 32px)) !important}
+.pay-edit{font-size:13.5px;font-weight:600;color:#55555f;text-decoration:underline;text-underline-offset:3px}
+.pay-edit:hover{color:#131316}
+.pay-summary{margin:0;display:grid;gap:0;border:1px solid #ececea;border-radius:16px;overflow:hidden}
+.pay-summary div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:12px 16px;border-top:1px solid #ececea}
+.pay-summary div:first-child{border-top:0}
+.pay-summary dt{font-size:13px;font-weight:600;color:#8a8a93}
+.pay-summary dd{margin:0;font-size:14.5px;color:#131316;overflow-wrap:anywhere}
+.pay-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:14px;background:#f6f6f4;font-size:14px;color:#55555f}
+.pay-total strong{font-size:20px;color:#131316;font-variant-numeric:tabular-nums}
+.pay-loading{min-height:360px}
+
+/* pill-shaped buttons, like the navbar */
+.sponsor-card .btn,.checkout .btn,.pay-card .btn,.not-found .btn{border-radius:999px !important}
+
+/* sponsor window: logo on top, compact so it fits without scrolling */
+.checkout-logo{color:#131316;display:block}
+.checkout-title-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;width:100%;margin-top:4px}
+.checkout-title-row h3{margin:0}
+.checkout .checkout-body{gap:12px !important;padding:26px 28px !important}
+.checkout .checkout-body>p{margin-top:-4px !important}
+.checkout .pay-fields{gap:10px !important}
+.checkout .pay-fields input{height:42px !important}
+.checkout .pay-fields textarea{min-height:64px !important}
+.checkout .pay-go{height:48px !important;margin-top:4px !important}
+.checkout{max-height:calc(100dvh - 32px);overflow:auto}
+
+
+/* decorations preview: original layout, softer petals */
+.f-deco .deco-stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:190px;background:#fff;border-radius:18px;overflow:hidden}
+.f-deco .deco-rain{position:absolute;inset:0;opacity:.55;pointer-events:none}
+.f-deco .deco-stage>svg{position:relative;z-index:1;max-width:80%;height:auto}
+.f-deco .deco-corner{position:absolute;right:0;bottom:0;z-index:1;line-height:0}
+
+/* private payments page */
+.admin-page{min-height:100dvh;padding:40px 24px 80px;background:#fafaf8;width:100%}
+.admin-page>h1,.admin-head,.admin-stats,.admin-table-wrap,.admin-note,.admin-page>.pay-error{width:min(1180px,100%);margin-left:auto;margin-right:auto}
+.admin-head{display:flex;align-items:center;justify-content:space-between}
+.admin-logo{color:#131316;display:inline-flex}
+.admin-page>h1{margin-top:28px;font-size:44px;letter-spacing:-.04em;font-weight:500;color:#131316}
+.admin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+.admin-stats div{padding:18px 20px;border:1px solid #ececea;border-radius:18px;background:#fff}
+.admin-stats span{display:block;font-size:13px;color:#8a8a93}
+.admin-stats strong{display:block;margin-top:6px;font-size:26px;font-weight:600;letter-spacing:-.02em;color:#131316;font-variant-numeric:tabular-nums}
+.admin-table-wrap{margin-top:18px;overflow-x:auto;border:1px solid #ececea;border-radius:18px;background:#fff}
+.admin-table{width:100%;border-collapse:collapse;font-size:14px}
+.admin-table th{text-align:left;padding:12px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#8a8a93;border-bottom:1px solid #ececea;white-space:nowrap}
+.admin-table td{padding:14px 16px;border-top:1px solid #f1f1ef;vertical-align:top;color:#131316}
+.admin-table td small{display:block;margin-top:4px;max-width:280px;color:#6b6b75;font-size:12.5px;line-height:1.45}
+.admin-table a{color:#131316;text-decoration:underline;text-underline-offset:3px}
+.admin-table code{font-family:var(--mono);font-size:12px;color:#55555f}
+.admin-amount{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.admin-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;background:#f1f1ef;color:#55555f}
+.admin-captured{background:#e7f7ec;color:#17803d}
+.admin-failed{background:#fdecec;color:#b42318}
+.admin-authorized{background:#fff6dc;color:#a15c00}
+.admin-empty{text-align:center;color:#8a8a93;padding:40px 16px !important}
+.admin-note{margin-top:12px;font-size:12.5px;color:#8a8a93}
+.admin-signin{width:min(380px,100%);margin:12vh auto 0;padding:32px;border:1px solid #ececea;border-radius:24px;background:#fff;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 70px -44px rgba(19,19,22,.35)}
+.admin-signin h1{font-size:30px;letter-spacing:-.03em;font-weight:500;color:#131316}
+.admin-signin p{color:#6b6b75;margin-top:-6px}
+.admin-signin input{height:46px;padding:0 14px;border:1px solid #e7e7e4;border-radius:12px;font:inherit;outline:0}
+.admin-signin input:focus{border-color:#131316}
+.admin-page .btn{border-radius:999px !important}
+@media (max-width:640px){.admin-stats{grid-template-columns:1fr}}
+
+/* ---------- gift page ---------- */
+.gift-page{padding:120px 24px 0;background:linear-gradient(#d4efff,#eaf7ff 30%,#fff 62%)}
+.gift-hero{text-align:center;max-width:640px;margin:0 auto}
+.gift-eyebrow{display:inline-block;padding:6px 14px;border-radius:999px;background:#fff;font-size:13px;font-weight:500;color:#44444d;box-shadow:0 1px 2px rgba(19,19,22,.06)}
+.gift-hero h1{margin-top:18px;font-size:clamp(40px,6vw,72px);letter-spacing:-.05em;font-weight:500;color:#131316}
+.gift-hero p{margin-top:12px;font-size:17px;color:#55555f}
+.gift-maker{width:min(1200px,100%);margin:40px auto 0}
+.gift-mode{display:flex;justify-content:center;gap:6px;width:max-content;max-width:100%;margin:0 auto 28px;padding:5px;border-radius:999px;background:#fff;border:1px solid #ececea;box-shadow:0 1px 2px rgba(19,19,22,.05)}
+.gift-mode button{height:38px;padding:0 18px;border-radius:999px;font-size:14.5px;font-weight:500;color:#55555f}
+.gift-mode button[aria-selected="true"]{background:#131316;color:#fff}
+.gift-grid{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:28px;align-items:start}
+.gift-controls{display:flex;flex-direction:column;gap:16px}
+.gift-step{padding:22px;border:1px solid #ececea;border-radius:22px;background:#fff}
+.gift-step-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.gift-step-head h2{font-size:18px;font-weight:600;letter-spacing:-.02em;color:#131316}
+.gift-step-head span{font-size:13px;color:#8a8a93;font-variant-numeric:tabular-nums}
+.gift-hint{margin-bottom:14px;font-size:13.5px;color:#8a8a93}
+.gift-label-gap{display:block;margin-top:18px}
+.gift-picker{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:8px}
+.gift-picker button{aspect-ratio:1;display:grid;place-items:center;border-radius:14px;background:#f6f6f4;transition:background .15s,transform .15s}
+.gift-picker button:hover{background:#ecf6ff;transform:translateY(-2px)}
+.gift-picker button:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.gift-chosen{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.gift-chosen button{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px 0 6px;border:1px solid #ececea;border-radius:999px;font-size:13px;color:#8a8a93}
+.gift-chosen button:hover{border-color:#131316;color:#131316}
+.gift-chosen .gift-clear{padding:0 12px;color:#55555f}
+.gift-stamps{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.gift-stamps button{padding:4px;border-radius:10px;border:2px solid transparent;transition:border-color .15s}
+.gift-stamps button[aria-pressed="true"]{border-color:#131316}
+.gift-side{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
+.gift-stage{padding:24px;border-radius:28px;background:#f7f3ea;border:1px solid #ece6da;box-shadow:0 30px 70px -48px rgba(80,60,20,.5)}
+.gift-preview{display:flex;justify-content:center;align-items:center;gap:18px}
+.gift-preview.is-both{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.gift-bouquet-wrap{display:flex;justify-content:center;align-items:center;min-height:300px;width:100%}
+.gift-bouquet{width:100%;max-width:360px;height:auto}
+.gift-empty{text-align:center;color:#8a8a93;font-size:14px;padding:40px 10px;border:1.5px dashed #ded6c4;border-radius:18px;width:100%}
+.letter{position:relative;width:100%;max-width:440px;min-height:340px;padding:30px 28px 28px;border-radius:6px;background:#fffdf8;border:1px solid #e8dfcd;box-shadow:0 18px 40px -26px rgba(80,60,20,.45);background-image:repeating-linear-gradient(#fffdf8 0 31px,#f1eadb 31px 32px);background-position:0 78px}
+.letter>.stamp{position:absolute;top:18px;right:18px}
+.letter-body{display:flex;gap:10px;align-items:flex-start;margin-top:58px}
+.letter-sprig{flex-shrink:0;width:84px;height:auto;margin:-58px 0 0 -10px}
+.letter-words{flex:1;min-width:0}
+.letter-to{font-size:20px;font-weight:600;letter-spacing:-.01em;color:#131316;line-height:32px}
+.letter-message{margin-top:0;font-size:16px;line-height:32px;color:#3d3d45;white-space:pre-wrap;overflow-wrap:anywhere}
+.letter-from{margin-top:8px;font-size:15px;line-height:32px;color:#55555f}
+.letter-from span{font-size:18px;font-weight:600;color:#131316}
+.stamp{display:inline-block;padding:5px;background:#fff;filter:drop-shadow(0 2px 3px rgba(19,19,22,.18));-webkit-mask:radial-gradient(circle at 3px 3px,transparent 2.4px,#000 2.6px) -3px -3px/7px 7px;mask:radial-gradient(circle at 3px 3px,transparent 2.4px,#000 2.6px) -3px -3px/7px 7px}
+.stamp-face{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:66px;height:80px;background:var(--stamp-paper);border:1.5px solid var(--stamp-ink);color:var(--stamp-ink)}
+.stamp-text{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.stamp-small .stamp-face{width:44px;height:54px}
+.stamp-small .stamp-text{font-size:6.5px}
+.gift-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.gift-actions .btn{border-radius:999px !important}
+.gift-note{text-align:center;font-size:12.5px;color:#8a8a93}
+
+/* envelope the recipient opens */
+.gift-received{width:min(1000px,100%);margin:28px auto 0}
+.envelope-scene{display:flex;flex-direction:column;align-items:center;gap:18px;padding:40px 0 20px;perspective:1200px}
+.envelope{position:relative;width:min(440px,90vw);aspect-ratio:1.55;cursor:pointer;transition:transform .5s ease}
+.envelope:hover{transform:translateY(-4px) rotate(-1deg)}
+.env-back,.env-front,.env-flap{position:absolute;inset:0;border-radius:10px}
+.env-back{background:#efe4cf;box-shadow:0 30px 60px -30px rgba(80,60,20,.55)}
+.env-card{position:absolute;left:7%;right:7%;top:8%;height:80%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border-radius:6px;background:#fffdf8;border:1px solid #e8dfcd;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.env-card-line{font-size:16px;font-weight:600;color:#131316}
+.env-front{clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%);background:linear-gradient(#f4ead7,#ecdfc6)}
+.env-flap{clip-path:polygon(0 0,100% 0,50% 58%);background:#e6d6b8;transform-origin:top center;transition:transform .7s cubic-bezier(.4,0,.2,1);z-index:3}
+.env-seal{position:absolute;left:50%;top:50%;z-index:4;display:grid;place-items:center;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#c2415d;box-shadow:inset 0 2px 4px rgba(255,255,255,.25),0 3px 8px rgba(120,20,40,.35);transition:opacity .3s}
+.env-address{position:absolute;left:8%;bottom:12%;z-index:2;display:flex;flex-direction:column;font-size:18px;font-weight:600;color:#3d3d45;text-align:left}
+.env-address span{font-size:12px;font-weight:500;color:#8a8a93;text-transform:uppercase;letter-spacing:.08em}
+.env-stamp{position:absolute;right:6%;bottom:10%;z-index:2;transform:rotate(4deg)}
+.envelope-hint{font-size:14px;color:#6b6b75}
+.stage-flap .env-flap,.stage-rise .env-flap,.stage-done .env-flap{transform:rotateX(180deg);z-index:0}
+.stage-flap .env-seal,.stage-rise .env-seal{opacity:0}
+.stage-rise .env-card{transform:translateY(-62%);z-index:1}
+.gift-reveal{display:flex;flex-direction:column;gap:18px;animation:reveal-in .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes reveal-in{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.env-flap,.env-card,.gift-reveal{transition:none;animation:none}}
+
+@media (max-width:960px){.gift-grid{grid-template-columns:1fr}.gift-side{position:static;order:-1}}
+@media (max-width:600px){.gift-preview.is-both{grid-template-columns:1fr}.gift-picker{grid-template-columns:repeat(5,minmax(0,1fr))}.gift-page{padding-top:100px}.gift-stage{padding:16px}.letter{padding:24px 20px}.gift-mode button{padding:0 12px;font-size:13.5px}}
+
+/* gardens fade in once they are drawn */
+.garden-fade{display:contents}
+.garden-fade>.garden{animation:garden-in .6s ease both}
+@keyframes garden-in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.garden-fade>.garden{animation:none}}
+
+.shelf-holder{margin-top:auto}
+.lazy-mount>*{animation:garden-in .5s ease both}

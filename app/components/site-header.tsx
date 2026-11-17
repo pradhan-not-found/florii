@@ -39,6 +39,7 @@ export function SiteHeader() {
       <nav className="header-nav" aria-label="Main">
         <a href="/flowers">flowers</a>
         <a href="/docs">docs</a>
+        <a href="/gift">gift</a>
         <a href={projectLinks.npm} target="_blank" rel="noreferrer">npm</a>
         <a href="/#sponsors">sponsor</a>
       </nav>

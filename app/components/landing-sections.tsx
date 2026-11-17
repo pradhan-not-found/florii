@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { BotanicalName } from "@/packages/florii/src";
 import { Botanical, botanicalCatalog, BotanicalDivider, FlowerCorner, Petals } from "@/packages/florii/src";
 import { Icon } from "./icons";
+import { LazyMount } from "./lazy-mount";
 
 type UseCase = { id: string; label: string; blurb: string; code: string; preview: ReactNode };
 
@@ -48,7 +49,7 @@ const cases: UseCase[] = [
           <span className="mock-avatar" /><span className="mock-avatar" /><span className="mock-avatar" />
           <span className="mock-pill">3 updates</span>
         </div>
-        <span className="mock-corner"><FlowerCorner size={96} position="bottom-right" title="" /></span>
+        <span className="mock-corner"><FlowerCorner size={76} position="bottom-right" title="" /></span>
       </div>
     ),
   },
@@ -99,11 +100,11 @@ export function Bento() {
       <article className="feature f-shelf">
         <Corner name="Daisy" color="#ffd9c9" size={230} style={{ right: -70, top: -90 }} />
         <div className="feature-text"><h3>{botanicalCatalog.length} flowers and counting</h3><p>flowers from around the world, plus leaves, vines and a few small surprises.</p></div>
-        <div className="shelf" aria-hidden="true">
+        <LazyMount minHeight={160} className="shelf-holder"><div className="shelf" aria-hidden="true">
           <div className="shelf-track">
             {[...shelf, ...shelf].map((item, index) => <span key={index} className="seed"><Botanical name={item.id} size={72} title="" /><small>{item.name}</small></span>)}
           </div>
-        </div>
+        </div></LazyMount>
       </article>
 
       <article className="feature f-color">
@@ -128,9 +129,8 @@ export function Bento() {
         <Corner name="Lily" color="#e4572e" size={240} style={{ right: -70, top: -100, rotate: "20deg" }} />
         <div className="feature-text"><h3>decorations too</h3><p>corners, dividers, borders and falling petals for cards and sections.</p></div>
         <div className="deco-stage" aria-hidden="true">
-          <span className="deco-rain"><Petals size="100%" count={12} title="" /></span>
-          <BotanicalDivider size={320} title="" />
-          <span className="deco-corner"><FlowerCorner size={110} position="bottom-right" title="" /></span>
+          <span className="deco-rain"><Petals size="100%" count={7} title="" /></span>
+          <BotanicalDivider size={300} title="" />
         </div>
       </article>
     </div>
