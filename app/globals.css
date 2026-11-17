@@ -726,7 +726,7 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .gift-hero p{margin-top:12px;font-size:17px;color:#55555f}
 .gift-maker{width:min(1200px,100%);margin:40px auto 0}
 .gift-mode{display:flex;justify-content:center;gap:6px;width:max-content;max-width:100%;margin:0 auto 28px;padding:5px;border-radius:999px;background:#fff;border:1px solid #ececea;box-shadow:0 1px 2px rgba(19,19,22,.05)}
-.gift-mode button{height:38px;padding:0 18px;border-radius:999px;font-size:14.5px;font-weight:500;color:#55555f}
+.gift-mode button{height:38px;padding:0 18px;border-radius:999px;font-size:14.5px;font-weight:500;color:#55555f;white-space:nowrap}
 .gift-mode button[aria-selected="true"]{background:#131316;color:#fff}
 .gift-grid{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:28px;align-items:start}
 .gift-controls{display:flex;flex-direction:column;gap:16px}
@@ -745,8 +745,9 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .gift-chosen button:hover{border-color:#131316;color:#131316}
 .gift-chosen .gift-clear{padding:0 12px;color:#55555f}
 .gift-stamps{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-.gift-stamps button{padding:4px;border-radius:10px;border:2px solid transparent;transition:border-color .15s}
-.gift-stamps button[aria-pressed="true"]{border-color:#131316}
+.gift-stamps button{padding:6px;border-radius:12px;border:1.5px solid transparent;background:#f6f6f4;transition:border-color .15s,background .15s}
+.gift-stamps button:hover{background:#efefec}
+.gift-stamps button[aria-pressed="true"]{border-color:#131316;background:#fff}
 .gift-side{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
 .gift-stage{padding:24px;border-radius:28px;background:#f7f3ea;border:1px solid #ece6da;box-shadow:0 30px 70px -48px rgba(80,60,20,.5)}
 .gift-preview{display:flex;justify-content:center;align-items:center;gap:18px}
@@ -754,20 +755,22 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .gift-bouquet-wrap{display:flex;justify-content:center;align-items:center;min-height:300px;width:100%}
 .gift-bouquet{width:100%;max-width:360px;height:auto}
 .gift-empty{text-align:center;color:#8a8a93;font-size:14px;padding:40px 10px;border:1.5px dashed #ded6c4;border-radius:18px;width:100%}
-.letter{position:relative;width:100%;max-width:440px;min-height:340px;padding:30px 28px 28px;border-radius:6px;background:#fffdf8;border:1px solid #e8dfcd;box-shadow:0 18px 40px -26px rgba(80,60,20,.45);background-image:repeating-linear-gradient(#fffdf8 0 31px,#f1eadb 31px 32px);background-position:0 78px}
-.letter>.stamp{position:absolute;top:18px;right:18px}
-.letter-body{display:flex;gap:10px;align-items:flex-start;margin-top:58px}
-.letter-sprig{flex-shrink:0;width:84px;height:auto;margin:-58px 0 0 -10px}
+.letter{position:relative;width:100%;max-width:440px;min-height:340px;padding:30px 30px 32px;border-radius:4px;background:#fffdf8;border:1px solid #ece3d1;box-shadow:0 1px 0 #fff inset,0 22px 44px -28px rgba(80,60,20,.45),0 2px 6px -2px rgba(80,60,20,.08)}
+.letter-stamp{position:absolute;top:16px;right:14px;display:block}
+.letter-body{display:flex;gap:10px;align-items:flex-start;margin-top:96px}
+.letter-sprig{flex-shrink:0;width:84px;height:auto;margin:-70px 0 0 -12px}
 .letter-words{flex:1;min-width:0}
-.letter-to{font-size:20px;font-weight:600;letter-spacing:-.01em;color:#131316;line-height:32px}
-.letter-message{margin-top:0;font-size:16px;line-height:32px;color:#3d3d45;white-space:pre-wrap;overflow-wrap:anywhere}
-.letter-from{margin-top:8px;font-size:15px;line-height:32px;color:#55555f}
+.letter-to{font-size:21px;font-weight:600;letter-spacing:-.02em;color:#131316;line-height:1.3}
+.letter-message{margin-top:14px;font-size:16px;line-height:1.7;color:#3d3d45;white-space:pre-wrap;overflow-wrap:anywhere}
+.letter-from{margin-top:22px;font-size:15px;line-height:1.5;color:#6b6b75}
 .letter-from span{font-size:18px;font-weight:600;color:#131316}
-.stamp{display:inline-block;padding:5px;background:#fff;filter:drop-shadow(0 2px 3px rgba(19,19,22,.18));-webkit-mask:radial-gradient(circle at 3px 3px,transparent 2.4px,#000 2.6px) -3px -3px/7px 7px;mask:radial-gradient(circle at 3px 3px,transparent 2.4px,#000 2.6px) -3px -3px/7px 7px}
-.stamp-face{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:66px;height:80px;background:var(--stamp-paper);border:1.5px solid var(--stamp-ink);color:var(--stamp-ink)}
-.stamp-text{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.stamp-small .stamp-face{width:44px;height:54px}
-.stamp-small .stamp-text{font-size:6.5px}
+.stamp{display:block;overflow:visible}
+.gift-wraps{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.gift-wraps button{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 6px;border-radius:999px;border:1px solid #ececea;background:#fff;font-size:13.5px;color:#44444d;transition:border-color .15s}
+.gift-wraps button:hover{border-color:#c9c9c4}
+.gift-wraps button[aria-pressed="true"]{border-color:#131316;color:#131316}
+.wrap-swatch{width:24px;height:24px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(19,19,22,.08)}
+.wrap-swatch.is-none{background:#fff;background-image:linear-gradient(135deg,transparent 46%,#d4d4d0 46% 54%,transparent 54%)}
 .gift-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .gift-actions .btn{border-radius:999px !important}
 .gift-note{text-align:center;font-size:12.5px;color:#8a8a93}
@@ -796,7 +799,8 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 @media (prefers-reduced-motion:reduce){.env-flap,.env-card,.gift-reveal{transition:none;animation:none}}
 
 @media (max-width:960px){.gift-grid{grid-template-columns:1fr}.gift-side{position:static;order:-1}}
-@media (max-width:600px){.gift-preview.is-both{grid-template-columns:1fr}.gift-picker{grid-template-columns:repeat(5,minmax(0,1fr))}.gift-page{padding-top:100px}.gift-stage{padding:16px}.letter{padding:24px 20px}.gift-mode button{padding:0 12px;font-size:13.5px}}
+@media (max-width:760px){.gift-preview.is-both{grid-template-columns:1fr;justify-items:center}.gift-bouquet-wrap{min-height:0}.gift-bouquet{max-width:300px}}
+@media (max-width:600px){.gift-page{padding:96px 16px 0}.gift-maker{margin-top:28px}.gift-picker{grid-template-columns:repeat(5,minmax(0,1fr))}.gift-stage{padding:14px;border-radius:22px}.gift-step{padding:18px;border-radius:20px}.letter{padding:22px 18px 28px;min-height:0}.letter-body{margin-top:92px}.letter-sprig{width:64px;margin:-80px 0 0 -8px}.letter-to{font-size:19px}.gift-mode{width:100%}.gift-mode button{flex:1 1 auto;padding:0 10px;font-size:13px}.gift-actions .btn{flex:1 1 auto}.gift-wraps button{height:34px;font-size:13px}}
 
 /* gardens fade in once they are drawn */
 .garden-fade{display:contents}

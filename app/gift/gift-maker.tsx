@@ -7,22 +7,30 @@ import { Icon } from "../components/icons";
 import { useCopy } from "../components/copy";
 
 type Mode = "bouquet" | "letter" | "both";
-type Gift = { mode: Mode; flowers: BotanicalName[]; sprig: BotanicalName[]; stamp: string; to: string; message: string; from: string };
+type Gift = { mode: Mode; flowers: BotanicalName[]; wrap: string; sprig: BotanicalName[]; stamp: string; to: string; message: string; from: string };
 
 const MAX_BOUQUET = 9, MAX_SPRIG = 3;
 const choices = botanicalCatalog.filter(item => item.category === "flower").map(item => item.id);
-const stamps = [
-  { id: "rose", flower: "Rose" as BotanicalName, paper: "#fde4ea", ink: "#c2415d", label: "rose" },
-  { id: "sun", flower: "Sunflower" as BotanicalName, paper: "#fff3cf", ink: "#b7791f", label: "sunflower" },
-  { id: "sky", flower: "ForgetMeNot" as BotanicalName, paper: "#e2f0ff", ink: "#2f6fb5", label: "forget-me-not" },
-  { id: "lilac", flower: "Lavender" as BotanicalName, paper: "#efe7ff", ink: "#6a4bb8", label: "lavender" },
-  { id: "meadow", flower: "Daisy" as BotanicalName, paper: "#e7f5e1", ink: "#3f7d3a", label: "daisy" },
+const wraps = [
+  { id: "none", label: "no paper", back: "", front: "", fold: "" },
+  { id: "kraft", label: "kraft", back: "#d8b78a", front: "#cda56f", fold: "#b88d55" },
+  { id: "blush", label: "blush", back: "#f6d5dc", front: "#eebcc8", fold: "#d99aaa" },
+  { id: "cream", label: "cream", back: "#f4eedf", front: "#e9dfc8", fold: "#d3c5a6" },
+  { id: "sage", label: "sage", back: "#d5e4c8", front: "#bfd4ad", fold: "#9fbb88" },
+  { id: "sky", label: "sky", back: "#d6e8f7", front: "#bcd6ee", fold: "#94b8db" },
 ];
-const empty: Gift = { mode: "both", flowers: [], sprig: [], stamp: "rose", to: "", message: "", from: "" };
+const stamps = [
+  { id: "rose", flower: "Rose" as BotanicalName, paper: "#fde4ea", ink: "#c2415d", label: "rose", value: "25" },
+  { id: "sun", flower: "Sunflower" as BotanicalName, paper: "#fff3cf", ink: "#b7791f", label: "sunflower", value: "40" },
+  { id: "sky", flower: "ForgetMeNot" as BotanicalName, paper: "#e2f0ff", ink: "#2f6fb5", label: "forget-me-not", value: "10" },
+  { id: "lilac", flower: "Lavender" as BotanicalName, paper: "#efe7ff", ink: "#6a4bb8", label: "lavender", value: "60" },
+  { id: "meadow", flower: "Daisy" as BotanicalName, paper: "#e7f5e1", ink: "#3f7d3a", label: "daisy", value: "15" },
+];
+const empty: Gift = { mode: "both", flowers: [], wrap: "none", sprig: [], stamp: "rose", to: "", message: "", from: "" };
 
 // ---------- share link: the whole gift lives in the URL ----------
 function encode(gift: Gift) {
-  const json = JSON.stringify({ o: gift.mode, f: gift.flowers, l: gift.sprig, p: gift.stamp, t: gift.to, m: gift.message, s: gift.from });
+  const json = JSON.stringify({ o: gift.mode, f: gift.flowers, w: gift.wrap, l: gift.sprig, p: gift.stamp, t: gift.to, m: gift.message, s: gift.from });
   return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 function decode(token: string): Gift | null {
@@ -31,7 +39,7 @@ function decode(token: string): Gift | null {
     const list = (value: unknown, max: number) => (Array.isArray(value) ? value.filter((n): n is BotanicalName => typeof n === "string" && choices.includes(n as BotanicalName)).slice(0, max) : []);
     const text = (value: unknown, max: number) => (typeof value === "string" ? value.slice(0, max) : "");
     const mode: Mode = raw.o === "bouquet" || raw.o === "letter" ? raw.o : "both";
-    return { mode, flowers: list(raw.f, MAX_BOUQUET), sprig: list(raw.l, MAX_SPRIG), stamp: stamps.some(s => s.id === raw.p) ? String(raw.p) : "rose", to: text(raw.t, 40), message: text(raw.m, 400), from: text(raw.s, 40) };
+    return { mode, flowers: list(raw.f, MAX_BOUQUET), wrap: wraps.some(w => w.id === raw.w) ? String(raw.w) : "none", sprig: list(raw.l, MAX_SPRIG), stamp: stamps.some(s => s.id === raw.p) ? String(raw.p) : "rose", to: text(raw.t, 40), message: text(raw.m, 400), from: text(raw.s, 40) };
   } catch { return null; }
 }
 
@@ -54,12 +62,17 @@ const slots: [number, number, number][] = [
 ];
 const stalkTones = ["#4f9a3f", "#5fa94a", "#468f39", "#6cb456"];
 
-export function Bouquet({ flowers, className = "gift-bouquet" }: { flowers: BotanicalName[]; className?: string }) {
+export function Bouquet({ flowers, wrap = "none", className = "gift-bouquet" }: { flowers: BotanicalName[]; wrap?: string; className?: string }) {
+  const paper = wraps.find(w => w.id === wrap && w.back);
   const filter = "crayon-" + useId().replace(/[^a-zA-Z0-9]/g, "");
   const items = flowers.map((name, i) => ({ name, slot: slots[i], i }));
   const n = items.length;
   return <svg className={className} viewBox={`0 0 ${BW} ${BH}`} role="img" aria-label={n ? `A bouquet of ${n} flowers` : "An empty bouquet"}>
     <defs><Crayon id={filter} /></defs>
+    {paper && n > 0 && <g filter={`url(#${filter})`}>
+      <path d="M92 292C140 276 280 276 328 292L238 566C222 572 198 572 182 566Z" fill={paper.back} />
+      <path d="M150 300L196 560M270 300L224 560" stroke={paper.fold} strokeWidth="2" fill="none" strokeLinecap="round" opacity=".55" />
+    </g>}
     <g filter={`url(#${filter})`} fill="none" strokeLinecap="round">
       {items.map(({ slot: [x, y, size], i }) => {
         const top = y + size * 0.28, endX = GATHER[0] + (i - (n - 1) / 2) * 5.5;
@@ -75,6 +88,11 @@ export function Bouquet({ flowers, className = "gift-bouquet" }: { flowers: Bota
       })}
     </g>
     {[...items].sort((a, b) => a.slot[1] - b.slot[1]).map(({ name, slot: [x, y, size], i }) => <g key={name + i} transform={`translate(${x - size / 2} ${y - size / 2})`}><Botanical name={name} size={size} title="" /></g>)}
+    {paper && n > 0 && <g filter={`url(#${filter})`}>
+      <path d="M112 352C150 378 270 378 308 352L240 566C222 573 198 573 180 566Z" fill={paper.front} />
+      <path d="M112 352C150 378 270 378 308 352" stroke={paper.fold} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M160 372L198 560M262 372L226 560" stroke={paper.fold} strokeWidth="2" fill="none" strokeLinecap="round" opacity=".5" />
+    </g>}
     {n > 0 && <g filter={`url(#${filter})`} fill="none" stroke="#b48a5a" strokeLinecap="round">
       <path d={`M${GATHER[0] - 20} ${GATHER[1] - 4} Q${GATHER[0]} ${GATHER[1] + 8} ${GATHER[0] + 20} ${GATHER[1] - 4}`} strokeWidth="5" />
       <path d={`M${GATHER[0] - 20} ${GATHER[1] + 6} Q${GATHER[0]} ${GATHER[1] + 18} ${GATHER[0] + 20} ${GATHER[1] + 6}`} strokeWidth="5" />
@@ -99,19 +117,42 @@ function Sprig({ flowers }: { flowers: BotanicalName[] }) {
   </svg>;
 }
 
-function Stamp({ id, small = false }: { id: string; small?: boolean }) {
+/** A postage stamp: perforated edge, white margin, printed face, value and a crayon postmark. */
+function Stamp({ id, small = false, postmark = false }: { id: string; small?: boolean; postmark?: boolean }) {
   const stamp = stamps.find(s => s.id === id) ?? stamps[0];
-  return <span className={"stamp" + (small ? " stamp-small" : "")} style={{ "--stamp-paper": stamp.paper, "--stamp-ink": stamp.ink } as React.CSSProperties} aria-label={stamp.label + " stamp"}>
-    <span className="stamp-face">
-      <Botanical name={stamp.flower} size={small ? 30 : 46} title="" />
-      <span className="stamp-text">florii · 01</span>
-    </span>
-  </span>;
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const W = 80, H = 96, holes: [number, number][] = [];
+  for (let x = 4; x <= W - 4; x += 8) holes.push([x, 0], [x, H]);
+  for (let y = 4; y <= H - 4; y += 8) holes.push([0, y], [W, y]);
+  const width = small ? 46 : 84;
+  return <svg className={"stamp" + (small ? " stamp-small" : "")} viewBox={`-2 -2 ${W + (postmark ? 40 : 4)} ${H + 4}`} width={width * (postmark ? 1.45 : 1)} height={width * 1.2} role="img" aria-label={stamp.label + " stamp"}>
+    <defs>
+      <mask id={"perf" + uid}><rect x="0" y="0" width={W} height={H} fill="#fff" />{holes.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2.7" fill="#000" />)}</mask>
+      <filter id={"shade" + uid} x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.2" floodColor="#3a2a10" floodOpacity=".22" /></filter>
+      <Crayon id={"ink" + uid} />
+      <pattern id={"dots" + uid} width="3" height="3" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".45" fill={stamp.ink} opacity=".18" /></pattern>
+    </defs>
+    <g filter={`url(#shade${uid})`}><rect x="0" y="0" width={W} height={H} fill="#fffdf6" mask={`url(#perf${uid})`} /></g>
+    <rect x="7" y="7" width={W - 14} height={H - 14} fill={stamp.paper} />
+    <rect x="7" y="7" width={W - 14} height={H - 14} fill={`url(#dots${uid})`} />
+    <rect x="7" y="7" width={W - 14} height={H - 14} fill="none" stroke={stamp.ink} strokeWidth=".8" />
+    <rect x="9.5" y="9.5" width={W - 19} height={H - 19} fill="none" stroke={stamp.ink} strokeWidth=".4" opacity=".6" />
+    <g transform={`translate(${W / 2 - 27} ${H / 2 - 29})`}><Botanical name={stamp.flower} size={54} title="" /></g>
+    <text x="12.5" y="21" fontSize="11" fontWeight="700" fill={stamp.ink} fontFamily="Instrument Sans, sans-serif">{stamp.value}</text>
+    <text x={W / 2} y={H - 12.5} fontSize="6.4" fontWeight="700" letterSpacing="1.4" textAnchor="middle" fill={stamp.ink} fontFamily="Instrument Sans, sans-serif">FLORII POST</text>
+    {postmark && <g filter={`url(#ink${uid})`} fill="none" stroke="#2c2a33" strokeLinecap="round" opacity=".62">
+      <circle cx={W - 4} cy="30" r="19" strokeWidth="1.6" />
+      <circle cx={W - 4} cy="30" r="14.5" strokeWidth=".8" />
+      <text x={W - 4} y="28" fontSize="5.4" fontWeight="700" textAnchor="middle" fill="#2c2a33" stroke="none" letterSpacing=".8" fontFamily="Instrument Sans, sans-serif">FLORII</text>
+      <text x={W - 4} y="35.5" fontSize="5" textAnchor="middle" fill="#2c2a33" stroke="none" fontFamily="Instrument Sans, sans-serif">{new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short" }).toUpperCase()}</text>
+      {[0, 1, 2, 3].map(i => <path key={i} d={`M${W + 17} ${20 + i * 6.5}q4.5-3 9 0t9 0`} strokeWidth="1.4" />)}
+    </g>}
+  </svg>;
 }
 
 function Letter({ gift }: { gift: Gift }) {
   return <article className="letter">
-    <Stamp id={gift.stamp} />
+    <span className="letter-stamp"><Stamp id={gift.stamp} postmark /></span>
     <div className="letter-body">
       {gift.sprig.length > 0 && <Sprig flowers={gift.sprig} />}
       <div className="letter-words">
@@ -126,7 +167,7 @@ function Letter({ gift }: { gift: Gift }) {
 function Preview({ gift }: { gift: Gift }) {
   const showBouquet = gift.mode !== "letter", showLetter = gift.mode !== "bouquet";
   return <div className={"gift-preview" + (showBouquet && showLetter ? " is-both" : "")}>
-    {showBouquet && <div className="gift-bouquet-wrap">{gift.flowers.length ? <Bouquet flowers={gift.flowers} /> : <p className="gift-empty">pick flowers to start your bouquet</p>}</div>}
+    {showBouquet && <div className="gift-bouquet-wrap">{gift.flowers.length ? <Bouquet flowers={gift.flowers} wrap={gift.wrap} /> : <p className="gift-empty">pick flowers to start your bouquet</p>}</div>}
     {showLetter && <Letter gift={gift} />}
   </div>;
 }
@@ -244,6 +285,12 @@ export function GiftMaker() {
           <div className="gift-step-head"><h2>the bouquet</h2><span>{gift.flowers.length}/{MAX_BOUQUET}</span></div>
           <p className="gift-hint">tap flowers to add them. each one gets its own stalk.</p>
           <Picker selected={gift.flowers} max={MAX_BOUQUET} onAdd={name => set({ flowers: [...gift.flowers, name] })} onRemove={i => set({ flowers: gift.flowers.filter((_, k) => k !== i) })} onClear={() => set({ flowers: [] })} />
+          <span className="pay-label gift-label-gap">wrapping paper <em>optional</em></span>
+          <div className="gift-wraps" role="group" aria-label="Wrapping paper">
+            {wraps.map(w => <button key={w.id} aria-pressed={gift.wrap === w.id} onClick={() => set({ wrap: w.id })}>
+              <span className={"wrap-swatch" + (w.back ? "" : " is-none")} style={w.back ? { background: `linear-gradient(135deg, ${w.back} 50%, ${w.front} 50%)` } : undefined} />{w.label}
+            </button>)}
+          </div>
         </div>}
 
         {showLetter && <div className="gift-step">
