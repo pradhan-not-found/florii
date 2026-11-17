@@ -1,30 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { Botanical, botanicalCatalog, FlowerCorner, BotanicalDivider, VineBorder, Petals, LeafConfetti } from "@/packages/florii/src";
+import { Botanical, botanicalCatalog, FlowerCorner, BotanicalDivider, VineBorder, Petals, LeafConfetti, FlowerWreath, FlowerGarland } from "@/packages/florii/src";
 import type { BotanicalName, BotanicalVariant } from "@/packages/florii/src";
 import { FlowerPreview } from "../components/flower-preview";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 import { Icon } from "../components/icons";
 import { useCopy } from "../components/copy";
+import d from "../docs/docs.module.css";
 
-type DecorationName = "FlowerCorner" | "BotanicalDivider" | "VineBorder" | "Petals" | "LeafConfetti";
+type DecorationName = "FlowerCorner" | "BotanicalDivider" | "VineBorder" | "Petals" | "LeafConfetti" | "FlowerWreath" | "FlowerGarland";
 const decorations: { id: DecorationName; name: string; description: string }[] = [
   { id: "FlowerCorner", name: "Flower corner", description: "A blooming corner accent." },
   { id: "BotanicalDivider", name: "Divider", description: "A floral section break." },
   { id: "VineBorder", name: "Vine border", description: "A winding edge for cards." },
   { id: "Petals", name: "Petals", description: "Softly falling petals." },
   { id: "LeafConfetti", name: "Leaf confetti", description: "Leaves drifting in the air." },
+  { id: "FlowerWreath", name: "Flower wreath", description: "A ring of blooms to frame an avatar." },
+  { id: "FlowerGarland", name: "Flower garland", description: "A string of flowers to hang over a header." },
 ];
 const categories = [["all", "All"], ["flower", "Flowers"], ["leaf", "Leaves"], ["nature", "Little things"]] as const;
 
 function DecorationPreview({ id, variant }: { id: DecorationName; variant: BotanicalVariant }) {
   const props = { variant, animate: "sway" as const, speed: 5, interactive: true, title: "" };
-  if (id === "FlowerCorner") return <FlowerCorner {...props} size={96} />;
+  if (id === "FlowerCorner") return <FlowerCorner {...props} size={128} />;
   if (id === "BotanicalDivider") return <BotanicalDivider {...props} size={180} />;
   if (id === "VineBorder") return <VineBorder {...props} size={180} />;
   if (id === "Petals") return <Petals {...props} size={140} count={9} />;
+  if (id === "FlowerWreath") return <FlowerWreath {...props} size={130} />;
+  if (id === "FlowerGarland") return <FlowerGarland {...props} size={190} />;
   return <LeafConfetti {...props} size={140} count={9} />;
 }
 
@@ -62,9 +67,9 @@ export default function FlowersPage() {
 
   return <>
     <SiteHeader />
-    <main className="container library-page">
+    <main className="library-page">
       <div className="library-head">
-        <div><h1>Flowers</h1><p>Copy the React code or download the SVG. Switch to Flat for clean pastel versions.</p></div>
+        <div className={d.hero}><span className={d.eyebrow}>the florii garden</span><h1>every flower,<br />ready to plant.</h1><p>Pick a flower, make it yours, and plant it anywhere. Switch to Flat for clean pastel versions.</p></div>
         <label className="search"><Icon name="search" size={15} /><input type="search" placeholder="Search" value={query} onChange={event => setQuery(event.target.value)} aria-label="Search flowers" /></label>
       </div>
 
@@ -89,7 +94,7 @@ export default function FlowersPage() {
         {decorationList.map(item => <article key={item.id} className="flower">
           <button className="flower-hit" onClick={() => copy(code(item.id, variant), item.name + " copied")} aria-label={"Copy code for " + item.name} />
           <div className="flower-art"><DecorationPreview id={item.id} variant={variant} /></div>
-          <div className="flower-meta"><div><h3>{item.name}</h3><p>{item.description}</p></div><div className="flower-actions"><button onClick={() => copy(code(item.id, variant), item.name + " code copied")} aria-label={"Copy code for " + item.name} title="Copy code"><Icon name="copy" size={15} /></button></div></div>
+          <div className="flower-meta"><div><h3>{item.name}</h3><p>{item.description}</p></div><div className="flower-actions"><button onClick={() => copy(code(item.id, variant), item.name + " code copied")} aria-label={"Copy code for " + item.name} title="Copy code"><Icon name="copy" size={15} /></button>{item.id !== "Petals" && item.id !== "LeafConfetti" && <button onClick={event => { if (downloadSvg(event.currentTarget, item.id)) copy("", item.name + " SVG downloaded"); }} aria-label={"Download " + item.name + " as SVG"} title="Download SVG"><Icon name="download" size={15} /></button>}</div></div>
         </article>)}
         {!decorationList.length && <p className="empty">No decorations match “{query}”.</p>}
       </div>}

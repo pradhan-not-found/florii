@@ -56,6 +56,7 @@ function Chip({
 
 export function Hero() {
   const { copy, toast } = useCopy();
+  const [copied, setCopied] = useState(false);
   const [selected, setSelected] = useState<BotanicalName | null>(null);
   return <>
     <section className={s.hero} aria-labelledby="hero-title">
@@ -70,16 +71,17 @@ export function Hero() {
       <span className={s.tag}><span className={s.stack} aria-hidden="true">{people.slice(0, 4).map(person => <Avatar key={person.name} person={person} className={s.stackAvatar} />)}</span>built by developers everywhere</span>
       <h1 id="hero-title">make the web bloom.</h1>
       <p className={s.lede}>
-        hand-painted flowers for react. drop a&nbsp;<Chip name="Daisy" onClick={() => setSelected("Daisy")}>daisy</Chip> into a&nbsp;hero,
+        hand-painted flowers for react. drop a&nbsp;<Chip name="CherryBlossom" onClick={() => setSelected("Daisy")}>daisy</Chip> into a&nbsp;hero,
         a&nbsp;<Chip name="Tulip" onClick={() => setSelected("Tulip")}>tulip</Chip> into an&nbsp;empty state, or&nbsp;a&nbsp;<Chip name="Sunflower" onClick={() => setSelected("Sunflower")}>sunflower</Chip> into
         a&nbsp;loading screen. they sway, bloom and wear your colors.
       </p>
       <div className={s.actions}>
-        <button className={s.installCommand} onClick={() => copy("npm i florii@latest", "Install command copied")} aria-label="Copy npm install command"><code>npm i florii@latest</code><Icon name="copy" size={17} /></button>
+        <button className={`${s.installCommand} ${copied ? s.isCopied : ""}`} onClick={() => { copy("npm i florii@latest", "Install command copied"); setCopied(true); window.setTimeout(() => setCopied(false), 1600); }} aria-label={copied ? "Copied" : "Copy npm install command"}><code>npm i florii@latest</code><span className={s.copyIcon} key={copied ? "done" : "idle"}><Icon name={copied ? "check" : "copy"} size={17} /></span></button>
         <a className={`${s.btn} ${s.wash}`} href="/flowers/">browse the flowers <Icon name="arrow" size={16} /></a>
       </div>
       <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
-      <Garden height={320} plants={30} className={s.field} />
+      <Garden height={320} plants={42} className={`${s.field} ${s.fieldWide}`} />
+    <Garden height={210} plants={16} density={0.6} className={`${s.field} ${s.fieldPhone}`} />
     </section>
     {selected && <FlowerPreview key={selected} name={selected} onClose={() => setSelected(null)} />}
     {toast}
@@ -155,7 +157,7 @@ export function Free() {
 const steps: { title: string; text: string; tint: string; name: BotanicalName }[] = [
   { title: "install it", text: "one package from npm. pnpm, yarn and bun work too.", tint: "#fff5bf", name: "Daffodil" },
   { title: "import the styles", text: "add one stylesheet to your root layout, once.", tint: "#ffe7ef", name: "CherryBlossom" },
-  { title: "pick a flower", text: "browse all 28, change the color and style to taste.", tint: "#e2f3ff", name: "ForgetMeNot" },
+  { title: "pick a flower", text: "browse all 36, change the color and style to taste.", tint: "#e2f3ff", name: "ForgetMeNot" },
   { title: "plant it", text: "drop the component anywhere. it sways on its own.", tint: "#eef8c6", name: "Clover" },
 ];
 

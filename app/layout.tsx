@@ -10,70 +10,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const description = "florii is a free, open-source library of hand-painted flower stickers for React. 36 animated SVG botanicals and seven decorations you can recolor, resize, copy, and download.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: "florii — hand-painted botanical UI components for React",
-    template: "%s · florii",
-  },
-  description:
-    "An open-source library of 28+ hand-drawn botanical SVG components and animated flourishes for React. Fully typed, zero extra dependencies, recolorable, with smooth CSS animations built in.",
-  keywords: [
-    "react",
-    "botanical",
-    "svg flowers",
-    "react icons",
-    "hand-drawn",
-    "animated flowers",
-    "ui components",
-    "florii",
-    "open source",
-    "react components",
-    "nature",
-    "react animations",
-  ],
-  authors: [{ name: "florii", url: siteUrl }],
+  title: { default: "florii · hand-painted flowers for React", template: "%s · florii" },
+  description,
+  applicationName: "florii",
+  keywords: ["react flowers", "svg flowers", "react svg components", "flower stickers", "botanical illustrations", "animated svg", "react ui decorations", "open source illustrations", "nextjs components", "hand-drawn icons"],
+  authors: [{ name: "florii contributors" }],
   creator: "florii",
-  publisher: "florii",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteUrl,
-    siteName: "florii",
-    title: "florii — hand-painted flowers for React",
-    description:
-      "Drop a daisy into a hero, a tulip into an empty state, or a sunflower into a loading screen. Sway, bloom, and wear your colors.",
-    images: [
-      {
-        url: "/images/hero-flowers.jpg",
-        width: 1200,
-        height: 630,
-        alt: "florii — hand-painted botanical components for React",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "florii — hand-painted flowers for React",
-    description:
-      "Drop a daisy into a hero, a tulip into an empty state, or a sunflower into a loading screen. Sway, bloom, and wear your colors.",
-    creator: "@floriijs",
-    images: ["/images/hero-flowers.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  alternates: { canonical: "/" },
+  openGraph: { type: "website", siteName: "florii", title: "florii · hand-painted flowers for React", description, url: "/", locale: "en_US" },
+  twitter: { card: "summary_large_image", title: "florii · hand-painted flowers for React", description },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   category: "technology",
 };
 

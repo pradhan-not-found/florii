@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 export type BotanicalVariant = "doodle" | "filled";
 export type AnimationPreset = "none" | "bloom" | "sway" | "float" | "rotate" | "pulse" | "fall";
 export type BotanicalCategory = "flower" | "leaf" | "nature";
-export type BotanicalName = "Daisy" | "Tulip" | "Rose" | "Sunflower" | "Poppy" | "CherryBlossom" | "Lotus" | "Lavender" | "Daffodil" | "Cosmos" | "Marigold" | "Anemone" | "Hibiscus" | "Dahlia" | "Peony" | "ForgetMeNot" | "Plumeria" | "Lily" | "Bluebell" | "Hydrangea" | "Leaf" | "Fern" | "Monstera" | "Sprig" | "Vine" | "Butterfly" | "Mushroom" | "Clover";
+export type BotanicalName = "Daisy" | "Tulip" | "Rose" | "Sunflower" | "Poppy" | "CherryBlossom" | "Lotus" | "Lavender" | "Daffodil" | "Cosmos" | "Marigold" | "Anemone" | "Hibiscus" | "Dahlia" | "Peony" | "ForgetMeNot" | "Plumeria" | "Lily" | "Bluebell" | "Hydrangea" | "Iris" | "Camellia" | "Zinnia" | "Orchid" | "Carnation" | "Magnolia" | "Pansy" | "Protea" | "Leaf" | "Fern" | "Monstera" | "Sprig" | "Vine" | "Butterfly" | "Mushroom" | "Clover";
 
 export interface BotanicalProps {
   size?: number | string;
@@ -55,6 +55,14 @@ export const botanicalCatalog: readonly BotanicalItem[] = [
   { id: "Lily", name: "Lily", category: "flower", color: "#F0AC7A", secondaryColor: "#A8643A", description: "Six pointed petals and freckled stamens." },
   { id: "Bluebell", name: "Bluebell", category: "flower", color: "#98A4E4", secondaryColor: "#8AA880", description: "Nodding bells along an arching woodland stem." },
   { id: "Hydrangea", name: "Hydrangea", category: "flower", color: "#A3B8EC", secondaryColor: "#BDA8E0", description: "A dome of tiny four-petaled florets." },
+  { id: "Iris", name: "Iris", category: "flower", color: "#8C7FE0", secondaryColor: "#F2C94C", description: "Three falls and three standards with a golden beard." },
+  { id: "Camellia", name: "Camellia", category: "flower", color: "#E8708A", secondaryColor: "#F5D36B", description: "Round, overlapping petals around a bright boss." },
+  { id: "Zinnia", name: "Zinnia", category: "flower", color: "#F08A4B", secondaryColor: "#B8432B", description: "Tidy rings of petals around a dark button center." },
+  { id: "Orchid", name: "Orchid", category: "flower", color: "#E3A2D9", secondaryColor: "#B4458E", description: "Wide sepals and a ruffled, deeper-toned lip." },
+  { id: "Carnation", name: "Carnation", category: "flower", color: "#F28FA8", secondaryColor: "#E06686", description: "Frilled, serrated petals packed into a cup." },
+  { id: "Magnolia", name: "Magnolia", category: "flower", color: "#F6D6E4", secondaryColor: "#C98AA8", description: "Large cupped petals blushing at the base." },
+  { id: "Pansy", name: "Pansy", category: "flower", color: "#7A5CC9", secondaryColor: "#F2C94C", description: "A velvet face with a sunny center and dark whiskers." },
+  { id: "Protea", name: "Protea", category: "flower", color: "#E8879A", secondaryColor: "#F3D7B0", description: "Pointed bracts cupping a soft, fuzzy crown." },
   { id: "Leaf", name: "Little leaf", category: "leaf", color: "#9AAD8B", secondaryColor: "#657B60", description: "A simple leaf with a gently curved stem." },
   { id: "Fern", name: "Fern", category: "leaf", color: "#90A88C", secondaryColor: "#667F68", description: "A delicate frond with pairs of tapering leaves." },
   { id: "Monstera", name: "Monstera", category: "leaf", color: "#8DA58A", secondaryColor: "#58775B", description: "A broad tropical leaf with sculptural cutouts." },
@@ -223,7 +231,40 @@ function HydrangeaArt({ color, secondary }: ArtProps) {
   return <><path d="M120 150v72" stroke="#5E9B57" strokeWidth="6" strokeLinecap="round" /><path d="M120 204c-30 2-50-12-56-36 30-4 50 10 56 36Zm2-8c28 0 46-14 50-38-28 2-46 14-50 38Z" fill="#5E9B57" />{florets.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}>{ring(4).map(j => <circle key={j} cx="0" cy="-10" r="11" fill={i % 2 ? secondary : color} transform={`rotate(${j * 90 + (i % 3) * 20})`} />)}<circle r="3.5" fill="#fff" opacity=".85" /></g>)}</>;
 }
 
-const artwork: Record<BotanicalName, (props: ArtProps) => ReactNode> = { Daisy: DaisyArt, Tulip: TulipArt, Rose: RoseArt, Sunflower: SunflowerArt, Poppy: PoppyArt, CherryBlossom: CherryBlossomArt, Lotus: LotusArt, Lavender: LavenderArt, Daffodil: DaffodilArt, Cosmos: CosmosArt, Marigold: MarigoldArt, Anemone: AnemoneArt, Hibiscus: HibiscusArt, Dahlia: DahliaArt, Peony: PeonyArt, ForgetMeNot: ForgetMeNotArt, Plumeria: PlumeriaArt, Lily: LilyArt, Bluebell: BluebellArt, Hydrangea: HydrangeaArt, Leaf: LeafArt, Fern: FernArt, Monstera: MonsteraArt, Sprig: SprigArt, Vine: VineArt, Butterfly: ButterflyArt, Mushroom: MushroomArt, Clover: CloverArt };
+function IrisArt({ color, secondary }: ArtProps) {
+  return <>{ring(3).map(i => <path key={"s" + i} d="M120 118C102 88 104 52 120 30c16 22 18 58 0 88Z" fill={color} transform={`rotate(${i * 120} 120 120)`} />)}{ring(3).map(i => <path key={"f" + i} d="M120 122C96 136 84 168 98 196c24-6 34-40 22-74Z" fill={color} opacity=".85" transform={`rotate(${i * 120 + 60} 120 120)`} />)}{ring(3).map(i => <path key={"b" + i} d="M120 124v40" stroke={secondary} strokeWidth="6" strokeLinecap="round" transform={`rotate(${i * 120 + 60} 120 120)`} />)}<circle cx="120" cy="120" r="10" fill={secondary} /></>;
+}
+
+function CamelliaArt({ color, secondary }: ArtProps) {
+  return <>{ring(8).map(i => <circle key={i} cx="120" cy="70" r="34" fill={color} transform={`rotate(${i * 45} 120 120)`} />)}{ring(6).map(i => <circle key={"i" + i} cx="120" cy="92" r="24" fill={color} opacity=".85" transform={`rotate(${i * 60 + 22} 120 120)`} />)}<circle cx="120" cy="120" r="20" fill={secondary} />{ring(10).map(i => <circle key={"d" + i} cx="120" cy="106" r="2.4" fill="#c9862e" transform={`rotate(${i * 36} 120 120)`} />)}</>;
+}
+
+function ZinniaArt({ color, secondary }: ArtProps) {
+  return <>{ring(16).map(i => <ellipse key={i} cx="120" cy="58" rx="13" ry="30" fill={color} transform={`rotate(${i * 22.5} 120 120)`} />)}{ring(12).map(i => <ellipse key={"m" + i} cx="120" cy="80" rx="10" ry="22" fill={secondary} opacity=".55" transform={`rotate(${i * 30 + 15} 120 120)`} />)}<circle cx="120" cy="120" r="22" fill="#4a2a20" />{ring(8).map(i => <circle key={"y" + i} cx="120" cy="104" r="3" fill="#f2c94c" transform={`rotate(${i * 45} 120 120)`} />)}</>;
+}
+
+function OrchidArt({ color, secondary }: ArtProps) {
+  return <><path d="M120 116C96 92 92 52 120 32c28 20 24 60 0 84Z" fill={color} /><path d="M120 120C84 110 52 88 48 66c32-4 62 14 72 54Zm0 0c36-10 68-32 72-54-32-4-62 14-72 54Z" fill={color} /><path d="M120 124C96 140 90 168 104 186c10 10 22 10 32 0 14-18 8-46-16-62Z" fill={secondary} /><path d="M108 150c6 8 18 8 24 0" stroke="#fff" strokeWidth="3" strokeLinecap="round" fill="none" opacity=".5" /><circle cx="120" cy="120" r="9" fill="#f2c94c" /></>;
+}
+
+function CarnationArt({ color, secondary }: ArtProps) {
+  const frill = (r: number) => ring(18).map(i => { const a = i * 20 * Math.PI / 180; return `${(120 + Math.sin(a) * r * (i % 2 ? 1 : 0.86)).toFixed(1)} ${(120 - Math.cos(a) * r * (i % 2 ? 1 : 0.86)).toFixed(1)}`; }).join(" L");
+  return <><path d={`M${frill(90)}Z`} fill={color} /><path d={`M${frill(64)}Z`} fill={secondary} /><path d={`M${frill(40)}Z`} fill={color} /><circle cx="120" cy="120" r="14" fill={secondary} /></>;
+}
+
+function MagnoliaArt({ color, secondary }: ArtProps) {
+  return <><path d="M120 196C82 186 60 150 68 108c24 10 42 40 52 88Z" fill={color} /><path d="M120 196c38-10 60-46 52-88-24 10-42 40-52 88Z" fill={color} /><path d="M120 190C94 160 92 98 120 52c28 46 26 108 0 138Z" fill={color} /><path d="M120 190c-10-20-12-50 0-80 12 30 10 60 0 80Z" fill={secondary} opacity=".55" /><path d="M86 150c10 14 20 26 34 40M154 150c-10 14-20 26-34 40" stroke={secondary} strokeWidth="3" strokeLinecap="round" fill="none" opacity=".45" /></>;
+}
+
+function PansyArt({ color, secondary }: ArtProps) {
+  return <><circle cx="88" cy="82" r="40" fill={color} /><circle cx="152" cy="82" r="40" fill={color} /><circle cx="74" cy="132" r="38" fill={color} opacity=".9" /><circle cx="166" cy="132" r="38" fill={color} opacity=".9" /><circle cx="120" cy="156" r="44" fill={color} /><path d="M120 120c-20 6-32 22-30 40 18 2 26-14 30-40Zm0 0c20 6 32 22 30 40-18 2-26-14-30-40Z" fill="#2e1d4f" opacity=".7" /><circle cx="120" cy="124" r="11" fill={secondary} /></>;
+}
+
+function ProteaArt({ color, secondary }: ArtProps) {
+  return <><path d="M120 168v58" stroke="#5E9B57" strokeWidth="6" strokeLinecap="round" /><path d="M120 206c-22 0-34-12-38-28 20-2 34 8 38 28Z" fill="#5E9B57" />{ring(9).map(i => <path key={i} d="M120 168C106 140 106 100 120 70c14 30 14 70 0 98Z" fill={color} transform={`rotate(${(i - 4) * 16} 120 168)`} />)}<ellipse cx="120" cy="116" rx="30" ry="40" fill={secondary} />{ring(12).map(i => <path key={"h" + i} d="M120 84v12" stroke="#d8b48a" strokeWidth="3" strokeLinecap="round" transform={`rotate(${i * 30} 120 116)`} />)}{ring(5).map(i => <path key={"f" + i} d="M120 168C110 150 110 128 120 110c10 18 10 40 0 58Z" fill={color} opacity=".9" transform={`rotate(${(i - 2) * 22} 120 168)`} />)}</>;
+}
+
+const artwork: Record<BotanicalName, (props: ArtProps) => ReactNode> = { Daisy: DaisyArt, Tulip: TulipArt, Rose: RoseArt, Sunflower: SunflowerArt, Poppy: PoppyArt, CherryBlossom: CherryBlossomArt, Lotus: LotusArt, Lavender: LavenderArt, Daffodil: DaffodilArt, Cosmos: CosmosArt, Marigold: MarigoldArt, Anemone: AnemoneArt, Hibiscus: HibiscusArt, Dahlia: DahliaArt, Peony: PeonyArt, ForgetMeNot: ForgetMeNotArt, Plumeria: PlumeriaArt, Lily: LilyArt, Bluebell: BluebellArt, Hydrangea: HydrangeaArt, Iris: IrisArt, Camellia: CamelliaArt, Zinnia: ZinniaArt, Orchid: OrchidArt, Carnation: CarnationArt, Magnolia: MagnoliaArt, Pansy: PansyArt, Protea: ProteaArt, Leaf: LeafArt, Fern: FernArt, Monstera: MonsteraArt, Sprig: SprigArt, Vine: VineArt, Butterfly: ButterflyArt, Mushroom: MushroomArt, Clover: CloverArt };
 
 export function Botanical({ name, size = 120, color, secondaryColor, speed = 4, animate = "none", interactive = false, className = "", style, title, variant = "doodle" }: BotanicalProps & { name: BotanicalName }) {
   const item = catalogByName[name] || catalogByName.Daisy;
@@ -260,6 +301,14 @@ export const Plumeria = (props: BotanicalProps) => <Botanical name="Plumeria" {.
 export const Lily = (props: BotanicalProps) => <Botanical name="Lily" {...props} />;
 export const Bluebell = (props: BotanicalProps) => <Botanical name="Bluebell" {...props} />;
 export const Hydrangea = (props: BotanicalProps) => <Botanical name="Hydrangea" {...props} />;
+export const Iris = (props: BotanicalProps) => <Botanical name="Iris" {...props} />;
+export const Camellia = (props: BotanicalProps) => <Botanical name="Camellia" {...props} />;
+export const Zinnia = (props: BotanicalProps) => <Botanical name="Zinnia" {...props} />;
+export const Orchid = (props: BotanicalProps) => <Botanical name="Orchid" {...props} />;
+export const Carnation = (props: BotanicalProps) => <Botanical name="Carnation" {...props} />;
+export const Magnolia = (props: BotanicalProps) => <Botanical name="Magnolia" {...props} />;
+export const Pansy = (props: BotanicalProps) => <Botanical name="Pansy" {...props} />;
+export const Protea = (props: BotanicalProps) => <Botanical name="Protea" {...props} />;
 export const Leaf = (props: BotanicalProps) => <Botanical name="Leaf" {...props} />;
 export const Fern = (props: BotanicalProps) => <Botanical name="Fern" {...props} />;
 export const Monstera = (props: BotanicalProps) => <Botanical name="Monstera" {...props} />;
@@ -302,6 +351,21 @@ export function VineBorder({ size = 400, color: colorProp, secondaryColor: secon
   const secondaryColor = secondaryProp ?? (paint ? vivid("#70866A") : "#70866A");
   const vertical = direction === "vertical";
   return <Decoration {...props} viewBox={vertical ? "0 0 90 400" : "0 0 400 90"} width={vertical ? 90 : dimension(size, 400)} height={vertical ? dimension(size, 400) : 90} defaultTitle="Winding vine border"><g transform={vertical ? "translate(90 0) rotate(90)" : undefined}><path d="M12 49c55-37 88 35 145 0s89 35 145 0c38-23 62-9 86 0" stroke={secondaryColor} strokeWidth="3" fill="none" strokeLinecap="round" />{ring(11).map(i => <g key={i} transform={`translate(${28 + i * 33} ${46 + Math.sin(i * .9) * 9}) rotate(${i % 2 ? 0 : 180})`}><path d="M0 0C2-24 16-35 35-30 30-8 17 1 0 0Z" fill={color} /><path d="m4-4 20-18" stroke={secondaryColor} strokeWidth="1.3" opacity=".5" /></g>)}</g></Decoration>;
+}
+
+export function FlowerWreath({ size = 220, color: colorProp, secondaryColor: secondaryProp, ...props }: DecorativeProps) {
+  const paint = props.variant !== "filled";
+  const color = colorProp ?? (paint ? vivid("#E9A59B") : "#E9A59B");
+  const secondaryColor = secondaryProp ?? (paint ? vivid("#9AAD8B") : "#9AAD8B");
+  return <Decoration {...props} viewBox="0 0 240 240" width={dimension(size)} height={dimension(size)} defaultTitle="Flower wreath"><circle cx="120" cy="120" r="78" fill="none" stroke={secondaryColor} strokeWidth="5" />{ring(12).map(i => <path key={"l" + i} d="M120 36c-12 6-16 18-10 28 10-2 16-14 10-28Z" fill={secondaryColor} transform={`rotate(${i * 30 + 12} 120 120)`} />)}{ring(6).map(i => <g key={"f" + i} transform={`rotate(${i * 60} 120 120) translate(120 42) scale(.2) translate(-120 -120)`}><DaisyArt color={color} secondary="#E8B867" /></g>)}</Decoration>;
+}
+
+export function FlowerGarland({ size = 400, color: colorProp, secondaryColor: secondaryProp, ...props }: DecorativeProps) {
+  const paint = props.variant !== "filled";
+  const color = colorProp ?? (paint ? vivid("#E3A5BA") : "#E3A5BA");
+  const secondaryColor = secondaryProp ?? (paint ? vivid("#9AAD8B") : "#9AAD8B");
+  const points = [40, 110, 180, 250, 320, 390];
+  return <Decoration {...props} viewBox="0 0 430 120" width={dimension(size, 400)} height={Math.round(Number(dimension(size, 400)) * 120 / 430) || 112} defaultTitle="Flower garland"><path d="M10 20C80 80 140 80 215 50S350 20 420 20" fill="none" stroke={secondaryColor} strokeWidth="3" strokeLinecap="round" />{points.map((x, i) => { const y = 20 + Math.sin((x / 430) * Math.PI) * 44; return <g key={x} transform={`translate(${x} ${y}) scale(.18) translate(-120 -120)`}><CosmosArt color={i % 2 ? color : vivid("#F0DCA3")} secondary="#D7AB61" /></g>; })}</Decoration>;
 }
 
 export interface NatureEffectProps extends BotanicalProps {

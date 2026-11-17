@@ -22,7 +22,20 @@ export function SiteHeader() {
 
   return <header className="site-header">
     <div className="container header-inner">
-      <a href="/" className="logo" aria-label="florii home">florii</a>
+      <a href="/" className="logo logo-art" aria-label="florii home">
+        <svg viewBox="0 0 70 30" width="84" height="36" fill="none" stroke="currentColor" strokeWidth="3.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M10 26V10C10 5.5 12.8 3 17 4.2" />
+          <path d="M5.5 14H15" />
+          <path d="M22 4V22C22 25 23.8 26.2 26.2 25.2" />
+          <path d="M33 14C29.2 14 27 16.8 27 20.2C27 23.8 29.6 26 33 26C36.8 26 39 23.2 39 19.8C39 16.2 36.4 14 33 14Z" />
+          <path d="M45 14.5V26" />
+          <path d="M45 19.5C46.2 15.6 49 14 52.4 15" />
+          <path d="M57.5 15V26" />
+          <path d="M64.5 15V26" />
+          <circle cx="57.5" cy="8.2" r="0.6" />
+          <circle cx="64.5" cy="8.2" r="0.6" />
+        </svg>
+      </a>
       <nav className="header-nav" aria-label="Main">
         <a href="/flowers/">flowers</a>
         <a href="/docs/">docs</a>

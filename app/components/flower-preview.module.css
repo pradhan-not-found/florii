@@ -273,3 +273,18 @@
   .motion input::before { transition: none; }
   .close, .downloadBtn, .codeBar > button { transition: none; }
 }
+
+/* code block: show the snippet in full, scroll inside if long */
+.code { flex-shrink: 0; }
+.code pre { max-height: 260px; overflow: auto; }
+
+/* landscape dialog: preview on the left, controls and code on the right */
+.dialog { width: min(980px, calc(100% - 32px)) !important; }
+.body { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); column-gap: 28px; align-items: start; }
+.body > * { grid-column: 2; }
+.body > .heading { grid-column: 1 / -1; }
+.body > .preview { grid-column: 1; grid-row: 2 / span 5; align-self: stretch; min-height: 420px; display: flex; align-items: center; justify-content: center; margin: 0; }
+@media (max-width: 760px) {
+  .body { display: flex !important; }
+  .body > .preview { min-height: 240px; }
+}

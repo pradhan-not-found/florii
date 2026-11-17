@@ -1,26 +1,14 @@
 # Florii
 
-Original botanical React components for adding a little bloom to an interface. Florii includes 28 SVG botanicals, five decorative compositions, and six CSS animation presets. Colors, size, and animation speed are configurable. TypeScript declarations are included.
+Original botanical React components for adding a little bloom to an interface. Florii includes 36 SVG botanicals, five decorative compositions, and six CSS animation presets. Colors, size, and animation speed are configurable. TypeScript declarations are included.
 
-## Installation status
-
-This package is under local development and has **not been published to npm**. `florii` is the proposed package name; availability has not been verified. Do not use `npm install florii` to install this local project yet.
-
-From the project root, install the development dependencies and create a tarball:
+## Installation
 
 ```sh
-npm install
-node packages/florii/build.mjs
-npm pack ./packages/florii
+npm install florii
 ```
 
-In a React application, install the generated file using its actual path:
-
-```sh
-npm install /path/to/florii-0.1.0.tgz
-```
-
-Once the owner publishes this package under an available name, registry installation can replace the local tarball step. React 18.2 or 19 is a peer dependency. This package ships ESM.
+Also works with `pnpm add florii`, `yarn add florii` and `bun add florii`. React 18.2 or 19 is a peer dependency. This package ships ESM.
 
 ## Usage
 

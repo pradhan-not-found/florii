@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Documentation",
+  title: "Docs",
   description:
     "Quickstart guide, installation options (npm, pnpm, yarn, bun), and complete props reference for florii React botanical components.",
   alternates: {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Documentation · florii",
-    description: "Install florii, import styles, and plant your first botanical React component.",
+    description: "Install florii, import the styles, and plant your first flower. Includes the full props reference.",
     url: "/docs/",
   },
 };

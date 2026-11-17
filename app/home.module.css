@@ -364,3 +364,17 @@
 .faqList details[open] summary::after { transform: rotate(45deg); }
 .faqList p { margin: -8px 0 24px !important; }
 .faqArt { display: block; margin-top: 36px; line-height: 0; }
+
+/* hero meadow: a lighter, shorter field on phones */
+.fieldPhone { display: none !important; }
+@media (max-width: 720px) {
+  .fieldWide { display: none !important; }
+  .fieldPhone { display: block !important; height: 210px !important; }
+  .hero { padding-bottom: 220px !important; }
+}
+
+/* install command: copy feedback */
+.copyIcon { display: inline-grid; place-items: center; animation: copy-pop .35s cubic-bezier(.3, 1.6, .5, 1); }
+.isCopied { border-color: rgba(31, 184, 102, .5) !important; }
+.isCopied .copyIcon { color: #1fb866; }
+@keyframes copy-pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }

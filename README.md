@@ -1,65 +1,119 @@
-# Florii
+<p align="center">
+  <img src=".github/assets/banner.svg" alt="florii — make the web bloom. Hand-painted flower components for React." width="100%" />
+</p>
 
-A botanical React component library with a Next.js catalog and playground. The interface uses a white background and peach typography. The application lives directly in this folder; the reusable package lives in `packages/florii/`.
+<p align="center">
+  <a href="https://www.npmjs.com/package/florii"><img alt="npm version" src="https://img.shields.io/npm/v/florii?style=flat-square&color=131316&labelColor=f4f4f2&label=npm" /></a>
+  <a href="https://www.npmjs.com/package/florii"><img alt="bundle size" src="https://img.shields.io/bundlephobia/minzip/florii?style=flat-square&color=131316&labelColor=f4f4f2&label=size" /></a>
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-131316?style=flat-square&labelColor=f4f4f2" /></a>
+  <a href="https://github.com/pradhan-not-found/florii/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/pradhan-not-found/florii?style=flat-square&color=131316&labelColor=f4f4f2" /></a>
+</p>
 
-Florii includes 20 original SVG botanicals, five decorative compositions, six animation presets, and TypeScript types. The package is in local development and is **not published to npm**. `florii` is a proposed package name, not a claim of registry availability.
+<p align="center">
+  <b>36 hand-painted botanicals and 7 decorations, as typed and animated SVG components for React.</b><br />
+  Recolor them, set them swaying, and plant them anywhere a page feels a little empty.
+</p>
 
-## Run the catalog
+<br />
 
-```sh
-npm install
-npm run dev
-```
-
-Open http://localhost:3000. Edit the catalog in `app/` and the library in `packages/florii/src/`.
-
-For a static production preview:
-
-```sh
-npm run build
-npm start
-```
-
-The Next.js export is written to `out/`. The local preview server uses http://127.0.0.1:3000; set `PORT` to change the port.
-
-## Build and install the library locally
+## 🌱 Install
 
 ```sh
-node packages/florii/build.mjs
-npm pack ./packages/florii
+npm install florii
 ```
 
-The build generates ESM JavaScript, TypeScript declarations, source maps, and CSS in `packages/florii/dist/`. Packing creates `florii-0.1.0.tgz` in the current directory. Install that tarball in another React app:
+<sub>Also works with <code>pnpm add florii</code>, <code>yarn add florii</code> and <code>bun add florii</code>. Needs React 18.2 or 19.</sub>
 
-```sh
-npm install /path/to/florii-0.1.0.tgz
-```
+## 🌷 Plant your first flower
 
-Then import a component and the shared stylesheet:
+Import the stylesheet once, in your root layout or entry file:
 
 ```tsx
 import "florii/styles.css";
-import { Daisy } from "florii";
+```
 
-export function Example() {
-  return <Daisy size={64} color="#c98264" animate="sway" speed={4} />;
+Then use any flower as a component:
+
+```tsx
+import { Tulip, Sunflower } from "florii";
+
+export function Hero() {
+  return (
+    <header>
+      <Tulip size={96} animate="sway" />
+      <h1>Spring collection</h1>
+      <Sunflower size={72} animate="bloom" color="#f5a623" />
+    </header>
+  );
 }
 ```
 
-In a Next.js App Router project, import the CSS once from `app/layout.tsx`. See [the package README](packages/florii/README.md) for the component API. Registry installation with `npm install florii` is a future step after the owner verifies the name and publishes; nothing here has been published automatically.
+Every flower is also available through one component, which is handy when the name comes from data:
 
-## Project links
+```tsx
+import { Botanical } from "florii";
 
-GitHub defaults to this project's repository, `https://github.com/pradhan-not-found/florii`, and the navbar reads its live star count. Override it or configure optional integrations in an untracked `.env.local` file:
-
-```dotenv
-NEXT_PUBLIC_GITHUB_URL=
-NEXT_PUBLIC_SPONSOR_URL=
-NEXT_PUBLIC_VISITOR_COUNTER_URL=
+<Botanical name="Hibiscus" size={120} animate="float" />;
 ```
 
-Set each to the actual public HTTPS URL when available, then restart the development server or rebuild the static site. Omit `NEXT_PUBLIC_GITHUB_URL` to use the default repository; an explicitly empty value disables the link. The optional visitor endpoint must allow browser requests and return a numeric `count`, `value`, or `data.up_count`. Until configured, the visitor total displays an unavailable dash. `config/project.ts` validates URLs. These variables are public configuration, so do not put secrets in them.
+## 🌼 The garden
 
-## Contributing and license
+<p align="center">
+  <img src=".github/assets/flowers.svg" alt="All 36 florii botanicals: daisy, tulip, rose, sunflower, poppy, cherry blossom, lotus, lavender, daffodil, cosmos, marigold, anemone, hibiscus, dahlia, peony, forget-me-not, plumeria, lily, bluebell, hydrangea, iris, camellia, zinnia, orchid, carnation, magnolia, pansy, protea, little leaf, fern, monstera, olive sprig, winding vine, butterfly, mushroom and lucky clover." width="100%" />
+</p>
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for local contribution steps and artwork requirements. Original source code and original botanical SVG art are covered by [MIT](LICENSE). Third-party assets, if retained in `public/`, keep their own licenses and credits; the root license does not relicense them. Self-hosted font licenses are in `public/fonts/`.
+## 🪴 Decorations
+
+<p align="center">
+  <img src=".github/assets/decorations.svg" alt="florii decorations: flower corner, divider, vine border, flower wreath and flower garland." width="100%" />
+</p>
+
+```tsx
+import { FlowerCorner, BotanicalDivider, VineBorder, FlowerWreath, FlowerGarland, Petals, LeafConfetti } from "florii";
+
+<BotanicalDivider size={420} />
+<FlowerCorner size={96} position="bottom-right" />
+<Petals size="100%" count={18} effect="falling" />
+```
+
+## 🎛 Props
+
+| Prop          | Type                                          | Default    | What it does                                          |
+| ------------- | --------------------------------------------- | ---------- | ----------------------------------------------------- |
+| `size`        | `number \| string`                            | `120`      | Width and height. Numbers are pixels.                 |
+| `color`       | `string`                                      | per flower | The main color. Any CSS color works.                  |
+| `secondaryColor` | `string`                                   | per flower | Centers, stems and leaves.                            |
+| `variant`     | `"doodle" \| "filled"`                        | `"doodle"` | Painted with a soft grain, or clean flat pastels.     |
+| `animate`     | `"none" \| "sway" \| "bloom" \| "float" \| "rotate" \| "pulse" \| "fall"` | `"none"` | A gentle CSS animation. |
+| `speed`       | `number`                                      | `4`        | Seconds per animation cycle.                          |
+| `interactive` | `boolean`                                     | `false`    | Animate only on hover or keyboard focus.              |
+| `title`       | `string`                                      | the name   | Accessible label. Pass `""` for purely decorative art. |
+
+## 🌻 Why florii
+
+- **Light.** No dependencies beyond React. Motion is plain CSS.
+- **Sharp.** Every flower is SVG, so it stays crisp at any size and on any screen.
+- **Yours.** One prop repaints a flower to match your brand.
+- **Kind.** All motion stops for visitors who prefer reduced motion, and every flower has an accessible label.
+- **Typed.** Full TypeScript declarations ship with the package.
+
+## 🐝 Contributing
+
+New flowers, gentler animations and small fixes are all welcome. Each botanical is original artwork drawn from simple SVG shapes on a 240 × 240 grid in [`packages/florii/src`](./packages/florii/src).
+
+```sh
+npm install
+npm run dev              # the website, at http://localhost:3000
+npm run package:build    # the library, into packages/florii/dist
+```
+
+Read the [contribution guide](./CONTRIBUTING.md), then open a pull request with a preview of your change. Ideas and bugs go in [issues](https://github.com/pradhan-not-found/florii/issues).
+
+## 🌸 License
+
+Code and artwork are released under the [MIT License](./LICENSE). Use them in personal and commercial work.
+
+<p align="center">
+  <br />
+  <sub>planted with care. the flowers did most of the work.</sub>
+</p>

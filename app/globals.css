@@ -494,3 +494,69 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 /* inner pages start below the navbar */
 .library-page,.docs-page{padding-top:124px !important}
 .prose{padding-top:132px !important}
+
+/* hand-drawn svg logo */
+.logo-art{display:inline-flex;align-items:center;color:var(--navy);line-height:0}
+.logo-art svg{display:block}
+
+/* neutral text: no blue */
+:root{--navy:#131316;--blue:#131316;--blue-hover:#2a2a30;--text:#44444d;--muted:#6b6b75}
+.logo-art{color:#131316}
+
+/* sunflower row reacts to the mouse */
+.sponsor-sunflowers{pointer-events:auto !important;z-index:1}
+
+/* sunflower grass runs edge to edge along the card bottom */
+.sponsor-sunflowers{width:100% !important;left:0 !important;right:0 !important;bottom:0 !important}
+
+/* flowers page head matches docs: title and subtitle stacked */
+.library-head{display:block !important}
+.library-head .search{margin-top:24px;width:min(420px,100%)}
+
+/* card actions: neat bordered icon buttons */
+.flower-actions{gap:6px !important}
+.flower-actions button{width:34px;height:34px;display:grid !important;place-items:center;padding:0 !important;border:1px solid #e9e9e6;border-radius:10px !important;color:#44444d !important;background:#fff}
+.flower-actions button:hover{background:#131316 !important;border-color:#131316;color:#fff !important}
+.library-page{padding-top:0 !important}
+.library-page>*:not(.library-head){width:min(1140px,100% - 48px);margin-inline:auto}
+
+/* sunflowers back to the left part of the card only */
+.sponsor-sunflowers{width:46% !important;right:auto !important}
+
+/* sunflower row at full brightness */
+.sponsor-sunflowers{opacity:1 !important}
+
+/* flower and decoration cards: clean meta row */
+.flower-meta{align-items:center !important;gap:12px !important}
+.flower-meta>div:first-child{min-width:0;flex:1}
+.flower-meta h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flower-meta p,.flower-meta code{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flower-actions{flex-shrink:0}
+.flower-actions button{width:32px !important;height:32px !important;border-radius:9px !important}
+.decorations .flower-art,.flower-art{display:flex;align-items:center;justify-content:center}
+
+/* art area engraved into the card */
+.flower-art{margin:10px 10px 0;border-radius:14px;background:#f6f6f4;box-shadow:inset 0 2px 6px rgba(19,19,22,.1),inset 0 -1px 0 rgba(255,255,255,.9);border-bottom:0 !important}
+
+/* search sits centred under the hero, inside the page width */
+.library-head .search{display:flex;margin:28px auto 0 !important;width:min(520px,calc(100% - 48px)) !important}
+/* hovering anywhere on a card sets its flower or decoration moving */
+.flower:hover .florii-botanical.florii--interactive,.flower:focus-within .florii-botanical.florii--interactive{animation-play-state:running !important}
+.flower:hover .florii-effect--interactive>.florii-particle,.flower:focus-within .florii-effect--interactive>.florii-particle{animation-play-state:running !important}
+
+/* one divider only on the flowers page */
+.library-page .toolbar{border-bottom:0 !important;padding-bottom:0 !important}
+
+/* flowers page controls: compact, no divider lines */
+.library-tabs{border-bottom:0 !important;margin-top:28px !important;gap:6px !important}
+.library-tabs button{padding:8px 14px !important;margin:0 !important;border:0 !important;border-radius:999px;font-size:14.5px !important}
+.library-tabs button[aria-selected="true"]{background:#131316;color:#fff !important}
+.library-tabs button[aria-selected="true"] span{background:rgba(255,255,255,.18);color:#fff}
+.library-page .toolbar{margin-top:14px !important;margin-bottom:18px !important}
+
+/* neutral lines everywhere: no blue tint */
+:root{--line:#e7e7e4;--soft:#f6f6f4}
+.flower{border-color:#e2e2df !important}
+.flower:hover{border-color:#131316 !important}
+.search{border-color:#e2e2df !important}
+.search:focus-within{border-color:#131316 !important}

@@ -2,40 +2,9 @@ import type { MetadataRoute } from "next";
 
 export const dynamic = "force-static";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://florii.dev";
-  const now = new Date();
+const site = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
-  return [
-    {
-      url: baseUrl,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/flowers/`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/docs/`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/about/`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/privacy/`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-  ];
+export default function sitemap(): MetadataRoute.Sitemap {
+  const now = new Date();
+  return ["/", "/flowers/", "/docs/", "/about/", "/privacy/"].map((path, index) => ({ url: site + path, lastModified: now, changeFrequency: "weekly", priority: index === 0 ? 1 : 0.7 }));
 }

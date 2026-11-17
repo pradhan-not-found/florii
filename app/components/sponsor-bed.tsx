@@ -44,7 +44,7 @@ export function SponsorBed() {
         <p className="sponsor-caption">the people and teams who keep florii growing.</p>
         <button className="btn btn-dark" onClick={open}>become a sponsor <Icon name="arrow" size={15} /></button>
       </div>
-      <div className="sponsor-sunflowers" aria-hidden="true"><Garden height={130} plants={5} density={0.3} heads={sunflowers} taper /></div>
+      <div className="sponsor-sunflowers" aria-hidden="true"><Garden height={130} plants={5} density={0.3} heads={sunflowers} /></div>
       <div className="sponsor-grid" role="group" aria-label="Sponsor plots">
         {Array.from({ length: 21 }, (_, index) => index < plots
           ? <button key={index} className="plot-cell plot-open" onClick={open} aria-label={"Sponsor plot " + (index + 1) + ", open checkout"}><span aria-hidden="true">+</span></button>
