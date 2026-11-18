@@ -1,9 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { supabasePatch } from "@/lib/supabase";
+import { MINUTE, guard } from "@/lib/guard";
 
 /** Confirms a payment really came from Razorpay by checking its signature with the secret key. */
 export async function POST(request: Request) {
+  const blocked = guard(request, "verify", { limit: 20, windowMs: 10 * MINUTE, sameOrigin: true, maxBytes: 2048 }); if (blocked) return blocked;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
   if (!keySecret) return NextResponse.json({ verified: false }, { status: 503 });
 

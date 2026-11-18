@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseInsert, supabasePatch } from "@/lib/supabase";
 import { SPONSOR_PRICES } from "@/lib/prices";
+import { MINUTE, guard } from "@/lib/guard";
 
 const clean = (value: unknown, max: number) => (typeof value === "string" ? value.trim().slice(0, max) : "");
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -10,6 +11,7 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  * checking out, not only those who paid. Only rows still in "created" can be changed from here.
  */
 export async function POST(request: Request) {
+  const blocked = guard(request, "lead", { limit: 30, windowMs: 10 * MINUTE, sameOrigin: true, maxBytes: 4096 }); if (blocked) return blocked;
   const origin = request.headers.get("origin"), host = request.headers.get("host");
   if (origin && host && new URL(origin).host !== host) return NextResponse.json({ error: "Blocked." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;

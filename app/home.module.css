@@ -375,8 +375,7 @@
 
 /* install command: copy feedback */
 .copyIcon { display: inline-grid; place-items: center; animation: copy-pop .35s cubic-bezier(.3, 1.6, .5, 1); }
-.isCopied { border-color: rgba(31, 184, 102, .5) !important; }
-.isCopied .copyIcon { color: #1fb866; }
+.isCopied { border-color: rgba(19, 19, 22, .28) !important; }
 @keyframes copy-pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 /* faq: a small field of white flowers on a soft sky */
@@ -434,3 +433,8 @@
   .end { padding-top: 84px !important; }
   .endGarden { margin-top: 56px !important; }
 }
+
+/* install command: copy icon and a quiet label, no green */
+.copyIcon { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; background: rgba(19, 19, 22, .06); color: #131316; font-size: 12.5px; font-weight: 500; }
+.copyLabel { min-width: 44px; text-align: left; }
+.installCommand:hover .copyIcon { background: rgba(19, 19, 22, .1); }

@@ -1171,3 +1171,30 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .co-address-row input+input{border-left:1px solid var(--field)}
 .co-address>input{border-top:0}
 .co-address input{min-width:0}
+
+/* docs: props reference */
+.props-card{padding:24px !important}
+.props-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:14px}
+.props-head h3{margin:0 !important;font-size:20px !important;font-weight:600 !important;letter-spacing:-.02em}
+.props-head p{margin:0;font-size:13.5px;color:#6b6b75}
+.props-list{margin:0;display:grid;border:1px solid #ececea;border-radius:14px;overflow:hidden}
+.props-list>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:14px;align-items:baseline;padding:12px 16px;border-top:1px solid #ececea;background:#fff}
+.props-list>div:first-child{border-top:0}
+.props-list dt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.props-list dt code{align-self:flex-start;padding:2px 8px;border-radius:6px;background:#f4f4f2;font-size:13px;font-weight:600;color:#131316}
+.props-list dt span{font-family:var(--mono,ui-monospace,monospace);font-size:12px;color:#8a8a93;overflow-wrap:anywhere}
+.props-list dd{margin:0;font-size:14px;line-height:1.5;color:#3d3d45}
+.props-card .note{display:block;margin-top:14px;font-size:13px;color:#6b6b75}
+@media (max-width:600px){.props-list>div{grid-template-columns:minmax(0,1fr);gap:6px}}
+
+/* gift: bouquet and letter share the stage evenly; stamps in a tidy grid; actions with room above */
+.gift-stage{padding:28px}
+.gift-preview.is-both{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;justify-items:center}
+.gift-preview.is-both .letter{width:100%;max-width:400px;margin:0}
+.gift-preview.is-both .gift-bouquet-wrap{width:100%;max-width:380px;min-height:340px}
+.gift-preview:not(.is-both){justify-content:center}
+.gift-side .gift-actions{margin-top:10px}
+.gift-note{margin-top:2px}
+.gift-stamps{display:grid !important;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.gift-stamps button{display:grid;place-items:center}
+@media (max-width:760px){.gift-preview.is-both{grid-template-columns:minmax(0,1fr)}.gift-stamps{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.gift-stage{padding:16px}}

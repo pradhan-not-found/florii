@@ -1,5 +1,6 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
+import { MINUTE, guard } from "@/lib/guard";
 
 /**
  * Returns a website's real icon: the one its page declares (icon, apple-touch-icon, SVG icon),
@@ -8,6 +9,16 @@ import { isIP } from "node:net";
 export const runtime = "nodejs";
 
 const MAX_PAGE = 300_000, MAX_ICON = 200_000, TIMEOUT = 4000;
+/** Icons already found, kept for a day so each site is fetched once, not on every page view. */
+const cache = new Map<string, { body: Uint8Array | null; type: string; at: number }>();
+const DAY = 86_400_000;
+const serve = (body: Uint8Array, type: string) => new Response(body as BodyInit, {
+  headers: {
+    "Content-Type": type, "Cache-Control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800",
+    // an SVG from another site is shown only as an image; this stops any script in it from running
+    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox", "X-Content-Type-Options": "nosniff",
+  },
+});
 const blank = () => new Response(null, { status: 204, headers: { "Cache-Control": "public, max-age=3600" } });
 
 function privateAddress(ip: string): boolean {
@@ -69,9 +80,14 @@ function declaredIcons(html: string, base: URL) {
 }
 
 export async function GET(request: Request) {
+  const blocked = guard(request, "favicon", { limit: 120, windowMs: 10 * MINUTE }); if (blocked) return blocked;
   const raw = new URL(request.url).searchParams.get("url") || "";
   let site: URL;
   try { site = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); } catch { return blank(); }
+
+  const known = cache.get(site.hostname);
+  if (known && Date.now() - known.at < DAY) return known.body ? serve(known.body, known.type) : blank();
+  if (cache.size > 500) cache.clear();
 
   const page = await get(new URL("/", site.origin), MAX_PAGE);
   const html = page && /html/i.test(page.type) ? new TextDecoder().decode(page.body) : "";
@@ -83,13 +99,9 @@ export async function GET(request: Request) {
     const isSvg = /svg/i.test(icon.type) || /\.svg(\?|$)/i.test(candidate.pathname);
     const type = isSvg ? "image/svg+xml" : /^image\//i.test(icon.type) ? icon.type.split(";")[0] : "image/x-icon";
     if (!isSvg && !/^image\//i.test(type)) continue;
-    return new Response(icon.body as BodyInit, {
-      headers: {
-        "Content-Type": type, "Cache-Control": "public, max-age=86400, s-maxage=604800",
-        // an SVG from another site is shown only as an image; this stops any script in it from running
-        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox", "X-Content-Type-Options": "nosniff",
-      },
-    });
+    cache.set(site.hostname, { body: icon.body, type, at: Date.now() });
+    return serve(icon.body, type);
   }
+  cache.set(site.hostname, { body: null, type: "", at: Date.now() });
   return blank();
 }

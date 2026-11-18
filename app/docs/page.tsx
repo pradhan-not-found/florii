@@ -58,19 +58,23 @@ export default function DocsPage() {
             </li>
           </ol>
           <div className="props-card" id="props">
-            <h3>make it yours.</h3>
-            <table>
-              <thead><tr><th scope="col">prop</th><th scope="col">type</th><th scope="col">what it does</th></tr></thead>
-              <tbody>
-                <tr><td><code>variant</code></td><td><code>&quot;doodle&quot; | &quot;filled&quot;</code></td><td>Painted, vivid look (default) or clean flat pastels.</td></tr>
-                <tr><td><code>color</code></td><td><code>string</code></td><td>Main color.</td></tr>
-                <tr><td><code>size</code></td><td><code>number | string</code></td><td>Width and height. Default 120.</td></tr>
-                <tr><td><code>animate</code></td><td><code>&quot;sway&quot; | &quot;bloom&quot; | …</code></td><td>bloom, sway, float, rotate, pulse, fall.</td></tr>
-                <tr><td><code>speed</code></td><td><code>number</code></td><td>Seconds per animation cycle.</td></tr>
-                <tr><td><code>interactive</code></td><td><code>boolean</code></td><td>Animate only on hover or focus.</td></tr>
-              </tbody>
-            </table>
-            <p className="note"><Icon name="check" size={13} /> Respects reduced-motion preferences.</p>
+            <div className="props-head"><h3>Make it yours</h3><p>Every flower and decoration takes the same props.</p></div>
+            <dl className="props-list">
+              {([
+                ["variant", '"doodle" | "filled"', "Painted and vivid (default), or clean flat pastels."],
+                ["color", "string", "Main colour. Any CSS colour."],
+                ["secondaryColor", "string", "Accent colour for centres, leaves and stems."],
+                ["size", "number | string", "Width and height. Default 120."],
+                ["animate", '"bloom" | "sway" | "float" | …', "bloom, sway, float, rotate, pulse or fall."],
+                ["speed", "number", "Seconds per animation cycle. Default 4."],
+                ["interactive", "boolean", "Animate only on hover or keyboard focus."],
+                ["title", "string", "Accessible name. Pass \"\" for decorative art."],
+              ] as const).map(([name, type, text]) => <div key={name}>
+                <dt><code>{name}</code><span>{type}</span></dt>
+                <dd>{text}</dd>
+              </div>)}
+            </dl>
+            <p className="note">Motion stops automatically for people who prefer reduced motion.</p>
           </div>
         </div>
       </section>

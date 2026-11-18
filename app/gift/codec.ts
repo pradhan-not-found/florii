@@ -10,7 +10,7 @@ export type Gift = { mode: Mode; flowers: BotanicalName[]; wrap: string; sprig: 
 
 export const MAX_BOUQUET = 15, MAX_SPRIG = 3, MAX_MESSAGE = 1000, MAX_NAME = 40;
 export const WRAP_IDS = ["none", "kraft", "blush", "cream", "sage", "sky"];
-export const STAMP_IDS = ["rose", "sun", "sky", "lilac", "meadow"];
+export const STAMP_IDS = ["rose", "sun", "sky", "lilac", "meadow", "poppy", "blossom", "hibiscus", "tulip", "lotus"];
 export const choices = botanicalCatalog.filter(item => item.category === "flower").map(item => item.id);
 
 const toBase64 = (text: string) => typeof window === "undefined" ? Buffer.from(text, "utf8").toString("base64") : btoa(unescape(encodeURIComponent(text)));

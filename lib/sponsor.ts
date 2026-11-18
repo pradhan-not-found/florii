@@ -31,7 +31,7 @@ export const noteOf = (s: SponsorInput) => [`Name: ${s.name}`, s.phone && `Phone
 /**
  * Records the checkout against the gateway reference (an order id, or a QR code id for UPI).
  * Attaches to the row saved when the sponsor filled the form, or creates one. Contact fields have
- * their own columns once supabase/schema.sql is re-run; until then they are kept in the note.
+ * their own columns once the database has them; until then they are kept in the note.
  */
 export async function saveCheckout(s: SponsorInput, reference: string) {
   const base = { product: s.product, link: s.link, description: s.description, email: s.email, note: noteOf(s), amount: s.amount, currency: s.currency, razorpay_order_id: reference, status: "created" };

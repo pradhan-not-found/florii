@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { gatewayAuth, markPaid, readSponsor, saveCheckout } from "@/lib/sponsor";
+import { MINUTE, guard } from "@/lib/guard";
 
 /**
  * UPI on florii's own page: the server creates a single-use QR code for the exact amount, the page
@@ -9,6 +10,7 @@ export const runtime = "nodejs";
 const API = "https://api.razorpay.com/v1/payments/qr_codes";
 
 export async function POST(request: Request) {
+  const blocked = guard(request, "upi", { limit: 10, windowMs: 10 * MINUTE, sameOrigin: true, maxBytes: 4096 }); if (blocked) return blocked;
   const auth = gatewayAuth();
   if (!auth) return NextResponse.json({ error: "Payments are not set up yet." }, { status: 503 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
@@ -36,6 +38,7 @@ export async function POST(request: Request) {
 
 /** Has this QR code been paid? Checked against the gateway itself, so the answer can be trusted. */
 export async function GET(request: Request) {
+  const blocked = guard(request, "upi-check", { limit: 400, windowMs: 10 * MINUTE }); if (blocked) return blocked;
   const auth = gatewayAuth();
   const id = new URL(request.url).searchParams.get("id") || "";
   if (!auth || !/^qr_[A-Za-z0-9]+$/.test(id)) return NextResponse.json({ paid: false }, { status: 400 });

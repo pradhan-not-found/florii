@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { gatewayAuth, readSponsor, saveCheckout } from "@/lib/sponsor";
+import { MINUTE, guard } from "@/lib/guard";
 
 /** Creates a card payment order for a sponsor spot. The secret key never leaves the server. */
 export async function POST(request: Request) {
+  const blocked = guard(request, "order", { limit: 12, windowMs: 10 * MINUTE, sameOrigin: true, maxBytes: 4096 }); if (blocked) return blocked;
   const auth = gatewayAuth();
   if (!auth) return NextResponse.json({ error: "Payments are not set up yet." }, { status: 503 });
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyticsKey, analyticsRedis, recordVisit, retentionSeconds } from "@/lib/analytics";
 import { supabaseCount, supabaseInsert, supabaseReady } from "@/lib/supabase";
+import { MINUTE, guard } from "@/lib/guard";
 
 /**
  * The visitor counter. Uses Upstash Redis when it is connected, otherwise the florii_visits table in
@@ -30,6 +31,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const blocked = guard(request, "visit", { limit: 120, windowMs: 10 * MINUTE }); if (blocked) return blocked;
   if (request.headers.get("origin") !== request.nextUrl.origin) return json({ error: "Invalid origin" }, 403);
   if (request.headers.get("dnt") === "1" || request.headers.get("sec-gpc") === "1") return new NextResponse(null, { status: 204 });
   if (!request.headers.get("content-type")?.startsWith("application/json")) return json({ error: "Expected JSON" }, 415);
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
   const device = /ipad|tablet/i.test(agent) ? "tablet" : /mobi|android|iphone/i.test(agent) ? "mobile" : "desktop";
   const country = request.headers.get("x-vercel-ip-country") || null;
   const row = { path, referrer, device, country, visitor: data.visitorId };
-  // first_visit needs one extra column (see supabase/schema.sql); without it the view is still recorded
+  // first_visit needs one extra column (an optional extra column); without it the view is still recorded
   if (!(await supabaseInsert("florii_visits", { ...row, first_visit: data.first === true }))) await supabaseInsert("florii_visits", row);
   return json({ count: await supabaseVisitors() });
 }

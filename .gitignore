@@ -13,3 +13,6 @@ packages/florii/dist/
 .openai/*
 !.openai/hosting.json
 next-env.d.ts
+
+# database setup scripts stay private
+supabase/

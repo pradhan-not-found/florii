@@ -15,6 +15,11 @@ const stamps = [
   { id: "sky", flower: "ForgetMeNot" as BotanicalName, paper: "#e2f0ff", ink: "#2f6fb5", label: "forget-me-not", value: "10" },
   { id: "lilac", flower: "Lavender" as BotanicalName, paper: "#efe7ff", ink: "#6a4bb8", label: "lavender", value: "60" },
   { id: "meadow", flower: "Daisy" as BotanicalName, paper: "#e7f5e1", ink: "#3f7d3a", label: "daisy", value: "15" },
+  { id: "poppy", flower: "Poppy" as BotanicalName, paper: "#ffe8e0", ink: "#c2492b", label: "poppy", value: "30" },
+  { id: "blossom", flower: "CherryBlossom" as BotanicalName, paper: "#fdeef3", ink: "#b8527a", label: "cherry blossom", value: "50" },
+  { id: "hibiscus", flower: "Hibiscus" as BotanicalName, paper: "#fff0e6", ink: "#c0392b", label: "hibiscus", value: "75" },
+  { id: "tulip", flower: "Tulip" as BotanicalName, paper: "#fff4e5", ink: "#b45f06", label: "tulip", value: "20" },
+  { id: "lotus", flower: "Lotus" as BotanicalName, paper: "#f1eefc", ink: "#5b4bb8", label: "lotus", value: "90" },
 ];
 const empty: Gift = { mode: "both", flowers: [], wrap: "kraft", sprig: [], stamp: "rose", to: "", message: "", from: "" };
 
