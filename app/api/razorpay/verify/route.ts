@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { supabaseUpdate } from "@/lib/supabase";
+import { supabasePatch } from "@/lib/supabase";
 
 /** Confirms a payment really came from Razorpay by checking its signature with the secret key. */
 export async function POST(request: Request) {
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
   const expected = createHmac("sha256", keySecret).update(`${orderId}|${paymentId}`).digest("hex");
   const a = Buffer.from(expected), b = Buffer.from(signature);
   const verified = a.length === b.length && timingSafeEqual(a, b);
-  if (verified) await supabaseUpdate("florii_sponsors", "razorpay_order_id", orderId, { status: "paid", razorpay_payment_id: paymentId, paid_at: new Date().toISOString() });
+  // the webhook may have recorded it already; only move rows that are still waiting
+  if (verified) await supabasePatch("florii_sponsors", `razorpay_order_id=eq.${encodeURIComponent(orderId)}&status=in.(created,failed)`, { status: "paid", razorpay_payment_id: paymentId, paid_at: new Date().toISOString() });
   return NextResponse.json({ verified, paymentId: verified ? paymentId : undefined }, { status: verified ? 200 : 400 });
 }
