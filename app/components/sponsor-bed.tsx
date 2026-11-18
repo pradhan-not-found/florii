@@ -1,18 +1,30 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { projectLinks } from "@/config/project";
 import { Icon } from "./icons";
-import { SponsorForm, saveSponsorDetails } from "../sponsor/checkout";
+import { Favicon, SponsorForm, saveSponsorDetails } from "../sponsor/checkout";
 import { Garden } from "./garden";
 
 const sunflowers = ["Sunflower" as const];
 const plots = 6;
+const cells = 21;
+type Sponsor = { name: string; link: string };
 
 /** Sponsor garden: a meadow with open plots at its centre. Each plot takes a logo and opens checkout. */
 export function SponsorBed() {
   const dialog = useRef<HTMLDialogElement>(null);
   const open = () => dialog.current?.showModal();
+  // paid sponsors appear here on their own, a few seconds after the payment goes through
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  useEffect(() => {
+    const load = () => fetch("/api/sponsors").then(r => r.ok ? r.json() : null).then(data => { if (Array.isArray(data?.sponsors)) setSponsors(data.sponsors); }).catch(() => {});
+    load();
+    const timer = window.setInterval(() => { if (document.visibilityState === "visible") load(); }, 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const taken = sponsors.slice(0, cells - 1);
+  const openPlots = Math.min(cells - taken.length, Math.max(1, plots - taken.length));
 
   return <section className="container section" id="sponsors" aria-labelledby="sponsors-title">
     <div className="sponsor-card">
@@ -23,9 +35,15 @@ export function SponsorBed() {
       </div>
       <div className="sponsor-sunflowers" aria-hidden="true"><Garden height={130} plants={5} density={0.3} heads={sunflowers} taper /></div>
       <div className="sponsor-grid" role="group" aria-label="Sponsor plots">
-        {Array.from({ length: 21 }, (_, index) => index < plots
-          ? <button key={index} className="plot-cell plot-open" onClick={open} aria-label={"Sponsor plot " + (index + 1) + ", open checkout"}><span aria-hidden="true">+</span></button>
-          : <span key={index} className="plot-cell plot-empty" aria-hidden="true" />)}
+        {taken.map(sponsor => {
+          const face = <><Favicon link={sponsor.link} size={28} /><span className="plot-initial" aria-hidden="true">{sponsor.name.charAt(0).toUpperCase()}</span><span className="plot-name">{sponsor.name}</span></>;
+          return sponsor.link
+            ? <a key={sponsor.name + sponsor.link} className="plot-cell plot-taken" href={sponsor.link} target="_blank" rel="sponsored noopener noreferrer" aria-label={sponsor.name}>{face}</a>
+            : <span key={sponsor.name} className="plot-cell plot-taken" aria-label={sponsor.name}>{face}</span>;
+        })}
+        {Array.from({ length: cells - taken.length }, (_, index) => index < openPlots
+          ? <button key={"open" + index} className="plot-cell plot-open" onClick={open} aria-label={"Sponsor plot " + (taken.length + index + 1) + ", open checkout"}><span aria-hidden="true">+</span></button>
+          : <span key={"empty" + index} className="plot-cell plot-empty" aria-hidden="true" />)}
       </div>
     </div>
 

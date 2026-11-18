@@ -32,6 +32,15 @@ export async function supabaseUpdate(table: string, column: string, value: strin
   } catch (error) { console.error("supabase update error", table, error); return false; }
 }
 
+/** Reads rows with a PostgREST query (e.g. "select=a,b&status=eq.x"). Returns [] on any failure. */
+export async function supabaseSelect<T>(table: string, query: string): Promise<T[]> {
+  if (!supabaseReady()) return [];
+  try {
+    const response = await fetch(`${url()}/rest/v1/${table}?${query}`, { headers: headers(), cache: "no-store" });
+    return response.ok ? await response.json() as T[] : [];
+  } catch { return []; }
+}
+
 /** Counts rows in a table (uses the exact count header). */
 export async function supabaseCount(table: string, filter = ""): Promise<number | null> {
   if (!supabaseReady()) return null;

@@ -1,7 +1,21 @@
 {
   "name": "florii",
-  "version": "0.1.1",
-  "description": "Original botanical React components, decorative flowers, and gentle CSS animations.",
+  "version": "0.1.2",
+  "description": "36 hand-painted flower and leaf SVG components for React, with seven decorations and gentle CSS animations. Typed, tree-shakeable, no dependencies.",
+  "author": "pradhan-not-found",
+  "homepage": "https://floriii.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pradhan-not-found/florii.git",
+    "directory": "packages/florii"
+  },
+  "bugs": {
+    "url": "https://github.com/pradhan-not-found/florii/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://floriii.vercel.app/#sponsors"
+  },
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -16,8 +30,15 @@
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
-  "files": ["dist", "src", "LICENSE", "README.md"],
-  "sideEffects": ["**/*.css"],
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -31,5 +52,24 @@
     "react": "^19.0.0",
     "typescript": "^5.0.0"
   },
-  "keywords": ["react", "botanical", "flowers", "svg", "animation", "components"]
+  "keywords": [
+    "react",
+    "react-components",
+    "flowers",
+    "botanical",
+    "floral",
+    "svg",
+    "svg-icons",
+    "illustrations",
+    "decorations",
+    "animation",
+    "css-animation",
+    "nextjs",
+    "typescript",
+    "ui",
+    "design"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
 }

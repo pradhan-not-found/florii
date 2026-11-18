@@ -43,9 +43,12 @@ export async function saveCheckout(s: SponsorInput, reference: string) {
   if (!(await save(full))) await save(base);
 }
 
+/** A paid sponsor goes straight onto the site; the dashboard can still take it off or reject it. */
+export const PAID = () => ({ status: "featured", featured: true, paid_at: new Date().toISOString() });
+
 /** Marks a checkout paid (from the gateway's own records, never from the page alone). */
 export function markPaid(reference: string, paymentId: string, extra: Record<string, unknown> = {}) {
-  return supabasePatch("florii_sponsors", `razorpay_order_id=eq.${encodeURIComponent(reference)}&status=in.(created,failed)`, { status: "paid", razorpay_payment_id: paymentId, paid_at: new Date().toISOString(), ...extra });
+  return supabasePatch("florii_sponsors", `razorpay_order_id=eq.${encodeURIComponent(reference)}&status=in.(created,failed)`, { ...PAID(), razorpay_payment_id: paymentId, ...extra });
 }
 
 export const gatewayAuth = () => {

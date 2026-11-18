@@ -1293,3 +1293,12 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 @keyframes count-lift{from{opacity:0;transform:translateY(.6em);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes count-wait{to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.live-count.is-new,.live-count-wait{animation:none}}
+
+/* sponsor plots taken by paid sponsors: their site icon, with the name on hover */
+.plot-taken{position:relative;background:#fff;box-shadow:0 0 0 1px #ececea,0 4px 12px -8px rgba(19,19,22,.3);text-decoration:none;transition:box-shadow .2s ease}
+.plot-taken:hover,.plot-taken:focus-visible{box-shadow:0 0 0 1px #d8d8d4,0 8px 18px -10px rgba(19,19,22,.35);outline:none}
+.plot-taken .favicon{width:44%;height:44%;border-radius:6px;object-fit:contain}
+.plot-initial{position:absolute;font-size:18px;font-weight:600;color:#131316}
+.plot-taken .favicon.is-loaded+.plot-initial{display:none}
+.plot-name{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,4px);padding:4px 10px;border-radius:999px;background:#131316;color:#fff;font-size:12px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:2}
+.plot-taken:hover .plot-name,.plot-taken:focus-visible .plot-name{opacity:1;transform:translate(-50%,0)}

@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { supabasePatch } from "@/lib/supabase";
+import { PAID } from "@/lib/sponsor";
 
 /**
  * Payment events sent by the payment gateway, server to server. This is what marks a sponsor as paid
@@ -31,14 +32,14 @@ export async function POST(request: Request) {
     case "payment.captured":
     case "order.paid":
       if (orderId && payment?.id) await supabasePatch("florii_sponsors", `razorpay_order_id=eq.${orderId}&status=in.(created,failed)`, {
-        status: "paid", razorpay_payment_id: payment.id, paid_at: new Date().toISOString(),
+        ...PAID(), razorpay_payment_id: payment.id,
         ...(payment.amount ? { amount: payment.amount } : {}), ...(payment.currency ? { currency: payment.currency } : {}),
       });
       break;
     case "qr_code.credited": {
       // a UPI payment to one of our single-use QR codes (the QR id is stored as the reference)
       const qrId = encodeURIComponent(event.payload?.qr_code?.entity?.id || "");
-      if (qrId && payment?.id) await supabasePatch("florii_sponsors", `razorpay_order_id=eq.${qrId}&status=in.(created,failed)`, { status: "paid", razorpay_payment_id: payment.id, paid_at: new Date().toISOString(), ...(payment.amount ? { amount: payment.amount } : {}) });
+      if (qrId && payment?.id) await supabasePatch("florii_sponsors", `razorpay_order_id=eq.${qrId}&status=in.(created,failed)`, { ...PAID(), razorpay_payment_id: payment.id, ...(payment.amount ? { amount: payment.amount } : {}) });
       break;
     }
     case "payment.failed":
