@@ -4,9 +4,11 @@ import { SponsorBed } from "./components/sponsor-bed";
 import { Bento } from "./components/landing-sections";
 import { End, Faq, Hero, Statement, Steps, Uses } from "./components/home";
 import s from "./home.module.css";
+import { JsonLd, faqPage } from "@/lib/seo";
 
 export default function Home() {
   return <>
+    <JsonLd data={faqPage()} />
     <SiteHeader />
     <main className={s.page}>
       <Hero />

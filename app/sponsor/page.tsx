@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd, breadcrumbs } from "@/lib/seo";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 import { SponsorCheckout } from "./checkout";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 
 export default function SponsorPage() {
   return <>
+    <JsonLd data={breadcrumbs("Sponsor", "/sponsor")} />
     <SiteHeader />
     <main className="pay-page">
       <section className="pay-hero">

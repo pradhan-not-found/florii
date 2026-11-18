@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd, breadcrumbs, flowerList } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Flowers",
@@ -16,6 +17,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function FlowersLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <>
+    <JsonLd data={breadcrumbs("Flowers", "/flowers")} />
+    <JsonLd data={flowerList()} />
+    {children}
+  </>;
 }

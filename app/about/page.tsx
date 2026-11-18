@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd, breadcrumbs } from "@/lib/seo";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return <>
+    <JsonLd data={breadcrumbs("About", "/about")} />
     <SiteHeader />
     <main className="container prose">
       <h1>About the Design</h1>

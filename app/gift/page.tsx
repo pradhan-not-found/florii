@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd, breadcrumbs } from "@/lib/seo";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 import { GiftMaker } from "./gift-maker";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 
 export default function GiftPage() {
   return <>
+    <JsonLd data={breadcrumbs("Send a bouquet", "/gift")} />
     <SiteHeader />
     <main className="gift-page">
       <section className="gift-hero">
