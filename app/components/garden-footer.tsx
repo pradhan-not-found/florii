@@ -29,7 +29,9 @@ const columns: { title: string; links: FooterLink[] }[] = [
   ] },
   { title: "Legal", links: [
     { label: "Privacy Policy", href: "/privacy" },
-    { label: "About the Design", href: "/about" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Refund Policy", href: "/refunds" },
+    { label: "Contact", href: "/contact" },
     { label: "MIT License", href: onGithub("/blob/main/LICENSE") || "/about#license", external: Boolean(github) },
   ] },
 ];

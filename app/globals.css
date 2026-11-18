@@ -795,3 +795,132 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 
 .shelf-holder{margin-top:auto}
 .lazy-mount>*{animation:garden-in .5s ease both}
+
+/* florii checkout: payment methods and the UPI QR */
+.pay-methods{display:grid;gap:8px}
+.pay-method{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:1.5px solid #ececea;border-radius:16px;background:#fff;text-align:left;transition:border-color .15s,background .15s}
+.pay-method:hover{border-color:#c9c9c4}
+.pay-method[aria-checked="true"]{border-color:#131316;background:#fafaf8}
+.pay-method-icon{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#f2f2ef;color:#131316}
+.pay-method[aria-checked="true"] .pay-method-icon{background:#131316;color:#fff}
+.pay-method-text{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.pay-method-text b{font-size:15.5px;font-weight:600;color:#131316}
+.pay-method-text small{font-size:13px;color:#8a8a93}
+.pay-method-price{font-size:15.5px;font-weight:600;color:#131316;font-variant-numeric:tabular-nums}
+.pay-phone{margin-top:0}
+.qr-panel{display:flex;flex-direction:column;align-items:center;gap:14px;padding:22px 18px;border:1px solid #ececea;border-radius:20px;background:linear-gradient(#fafaf8,#fff)}
+.qr-top{display:flex;align-items:baseline;justify-content:space-between;width:100%}
+.qr-top strong{font-size:22px;font-weight:600;color:#131316;font-variant-numeric:tabular-nums}
+.qr-frame{position:relative;width:224px;height:224px;padding:14px;border-radius:20px;background:#fff;box-shadow:0 0 0 1px #ececea,0 20px 40px -26px rgba(19,19,22,.4)}
+.qr-code{display:block;width:100%;height:100%}
+.qr-code svg{display:block;width:100%;height:100%}
+.qr-wait{border-radius:10px;background:linear-gradient(110deg,#f2f2ef 30%,#fafaf8 50%,#f2f2ef 70%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+.qr-mark{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:14px;background:#fff;box-shadow:0 0 0 4px #fff}
+.qr-hint{font-size:14px;color:#55555f;text-align:center}
+.qr-apps{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.qr-apps span{padding:4px 10px;border-radius:999px;background:#f2f2ef;font-size:12px;font-weight:500;color:#55555f}
+.qr-open{display:none !important}
+.qr-status{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#55555f;font-variant-numeric:tabular-nums}
+.qr-pulse{width:8px;height:8px;border-radius:999px;background:#16a34a;box-shadow:0 0 0 0 rgba(22,163,74,.5);animation:qr-pulse 1.6s ease-out infinite}
+.qr-cancel{margin-top:-4px}
+@keyframes qr-pulse{to{box-shadow:0 0 0 10px rgba(22,163,74,0)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media (hover:none) and (pointer:coarse){.qr-open{display:inline-flex !important}}
+@media (prefers-reduced-motion:reduce){.qr-pulse,.qr-wait{animation:none}}
+
+/* checkout: a dedicated two-column page, order left and payment right */
+.co-page{min-height:100dvh;background:#fff}
+.co{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:100dvh;font-size:15px;color:#131316}
+.co-order{position:relative;overflow:hidden;display:flex;justify-content:flex-end;padding:64px 64px 220px;background:#f7f7f5;border-right:1px solid #ececea}
+.co-order-inner{width:min(460px,100%);display:flex;flex-direction:column;gap:28px}
+.co-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.co-logo{color:#131316;display:inline-flex}
+.co-currency{position:relative;display:inline-flex;align-items:center}
+.co-currency select{appearance:none;height:40px;padding:0 38px 0 16px;border:1px solid #e4e4e0;border-radius:12px;background:#fff;font:inherit;font-size:14.5px;font-weight:500;color:#131316;cursor:pointer;outline:0}
+.co-currency select:focus-visible{border-color:#131316}
+.co-currency svg{position:absolute;right:12px;pointer-events:none;color:#55555f}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.co-item{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:16px;align-items:start}
+.co-item-art{display:grid;place-items:center;width:72px;height:72px;border-radius:18px;background:linear-gradient(160deg,#fff4cf,#ffe6a8);box-shadow:inset 0 0 0 1px rgba(19,19,22,.05)}
+.co-item-text b{display:block;font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+.co-item-text p{margin-top:4px;font-size:14.5px;line-height:1.45;color:#6b6b75}
+.co-item strong{font-size:16.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.co-details{padding-top:22px;border-top:1px solid #e7e7e3}
+.co-details-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;font-weight:600;color:#55555f}
+.co-details dl{margin:0;display:grid;gap:8px}
+.co-details dl div{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;font-size:14.5px}
+.co-details dt{color:#8a8a93}
+.co-details dd{margin:0;overflow-wrap:anywhere}
+.co-link{font-size:13.5px;font-weight:500;color:#131316;text-decoration:underline;text-decoration-color:#c9c9c4;text-underline-offset:3px}
+.co-link:hover{text-decoration-color:#131316}
+.co-lines{display:grid;gap:14px;padding-top:22px;border-top:1px solid #e7e7e3;font-size:15px;color:#55555f}
+.co-lines div{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.co-total{color:#131316;font-weight:500}
+.co-total strong{font-size:18px;font-weight:600}
+.co-garden{position:absolute;left:0;right:0;bottom:0;height:150px;pointer-events:none;opacity:.95}
+.co-garden span{position:absolute}
+.co-pay{display:flex;justify-content:flex-start;padding:64px 64px 48px;background:#fff}
+.co-pay-inner{width:min(460px,100%);display:flex;flex-direction:column;gap:18px}
+.co-title{font-size:24px;font-weight:600;letter-spacing:-.025em;line-height:1.25}
+.co-sub{margin-top:-10px;font-size:14.5px;color:#6b6b75}
+.co-label{margin-top:6px;font-size:15px;font-weight:600}
+.co-field-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.co-field{display:flex;flex-direction:column;gap:7px;font-size:14px;font-weight:500;color:#3d3d45}
+.co-field i{font-style:normal;color:#dc2626}
+.co-field em{font-style:normal;font-weight:400;color:#8a8a93}
+.co-field input,.co-phone{height:48px;border:1px solid #e4e4e0;border-radius:12px;background:#fff;font:inherit;font-size:15px;color:#131316;outline:0;transition:border-color .15s,box-shadow .15s}
+.co-field input{padding:0 14px}
+.co-field input[readonly]{background:#f7f7f5;color:#55555f}
+.co-field input:focus,.co-phone:focus-within{border-color:#131316;box-shadow:0 0 0 3px rgba(19,19,22,.06)}
+.co-phone{display:flex;align-items:center;overflow:hidden}
+.co-phone b{display:grid;place-items:center;height:100%;padding:0 12px;border-right:1px solid #e4e4e0;background:#fafaf8;font-weight:500;color:#55555f}
+.co-phone input{flex:1;min-width:0;height:100%;border:0 !important;box-shadow:none !important;border-radius:0}
+.co .pay-method{padding:14px 16px;border-radius:14px}
+.pay-method-radio{flex-shrink:0;width:18px;height:18px;border-radius:999px;border:1.5px solid #c9c9c4;transition:border .15s}
+.pay-method[aria-checked="true"] .pay-method-radio{border:5px solid #131316}
+.co .pay-method-icon{width:34px;height:34px;border-radius:10px;background:#f2f2ef;color:#55555f}
+.co .pay-method[aria-checked="true"] .pay-method-icon{background:#f2f2ef;color:#131316}
+.co-pay-btn,.co-continue{display:inline-flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:6px;border-radius:14px !important;background:#131316;color:#fff;font-size:16px !important;font-weight:500;letter-spacing:-.01em;transition:opacity .15s}
+.co-pay-btn:hover{opacity:.9}
+.co-pay-btn:disabled{opacity:.55;cursor:wait}
+.co-pay-ghost{background:#fff;color:#131316;box-shadow:inset 0 0 0 1px #e4e4e0}
+.co-foot{display:flex;align-items:flex-start;justify-content:center;gap:7px;margin-top:8px;font-size:13px;line-height:1.5;color:#6b6b75;text-align:center}
+.co-foot svg{flex-shrink:0;margin-top:3px}
+.co-legal{display:flex;justify-content:center;gap:16px;margin-top:-6px;font-size:13px}
+.co-legal a{color:#8a8a93;text-decoration:none}
+.co-legal a:hover{color:#131316}
+.co-done{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.co-done h1{font-size:28px;font-weight:600;letter-spacing:-.03em}
+.co-done p{color:#55555f}
+.co-ref code{font-family:var(--mono);font-size:13px;color:#131316}
+.co-loading{height:360px;border-radius:16px;background:linear-gradient(110deg,#f4f4f2 30%,#fafaf8 50%,#f4f4f2 70%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+.co .sponsor-form .pay-fields{gap:16px}
+.co .pay-fields input,.co .pay-fields textarea{border-radius:12px;border-color:#e4e4e0;font-size:15px}
+.co .pay-label{font-size:14px;font-weight:500;color:#3d3d45}
+.co .qr-panel{padding:0;border:0;background:none;align-items:center}
+.co .qr-top{align-items:center}
+@media (max-width:900px){
+  .co{grid-template-columns:minmax(0,1fr)}
+  .co-order{justify-content:center;padding:28px 20px 150px;border-right:0;border-bottom:1px solid #ececea}
+  .co-order-inner{gap:22px}
+  .co-garden{height:120px}
+  .co-garden span{transform:scale(.8);transform-origin:bottom center}
+  .co-pay{justify-content:center;padding:28px 20px 40px}
+  .co-field-row{grid-template-columns:minmax(0,1fr)}
+}
+
+/* checkout fits one screen: no page scrollbar; each side scrolls quietly only if the window is very short */
+.co-page{height:100dvh;overflow:hidden}
+.co{height:100dvh;min-height:0}
+.co-order,.co-pay{overflow-y:auto;scrollbar-width:none}
+.co-order::-webkit-scrollbar,.co-pay::-webkit-scrollbar{display:none}
+.co-order{padding-top:clamp(28px,7vh,64px);padding-bottom:clamp(120px,22vh,200px)}
+.co-pay{padding-top:clamp(28px,7vh,64px);padding-bottom:32px}
+.co .pay-label{display:block}
+.co .pay-label::first-letter{text-transform:uppercase}
+@media (max-height:760px) and (min-width:901px){.co-order-inner{gap:20px}.co-pay-inner{gap:14px}.co .pay-fields textarea{min-height:64px}.co-garden{height:110px}.co-garden span{transform:scale(.8);transform-origin:bottom center}}
+@media (max-width:900px){.co-page{height:auto;overflow:visible}.co{height:auto}.co-order,.co-pay{overflow:visible}}
+
+.co-field-row{grid-template-columns:minmax(0,1fr) !important}
+.co-legal{flex-wrap:wrap;gap:6px 18px}
+.prose-meta{margin-top:28px;font-size:13.5px;color:#8a8a93}
