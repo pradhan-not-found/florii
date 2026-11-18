@@ -252,9 +252,15 @@ export function SponsorCheckout() {
     if (phone.trim() && !isValidPhoneNumber(phone, country)) { fail(`That doesn't look like a ${countryName(country)} phone number.`); return; }
     if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
     setStatus("working"); setMessage("");
+    await openSecureWindow("card");
+  }
+
+  /** The secure payment window on this page, limited to one way of paying: cards, or UPI (a QR on computers, the UPI apps on phones). */
+  async function openSecureWindow(kind: Method) {
+    if (!details) return;
     try {
       if (!(await loadHosted()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "card", { name: name.trim(), phone: dial(phone), country: countryName(region), address: fullAddress, amount });
+      const order = await createOrder(details, kind, { name: name.trim(), phone: dial(phone), country: countryName(region), address: fullAddress, amount });
       const checkout = new window.Razorpay({
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
@@ -265,7 +271,9 @@ export function SponsorCheckout() {
         hidden: { email: true, ...(phone.trim() ? { contact: true } : {}) },
         remember_customer: false,
         theme: { color: "#131316", backdrop_color: "rgba(255,255,255,.92)" },
-        config: { display: { blocks: { card: { name: "Pay by card", instruments: [{ method: "card" }] } }, sequence: ["block.card"], preferences: { show_default_blocks: false } } },
+        config: kind === "upi"
+          ? { display: { blocks: { upi: { name: "Pay by UPI", instruments: [{ method: "upi" }] } }, sequence: ["block.upi"], preferences: { show_default_blocks: false } } }
+          : { display: { blocks: { card: { name: "Pay by card", instruments: [{ method: "card" }] } }, sequence: ["block.card"], preferences: { show_default_blocks: false } } },
         handler: (result: RazorpayResponse) => { unlockScroll(); settle(result); },
         modal: { ondismiss: () => { unlockScroll(); setStatus(current => (current === "working" ? "idle" : current)); } },
       });
@@ -286,6 +294,8 @@ export function SponsorCheckout() {
     try {
       const response = await fetch("/api/razorpay/upi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, name: name.trim(), phone: dial(phone), country: countryName(region), address: fullAddress, amount }) });
       const made = await response.json();
+      // our own QR needs the gateway's QR product; until it's on, UPI runs in the secure window instead
+      if (response.status === 409) { if (session.current === mine) await openSecureWindow("upi"); return; }
       if (!response.ok) throw new Error(made.error || "Couldn't make the QR code. Please try again.");
       if (session.current !== mine) return;
       setQr({ id: made.id, image: made.image }); setSeconds(Math.max(60, made.closeBy - Math.floor(Date.now() / 1000))); setStatus("qr");
