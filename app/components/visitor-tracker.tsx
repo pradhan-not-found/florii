@@ -11,15 +11,17 @@ export function VisitorTracker() {
     previous.current = pathname;
     if (!pathname || pathname === "/admin" || pathname.startsWith("/admin/")) return;
     if (navigator.doNotTrack === "1" || (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl) return;
-    let visitorId: string;
+    let visitorId: string, first = false;
     try {
-      visitorId = localStorage.getItem("florii-visitor-id") || crypto.randomUUID();
-      localStorage.setItem("florii-visitor-id", visitorId);
+      const known = localStorage.getItem("florii-visitor-id");
+      visitorId = known || crypto.randomUUID();
+      first = !known;
+      if (first) localStorage.setItem("florii-visitor-id", visitorId);
     } catch { return; }
     void fetch("/api/visitors", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ visitorId, eventId: crypto.randomUUID() }),
+      body: JSON.stringify({ visitorId, eventId: crypto.randomUUID(), first, path: pathname, referrer: first ? document.referrer : "" }),
       keepalive: true,
     }).then(r => r.ok ? r.json() : null).then(data => {
       if (typeof data?.count === "number") window.dispatchEvent(new CustomEvent("florii-visitors", { detail: data.count }));

@@ -99,3 +99,7 @@ alter table public.florii_sponsors add column if not exists name    text;
 alter table public.florii_sponsors add column if not exists phone   text;
 alter table public.florii_sponsors add column if not exists country text;
 alter table public.florii_sponsors add column if not exists address text;
+
+-- Visitor counter: marks each browser's first visit, so the count is unique visitors (safe to re-run).
+alter table public.florii_visits add column if not exists first_visit boolean not null default false;
+create index if not exists florii_visits_first_idx on public.florii_visits (first_visit) where first_visit;

@@ -33,10 +33,11 @@ export async function supabaseUpdate(table: string, column: string, value: strin
 }
 
 /** Counts rows in a table (uses the exact count header). */
-export async function supabaseCount(table: string): Promise<number | null> {
+export async function supabaseCount(table: string, filter = ""): Promise<number | null> {
   if (!supabaseReady()) return null;
   try {
-    const response = await fetch(`${url()}/rest/v1/${table}?select=id`, { method: "HEAD", headers: headers({ Prefer: "count=exact", Range: "0-0" }), cache: "no-store" });
+    const response = await fetch(`${url()}/rest/v1/${table}?select=id${filter ? "&" + filter : ""}`, { method: "HEAD", headers: headers({ Prefer: "count=exact", Range: "0-0" }), cache: "no-store" });
+    if (!response.ok) return null;
     const range = response.headers.get("content-range");
     const total = range?.split("/")[1];
     return total && total !== "*" ? Number(total) : null;
