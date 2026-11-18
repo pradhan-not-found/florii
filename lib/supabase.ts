@@ -41,6 +41,17 @@ export async function supabaseSelect<T>(table: string, query: string): Promise<T
   } catch { return []; }
 }
 
+/** The all-time visitor total, read through the page cache (refreshed every 15 seconds) so pages render it instantly. */
+export async function cachedVisitorTotal(): Promise<number | null> {
+  if (!supabaseReady()) return null;
+  try {
+    const response = await fetch(`${url()}/rest/v1/florii_visit_counts?select=visits&kind=eq.total&key=eq.`, { headers: headers(), next: { revalidate: 15 } });
+    if (!response.ok) return null;
+    const rows = await response.json() as { visits?: number }[];
+    return typeof rows[0]?.visits === "number" ? rows[0].visits : null;
+  } catch { return null; }
+}
+
 /** Counts rows in a table (uses the exact count header). */
 export async function supabaseCount(table: string, filter = ""): Promise<number | null> {
   if (!supabaseReady()) return null;

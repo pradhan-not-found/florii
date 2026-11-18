@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { VisitorTracker } from "./components/visitor-tracker";
+import { VisitorsProvider } from "./components/initial-visitors";
+import { cachedVisitorTotal } from "@/lib/supabase";
 import { botanicalCatalog } from "@/packages/florii/src";
 import { JsonLd } from "@/lib/seo";
 import "./globals.css";
@@ -58,7 +60,7 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -66,7 +68,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* Safari (and every iOS browser) paints SVG filters on the CPU; mark it so the grain filter can be skipped there */}
         <script dangerouslySetInnerHTML={{ __html: `if(/AppleWebKit/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg|OPR/.test(navigator.userAgent))document.documentElement.classList.add("webkit")` }} />
       </head>
-      <body><VisitorTracker />{children}</body>
+      <body><VisitorTracker /><VisitorsProvider value={await cachedVisitorTotal()}>{children}</VisitorsProvider></body>
     </html>
   );
 }

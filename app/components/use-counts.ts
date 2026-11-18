@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { InitialVisitors } from "./initial-visitors";
 import { githubRepo } from "@/config/project";
 
 export const formatCount = (value: number) => new Intl.NumberFormat("en-US").format(value);
@@ -18,7 +19,8 @@ const visitorBase = 100;
 export function useCounts() {
   const [stars, setStars] = useState<number | null>(null);
   // null until the first number arrives (the last known one is shown straight away)
-  const [visitors, setVisitors] = useState<number | null>(null);
+  const initial = useContext(InitialVisitors);
+  const [visitors, setVisitors] = useState<number | null>(initial === null ? null : visitorBase + initial);
 
   useEffect(() => {
     // stars: show the last known number at once, then keep it live (every minute and when the tab is focused)
@@ -34,7 +36,7 @@ export function useCounts() {
     const timer = window.setInterval(refreshStars, 60_000);
     window.addEventListener("focus", refreshStars);
     const seen = readCache("florii-visitors");
-    if (seen !== null) setVisitors(seen);
+    if (seen !== null) setVisitors(current => current ?? seen);
     const applyCount = (count: number) => setVisitors(current => {
       // the server's number is the truth; the cached one only fills the gap while it loads
       const next = visitorBase + count;
