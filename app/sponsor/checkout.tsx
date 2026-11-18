@@ -149,7 +149,9 @@ export function toneOf(img: HTMLImageElement): string[] {
     }
     if (!count) return [];
     const light = total / count;
-    return light > 0.8 ? ["is-light"] : light < 0.2 ? ["is-dark"] : [];
+    const tone = light > 0.8 ? ["is-light"] : light < 0.2 ? ["is-dark"] : [];
+    // a full square icon (no see-through edges) can fill its tile edge to edge
+    return count / (size * size) > 0.92 ? [...tone, "is-solid"] : tone;
   } catch { return []; }
 }
 

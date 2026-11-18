@@ -3,19 +3,37 @@
 import { projectLinks } from "@/config/project";
 import { formatCount as format, useCounts } from "./use-counts";
 import { Icon } from "./icons";
+import { useEffect, useState } from "react";
 
 const compactCount = (value: number) => new Intl.NumberFormat("en-US", {
   notation: value >= 10000 ? "compact" : "standard",
   maximumFractionDigits: 1,
 }).format(value);
 
-/** Shows a number; when it changes, each digit that changed rolls to its new value, like a counter. */
+/** Set once the count has rolled up on this page load, so moving between pages doesn't replay it. */
+let rolledUp = false;
+
+/**
+ * Shows a number; each digit that changes rolls to its new value, like a counter.
+ * On the first open of the site it counts up from zero once.
+ */
 function LiveCount({ value }: { value: number }) {
   const text = compactCount(value);
-  return <span className="odo" aria-label={text}>
-    {[...text].map((char, i) => /\d/.test(char)
-      ? <span key={text.length - i} className="odo-digit" aria-hidden="true"><span style={{ transform: `translateY(-${Number(char) * 10}%)` }}>{"0123456789".split("").map(d => <span key={d}>{d}</span>)}</span></span>
-      : <span key={"c" + (text.length - i)} aria-hidden="true">{char}</span>)}
+  const [ready, setReady] = useState(rolledUp);
+  const [counting, setCounting] = useState(!rolledUp);
+  useEffect(() => {
+    if (rolledUp) return;
+    let id = requestAnimationFrame(() => { id = requestAnimationFrame(() => { rolledUp = true; setReady(true); }); });
+    const done = window.setTimeout(() => setCounting(false), 2000);
+    return () => { cancelAnimationFrame(id); window.clearTimeout(done); };
+  }, []);
+  let place = 0;
+  return <span className={"odo" + (counting ? " is-counting" : "")} aria-label={text}>
+    {[...text].map((char, i) => {
+      if (!/\d/.test(char)) return <span key={"c" + (text.length - i)} aria-hidden="true">{char}</span>;
+      const order = place++;
+      return <span key={text.length - i} className="odo-digit" aria-hidden="true"><span style={{ transform: `translateY(-${(ready ? Number(char) : 0) * 10}%)`, transitionDelay: counting ? `${order * 90}ms` : undefined }}>{"0123456789".split("").map(d => <span key={d}>{d}</span>)}</span></span>;
+    })}
   </span>;
 }
 
