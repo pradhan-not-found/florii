@@ -12,7 +12,7 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{1
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 const BOT = /bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit|embedly|whatsapp|telegram/i;
 
-/** Unique visitors (first visits) once the first_visit column exists; page views until then. */
+/** Visits (the first page of each visit) once the first_visit column exists; page views until then. */
 async function supabaseVisitors() {
   return (await supabaseCount("florii_visits", "first_visit=eq.true")) ?? (await supabaseCount("florii_visits"));
 }

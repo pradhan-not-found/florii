@@ -13,10 +13,11 @@ export function VisitorTracker() {
     if (navigator.doNotTrack === "1" || (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl) return;
     let visitorId: string, first = false;
     try {
-      const known = localStorage.getItem("florii-visitor-id");
-      visitorId = known || crypto.randomUUID();
-      first = !known;
-      if (first) localStorage.setItem("florii-visitor-id", visitorId);
+      visitorId = localStorage.getItem("florii-visitor-id") || crypto.randomUUID();
+      localStorage.setItem("florii-visitor-id", visitorId);
+      // every visit counts once: the first page of each visit (a new tab or coming back later)
+      first = !sessionStorage.getItem("florii-visit");
+      if (first) sessionStorage.setItem("florii-visit", "1");
     } catch { return; }
     void fetch("/api/visitors", {
       method: "POST",
