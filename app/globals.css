@@ -1338,16 +1338,18 @@ html:has(dialog.checkout[open]) body{overflow:hidden}
 
 /* sponsor name bubble: compact, with an arrow pointing at the logo; end columns stay inside the grid */
 .plot-name{max-width:220px;overflow:hidden;text-overflow:ellipsis;padding:6px 12px !important;box-shadow:0 6px 16px -6px rgba(19,19,22,.35)}
-.plot-taken::after{content:"";position:absolute;left:50%;bottom:calc(100% + 3px);width:10px;height:10px;background:#131316;transform:translate(-50%,4px) rotate(45deg);border-radius:2px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:2}
+.plot-taken::after{content:"";position:absolute;left:50%;bottom:calc(100% + 6px);width:10px;height:10px;background:#131316;transform:translate(-50%,4px) rotate(45deg);border-radius:2px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:2}
 .plot-taken:hover::after,.plot-taken:focus-visible::after{opacity:1;transform:translate(-50%,0) rotate(45deg)}
-.sponsor-grid>.plot-taken:nth-child(7n+1) .plot-name{left:0;transform:translate(0,4px)}
-.sponsor-grid>.plot-taken:nth-child(7n+1):hover .plot-name,.sponsor-grid>.plot-taken:nth-child(7n+1):focus-visible .plot-name{transform:none}
-.sponsor-grid>.plot-taken:nth-child(7n) .plot-name{left:auto;right:0;transform:translate(0,4px)}
-.sponsor-grid>.plot-taken:nth-child(7n):hover .plot-name,.sponsor-grid>.plot-taken:nth-child(7n):focus-visible .plot-name{transform:none}
 @media (max-width:820px){
-  .sponsor-grid>.plot-taken:nth-child(7n+1) .plot-name,.sponsor-grid>.plot-taken:nth-child(7n) .plot-name{left:50%;right:auto;transform:translate(-50%,4px)}
-  .sponsor-grid>.plot-taken:nth-child(7n+1):hover .plot-name,.sponsor-grid>.plot-taken:nth-child(7n):hover .plot-name{transform:translate(-50%,0)}
   .sponsor-grid>.plot-taken:nth-child(4n+1) .plot-name{left:0;right:auto;transform:translate(0,4px)}
   .sponsor-grid>.plot-taken:nth-child(4n) .plot-name{left:auto;right:0;transform:translate(0,4px)}
   .sponsor-grid>.plot-taken:nth-child(4n+1):hover .plot-name,.sponsor-grid>.plot-taken:nth-child(4n):hover .plot-name{transform:none}
+}
+
+.plot-name{bottom:calc(100% + 10px) !important}
+.plot-taken:hover,.plot-taken:focus-visible{z-index:6}
+/* phones: the name opens below the logo, clear of the button above the grid */
+@media (max-width:820px){
+  .plot-name{bottom:auto !important;top:calc(100% + 10px)}
+  .plot-taken::after{bottom:auto;top:calc(100% + 6px)}
 }
