@@ -20,21 +20,25 @@ export function useCounts() {
   const [visitors, setVisitors] = useState<number | null>(visitorBase);
 
   useEffect(() => {
-    const repo = githubRepo();
-    if (repo) {
-      const cached = readCache("florii-stars");
-      if (cached !== null) setStars(cached);
-      else fetch("https://api.github.com/repos/" + repo).then(r => r.ok ? r.json() : null).then(data => {
-        if (typeof data?.stargazers_count === "number") { setStars(data.stargazers_count); writeCache("florii-stars", data.stargazers_count); }
+    // stars: show the last known number at once, then keep it live (every minute and when the tab is focused)
+    const cached = readCache("florii-stars");
+    if (cached !== null) setStars(cached);
+    const refreshStars = () => {
+      if (!githubRepo() || document.visibilityState !== "visible") return;
+      fetch("/api/stars", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {
+        if (typeof data?.stars === "number") { setStars(data.stars); writeCache("florii-stars", data.stars); }
       }).catch(() => {});
-    }
+    };
+    refreshStars();
+    const timer = window.setInterval(refreshStars, 60_000);
+    window.addEventListener("focus", refreshStars);
     const applyCount = (count: number) => setVisitors(current => Math.max(current ?? visitorBase, visitorBase + count));
     const update = (event: Event) => applyCount((event as CustomEvent<number>).detail);
     window.addEventListener("florii-visitors", update);
     fetch("/api/visitors", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {
       if (typeof data?.count === "number") applyCount(data.count);
     }).catch(() => {});
-    return () => window.removeEventListener("florii-visitors", update);
+    return () => { window.removeEventListener("florii-visitors", update); window.removeEventListener("focus", refreshStars); window.clearInterval(timer); };
   }, []);
 
   return { stars, visitors };
