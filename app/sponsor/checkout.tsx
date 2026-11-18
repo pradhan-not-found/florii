@@ -93,6 +93,7 @@ export function SponsorCheckout() {
   const [editing, setEditing] = useState(false);
   const [method, setMethod] = useState<Method>("card");
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
   const [status, setStatus] = useState<"idle" | "working" | "qr" | "paid" | "error">("idle");
   const [message, setMessage] = useState("");
   const [qrLink, setQrLink] = useState("");
@@ -122,6 +123,7 @@ export function SponsorCheckout() {
   /** Cards: the secure card window, styled as florii and limited to cards. */
   async function payByCard() {
     if (!details) return;
+    if (!name.trim()) { fail("Add your full name."); return; }
     setStatus("working"); setMessage("");
     try {
       if (!(await loadHosted()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
@@ -130,7 +132,7 @@ export function SponsorCheckout() {
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
         image: window.location.origin + "/logo.png",
-        prefill: { email: details.email }, theme: { color: "#131316", backdrop_color: "rgba(212,239,255,.85)" },
+        prefill: { email: details.email, name: name.trim() }, theme: { color: "#131316", backdrop_color: "rgba(212,239,255,.85)" },
         config: { display: { blocks: { card: { name: "Pay by card", instruments: [{ method: "card" }] } }, sequence: ["block.card"], preferences: { show_default_blocks: false } } },
         handler: (result: RazorpayResponse) => { unlockScroll(); settle(result); },
         modal: { ondismiss: () => { unlockScroll(); setStatus(current => (current === "working" ? "idle" : current)); } },
@@ -143,6 +145,7 @@ export function SponsorCheckout() {
   /** UPI: we create the payment ourselves and draw its QR on this page. */
   async function payByUpi() {
     if (!details) return;
+    if (!name.trim()) { fail("Add your full name."); return; }
     const contact = phone.replace(/\D/g, "").slice(-10);
     if (contact.length !== 10) { fail("Add your 10-digit mobile number. It's only used for the payment receipt."); return; }
     const mine = ++session.current;
@@ -260,14 +263,15 @@ export function SponsorCheckout() {
     <button className="co-link" onClick={cancelQr}>Use another method</button>
   </div>;
   else panel = <>
-    <h1 className="co-title">Payment</h1>
+    <h1 className="co-title">Contact information</h1>
+    <label className="co-field"><span>Full name <i>*</i></span><input value={name} onChange={e => setName(e.target.value)} maxLength={80} autoComplete="name" placeholder="e.g. Jane Doe" /></label>
     <div className="co-field-row">
       <label className="co-field"><span>Email</span><input value={details.email} readOnly aria-readonly="true" /></label>
       <label className="co-field"><span>Phone {method === "upi" ? <i>*</i> : <em>(optional)</em>}</span>
         <span className="co-phone"><b>{method === "upi" ? "+91" : "+"}</b><input inputMode="tel" autoComplete="tel" maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder={method === "upi" ? "98765 43210" : "phone number"} /></span>
       </label>
     </div>
-    <h2 className="co-label">Payment method</h2>
+    <h2 className="co-title co-title-gap">Payment method</h2>
     <div className="pay-methods" role="radiogroup" aria-label="Payment method">
       {(["upi", "card"] as Method[]).map(m => <button key={m} role="radio" aria-checked={method === m} className="pay-method" onClick={() => pick(m)}>
         <span className="pay-method-radio" aria-hidden="true" />
