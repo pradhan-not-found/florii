@@ -5,12 +5,21 @@ import type { FormEvent } from "react";
 import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
 import { Icon } from "../components/icons";
+import { AsYouType, getCountries, getCountryCallingCode, isValidPhoneNumber } from "libphonenumber-js";
+import type { CountryCode } from "libphonenumber-js";
 
 export type SponsorDetails = { product: string; link: string; description: string; email: string; leadId?: string };
-const COUNTRIES = [
-  ["IN", "India", "+91"], ["US", "United States", "+1"], ["GB", "United Kingdom", "+44"], ["CA", "Canada", "+1"], ["AU", "Australia", "+61"], ["DE", "Germany", "+49"],
-  ["FR", "France", "+33"], ["NL", "Netherlands", "+31"], ["SG", "Singapore", "+65"], ["AE", "United Arab Emirates", "+971"], ["JP", "Japan", "+81"], ["BR", "Brazil", "+55"],
-] as const;
+const regionNames = typeof Intl !== "undefined" && "DisplayNames" in Intl ? new Intl.DisplayNames(["en"], { type: "region" }) : null;
+const countryName = (code: string) => { try { return regionNames?.of(code) ?? code; } catch { return code; } };
+const NO_FLAG = new Set(["AC", "TA"]);
+const POPULAR = ["IN", "US", "GB", "CA", "AU", "DE", "FR", "SG", "AE"];
+/** Every country, the most common first, then A to Z. */
+const COUNTRY_LIST = (() => {
+  const all = getCountries().map(code => ({ code, name: countryName(code), dial: "+" + getCountryCallingCode(code) }));
+  const first = POPULAR.map(code => all.find(c => c.code === code)!).filter(Boolean);
+  return [...first, ...all.filter(c => !POPULAR.includes(c.code)).sort((a, b) => a.name.localeCompare(b.name))];
+})();
+const flagOf = (code: string) => (NO_FLAG.has(code) ? undefined : code);
 const STORAGE_KEY = "florii-sponsor";
 const PRICE = "$49.99";
 const PRICES = { card: "$49.99", upi: "₹4,199" } as const;
@@ -19,12 +28,9 @@ type Method = keyof typeof PRICES;
 const AMOUNTS: Record<Method, number[]> = { card: [4999, 9900, 19900], upi: [419900, 829900, 1659900] };
 const LIMITS: Record<Method, [number, number]> = { card: [4999, 500000], upi: [419900, 42000000] };
 const money = (minor: number, method: Method) => new Intl.NumberFormat(method === "upi" ? "en-IN" : "en-US", { style: "currency", currency: method === "upi" ? "INR" : "USD", minimumFractionDigits: method === "upi" || minor % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(minor / 100);
-const REGIONS = ["India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Netherlands", "Singapore", "United Arab Emirates", "Japan", "Brazil", "Other"];
-
 /** A country's flag, served from /public/flags (emoji flags don't show on Windows). */
 // eslint-disable-next-line @next/next/no-img-element
 const Flag = ({ code }: { code: string }) => <img className="flag" src={`/flags/${code.toLowerCase()}.svg`} alt="" width={20} height={14} />;
-const REGION_FLAGS: Record<string, string> = { India: "in", "United States": "us", "United Kingdom": "gb", Canada: "ca", Australia: "au", Germany: "de", France: "fr", Netherlands: "nl", Singapore: "sg", "United Arab Emirates": "ae", Japan: "jp", Brazil: "br" };
 
 /** A small, styled dropdown (the browser's own select list can't be styled). */
 function Dropdown<T extends string>({ value, options, onChange, label, className = "", disabled, show }: {
@@ -32,8 +38,17 @@ function Dropdown<T extends string>({ value, options, onChange, label, className
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
+  const [query, setQuery] = useState("");
   const box = useRef<HTMLDivElement>(null);
   const index = Math.max(0, options.findIndex(o => o.value === value));
+  const searchable = options.length > 15;
+  const needle = query.trim().toLowerCase();
+  const shown = needle ? options.filter(o => o.label.toLowerCase().includes(needle) || o.value.toLowerCase() === needle || (o.hint ?? "").includes(needle)) : options;
+  useEffect(() => { if (!open) setQuery(""); }, [open]);
+  useEffect(() => {
+    if (!open || needle) return;
+    box.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: "nearest" });
+  }, [open, needle]);
   useEffect(() => {
     if (!open) return;
     const close = (event: MouseEvent) => { if (!box.current?.contains(event.target as Node)) setOpen(false); };
@@ -45,22 +60,26 @@ function Dropdown<T extends string>({ value, options, onChange, label, className
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       if (!open) { setOpen(true); setActive(index); return; }
-      setActive(a => (a + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length);
+      setActive(a => (a + (event.key === "ArrowDown" ? 1 : -1) + shown.length) % Math.max(1, shown.length));
     }
-    if ((event.key === "Enter" || event.key === " ") && open) { event.preventDefault(); onChange(options[active].value); setOpen(false); }
+    if ((event.key === "Enter" || (event.key === " " && !searchable)) && open && shown[active]) { event.preventDefault(); onChange(shown[active].value); setOpen(false); }
   }
   const current = options[index];
   return <div className={"dd " + className} ref={box}>
-    <button type="button" className="dd-button" aria-haspopup="listbox" aria-expanded={open} aria-label={label} disabled={disabled} onClick={() => { setOpen(o => !o); setActive(index); }} onKeyDown={key}>
+    <button type="button" className="dd-button" aria-haspopup="listbox" aria-expanded={open} aria-label={label} disabled={disabled} onClick={() => { setOpen(o => !o); setActive(index); }} onKeyDown={searchable && open ? undefined : key}>
       {current.flag && <Flag code={current.flag} />}<span>{show ? show(current) : current.label}</span>
       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
     </button>
-    {open && <ul className="dd-list" role="listbox" aria-label={label}>
-      {options.map((option, i) => <li key={option.value} role="option" aria-selected={option.value === value} className={i === active ? "is-active" : ""} onMouseEnter={() => setActive(i)} onMouseDown={event => { event.preventDefault(); onChange(option.value); setOpen(false); }}>
+    {open && <div className="dd-pop">
+      {searchable && <input className="dd-search" autoFocus value={query} onChange={e => { setQuery(e.target.value); setActive(0); }} onKeyDown={key} placeholder="Search" aria-label={`Search ${label.toLowerCase()}`} />}
+      <ul className="dd-list" role="listbox" aria-label={label}>
+      {shown.length === 0 && <li className="dd-none">No matches</li>}
+      {shown.map((option, i) => <li key={option.value} role="option" aria-selected={option.value === value} className={i === active ? "is-active" : ""} onMouseEnter={() => setActive(i)} onMouseDown={event => { event.preventDefault(); onChange(option.value); setOpen(false); }}>
         {option.flag && <Flag code={option.flag} />}<span>{option.label}</span>{option.hint && <em>{option.hint}</em>}
         {option.value === value && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>}
       </li>)}
-    </ul>}
+      </ul>
+    </div>}
   </div>;
 }
 
@@ -192,9 +211,11 @@ export function SponsorCheckout() {
   const [method, setMethod] = useState<Method>("card");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
-  const [country, setCountry] = useState("US");
-  const [region, setRegion] = useState("United States");
+  const [country, setCountry] = useState<CountryCode>("US");
+  const [region, setRegion] = useState<string>("US");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [postal, setPostal] = useState("");
   const [choice, setChoice] = useState(0); // index into AMOUNTS, or -1 for a custom amount
   const [custom, setCustom] = useState("");
   const [status, setStatus] = useState<"idle" | "working" | "qr" | "paid" | "error">("idle");
@@ -227,12 +248,13 @@ export function SponsorCheckout() {
   async function payByCard() {
     if (!details) return;
     if (!name.trim()) { fail("Add your full name."); return; }
-    if (!address.trim()) { fail("Add your billing address."); return; }
+    if (!address.trim() || !city.trim()) { fail("Add your billing address and city."); return; }
+    if (phone.trim() && !isValidPhoneNumber(phone, country)) { fail(`That doesn't look like a ${countryName(country)} phone number.`); return; }
     if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
     setStatus("working"); setMessage("");
     try {
       if (!(await loadHosted()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "card", { name: name.trim(), phone: dial(phone), country: region, address: address.trim(), amount });
+      const order = await createOrder(details, "card", { name: name.trim(), phone: dial(phone), country: countryName(region), address: fullAddress, amount });
       const checkout = new window.Razorpay({
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
@@ -251,12 +273,13 @@ export function SponsorCheckout() {
   async function payByUpi() {
     if (!details) return;
     if (!name.trim()) { fail("Add your full name."); return; }
-    if (!address.trim()) { fail("Add your billing address."); return; }
+    if (!address.trim() || !city.trim()) { fail("Add your billing address and city."); return; }
+    if (phone.trim() && !isValidPhoneNumber(phone, country)) { fail(`That doesn't look like a ${countryName(country)} phone number.`); return; }
     if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
     const mine = ++session.current;
     setStatus("working"); setMessage(""); setQr(null);
     try {
-      const response = await fetch("/api/razorpay/upi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, name: name.trim(), phone: dial(phone), country: region, address: address.trim(), amount }) });
+      const response = await fetch("/api/razorpay/upi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, name: name.trim(), phone: dial(phone), country: countryName(region), address: fullAddress, amount }) });
       const made = await response.json();
       if (!response.ok) throw new Error(made.error || "Couldn't make the QR code. Please try again.");
       if (session.current !== mine) return;
@@ -275,9 +298,12 @@ export function SponsorCheckout() {
   function cancelQr() { session.current++; setStatus("idle"); setQr(null); }
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0"), ss = String(seconds % 60).padStart(2, "0");
-  const dialCode = COUNTRIES.find(c => c[0] === country)?.[2] ?? "+1";
+  const dialCode = "+" + getCountryCallingCode(country);
   function dial(value: string) { const digits = value.replace(/\D/g, ""); return digits ? `${dialCode} ${digits}` : ""; }
-  const pick = (m: Method) => { if (status === "qr") cancelQr(); setMethod(m); if (m === "upi") { setCountry("IN"); setRegion("India"); } if (choice === -1) setCustom(""); if (status === "error") setStatus("idle"); };
+  const fullAddress = [address.trim(), [city.trim(), postal.trim()].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+  /** Formats the number as it's typed, the way that country writes it. */
+  const typePhone = (value: string) => setPhone(new AsYouType(country).input(value.replace(/[^\d\s()+-]/g, "")));
+  const pick = (m: Method) => { if (status === "qr") cancelQr(); setMethod(m); if (m === "upi") { setCountry("IN"); setRegion("IN"); } if (choice === -1) setCustom(""); if (status === "error") setStatus("idle"); };
   const customMinor = Math.round((Number(custom.replace(/[^\d.]/g, "")) || 0) * 100);
   const amount = choice >= 0 ? AMOUNTS[method][choice] : customMinor;
   const amountOk = amount >= LIMITS[method][0] && amount <= LIMITS[method][1];
@@ -347,35 +373,33 @@ export function SponsorCheckout() {
     <label className="co-field"><span>Full name <i>*</i></span><input value={name} onChange={e => setName(e.target.value)} maxLength={80} autoComplete="name" placeholder="e.g. Jane Doe" /></label>
     <div className="co-field-row">
       <label className="co-field"><span>Email <i>*</i></span><input type="email" value={details.email} title={details.email} autoComplete="email" onChange={e => setDetails({ ...details, email: e.target.value })} onBlur={() => setDetails(saveSponsorDetails(details))} /></label>
-      <div className="co-field"><span>Phone {method === "upi" ? <i>*</i> : <em>(optional)</em>}</span>
+      <div className="co-field"><span>Phone <em>(optional)</em></span>
         <span className="co-phone">
-          <Dropdown className="dd-code" label="Country code" value={country} onChange={setCountry} disabled={method === "upi"} show={o => o.value} options={COUNTRIES.map(([code, label, prefix]) => ({ value: code as string, label, hint: prefix, flag: code }))} />
+          <Dropdown className="dd-code" label="Country code" value={country} onChange={code => { setCountry(code as CountryCode); setPhone(""); }} show={o => o.value} options={COUNTRY_LIST.map(c => ({ value: c.code, label: c.name, hint: c.dial, flag: flagOf(c.code) }))} />
           <b>{dialCode}</b>
-          <input aria-label="Phone number" inputMode="tel" autoComplete="tel-national" maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder={method === "upi" ? "98765 43210" : ""} />
+          <input aria-label="Phone number" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={22} value={phone} onChange={e => typePhone(e.target.value)} />
         </span>
       </div>
     </div>
 
     <div className="co-field"><span>Billing address <i>*</i></span>
       <div className="co-address">
-        <Dropdown className="dd-region" label="Country or region" value={region} onChange={setRegion} options={REGIONS.map(r => ({ value: r, label: r, flag: REGION_FLAGS[r] }))} />
-        <input aria-label="Address" value={address} onChange={e => setAddress(e.target.value)} maxLength={200} autoComplete="street-address" placeholder="Address, city, postal code" />
+        <Dropdown className="dd-region" label="Country or region" value={region} onChange={code => { setRegion(code); if (method !== "upi" && !phone) setCountry(code as CountryCode); }} options={COUNTRY_LIST.map(c => ({ value: c.code, label: c.name, flag: flagOf(c.code) }))} />
+        <input aria-label="Address" value={address} onChange={e => setAddress(e.target.value)} maxLength={140} autoComplete="address-line1" placeholder="Address line" />
+        <div className="co-address-row">
+          <input aria-label="City" value={city} onChange={e => setCity(e.target.value)} maxLength={60} autoComplete="address-level2" placeholder="City" />
+          <input aria-label="Postal code" value={postal} onChange={e => setPostal(e.target.value)} maxLength={16} autoComplete="postal-code" placeholder="Postal code" />
+        </div>
       </div>
     </div>
 
     <div className="co-field"><span>Amount</span>
-      {choice === -1
-        ? <>
-          <div className="co-amount-box is-custom">
-            <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value)} placeholder={(LIMITS[method][0] / 100).toFixed(method === "upi" ? 0 : 2)} aria-label="Custom amount" /></span>
-            <button className="co-link" onClick={() => { setChoice(0); setCustom(""); }}>Standard price</button>
-          </div>
-          <small className={"co-hint" + (custom && !amountOk ? " is-error" : "")}>Minimum {money(LIMITS[method][0], method)}</small>
-        </>
-        : <div className="co-amount-box">
-          <strong>{money(LIMITS[method][0], method)}</strong>
-          <button className="co-link" onClick={() => { setChoice(-1); setCustom(""); }}>Custom amount</button>
-        </div>}
+      <div className="co-amount-box">
+        {choice === -1
+          ? <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value.replace(/[^\d.]/g, ""))} placeholder={(LIMITS[method][0] / 100).toFixed(method === "upi" ? 0 : 2)} aria-label="Custom amount" /><em className={custom && !amountOk ? "is-error" : ""}>min {money(LIMITS[method][0], method)}</em></span>
+          : <strong>{money(LIMITS[method][0], method)}</strong>}
+        <button className="co-link" onClick={() => { setChoice(choice === -1 ? 0 : -1); setCustom(""); }}>{choice === -1 ? "Standard price" : "Custom amount"}</button>
+      </div>
     </div>
 
     <div className="co-field"><span>Payment method</span>
