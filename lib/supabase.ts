@@ -42,3 +42,13 @@ export async function supabaseCount(table: string): Promise<number | null> {
     return total && total !== "*" ? Number(total) : null;
   } catch { return null; }
 }
+
+/** Updates rows matching a PostgREST filter (e.g. "id=eq.x&status=eq.created") and returns how many changed, or null on error. */
+export async function supabasePatch(table: string, filter: string, patch: Record<string, unknown>): Promise<number | null> {
+  if (!supabaseReady()) return null;
+  try {
+    const response = await fetch(`${url()}/rest/v1/${table}?${filter}`, { method: "PATCH", headers: headers({ Prefer: "return=representation" }), body: JSON.stringify(patch), cache: "no-store" });
+    if (!response.ok) { console.error("supabase patch failed", table, response.status, await response.text()); return null; }
+    return (await response.json() as unknown[]).length;
+  } catch (error) { console.error("supabase patch error", table, error); return null; }
+}

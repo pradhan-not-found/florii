@@ -6,7 +6,11 @@ import type { FormEvent } from "react";
 import { Botanical } from "@/packages/florii/src";
 import { Icon } from "../components/icons";
 
-export type SponsorDetails = { product: string; link: string; description: string; email: string };
+export type SponsorDetails = { product: string; link: string; description: string; email: string; leadId?: string };
+const COUNTRIES = [
+  ["IN", "🇮🇳", "+91"], ["US", "🇺🇸", "+1"], ["GB", "🇬🇧", "+44"], ["CA", "🇨🇦", "+1"], ["AU", "🇦🇺", "+61"], ["DE", "🇩🇪", "+49"],
+  ["FR", "🇫🇷", "+33"], ["NL", "🇳🇱", "+31"], ["SG", "🇸🇬", "+65"], ["AE", "🇦🇪", "+971"], ["JP", "🇯🇵", "+81"], ["BR", "🇧🇷", "+55"],
+] as const;
 const STORAGE_KEY = "florii-sponsor";
 const PRICE = "$49.99";
 const PRICES = { card: "$49.99", upi: "₹4,199" } as const; // the server holds the real amounts
@@ -38,8 +42,8 @@ function loadScript(src: string): Promise<boolean> {
 const loadHosted = () => loadScript("https://checkout.razorpay.com/v1/checkout.js");
 const loadCustom = () => loadScript("https://checkout.razorpay.com/v1/razorpay.js");
 
-async function createOrder(details: SponsorDetails, method: Method) {
-  const response = await fetch("/api/razorpay/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, method }) });
+async function createOrder(details: SponsorDetails, method: Method, contact: { name: string; phone: string }) {
+  const response = await fetch("/api/razorpay/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, ...contact, method }) });
   const order = await response.json();
   if (!response.ok) throw new Error(order.error || "Couldn't start the payment.");
   return order as { orderId: string; amount: number; currency: string; keyId: string };
@@ -52,7 +56,14 @@ async function confirm(result: RazorpayResponse) {
 
 /** Saves the sponsor's details for the checkout page. Kept in this tab only. */
 export function saveSponsorDetails(details: SponsorDetails) {
-  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(details)); } catch { /* storage unavailable */ }
+  let leadId = details.leadId;
+  try { leadId ||= (JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null") as SponsorDetails | null)?.leadId; } catch { /* storage unavailable */ }
+  leadId ||= crypto.randomUUID();
+  const saved = { ...details, leadId };
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch { /* storage unavailable */ }
+  // record the sponsor straight away (keepalive: it survives the page changing)
+  void fetch("/api/sponsor/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(saved), keepalive: true }).catch(() => {});
+  return saved;
 }
 function readSponsorDetails(): SponsorDetails | null {
   try { const raw = sessionStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) as SponsorDetails : null; } catch { return null; }
@@ -94,6 +105,7 @@ export function SponsorCheckout() {
   const [method, setMethod] = useState<Method>("card");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
+  const [country, setCountry] = useState("US");
   const [status, setStatus] = useState<"idle" | "working" | "qr" | "paid" | "error">("idle");
   const [message, setMessage] = useState("");
   const [qrLink, setQrLink] = useState("");
@@ -127,7 +139,7 @@ export function SponsorCheckout() {
     setStatus("working"); setMessage("");
     try {
       if (!(await loadHosted()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "card");
+      const order = await createOrder(details, "card", { name: name.trim(), phone: dial(phone) });
       const checkout = new window.Razorpay({
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
@@ -152,7 +164,7 @@ export function SponsorCheckout() {
     setStatus("working"); setMessage(""); setQrLink("");
     try {
       if (!(await loadCustom()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "upi");
+      const order = await createOrder(details, "upi", { name: name.trim(), phone: dial(phone) });
       const gateway = new window.Razorpay({ key: order.keyId, image: window.location.origin + "/logo.png" });
       if (!gateway.createPayment) throw new Error("UPI isn't available right now. Try paying by card.");
       let qrArrived = false;
@@ -189,7 +201,9 @@ export function SponsorCheckout() {
   function cancelQr() { session.current++; setStatus("idle"); setQrLink(""); }
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0"), ss = String(seconds % 60).padStart(2, "0");
-  const pick = (m: Method) => { if (status === "qr") cancelQr(); setMethod(m); if (status === "error") setStatus("idle"); };
+  const dialCode = COUNTRIES.find(c => c[0] === country)?.[2] ?? "+1";
+  function dial(value: string) { const digits = value.replace(/\D/g, ""); return digits ? `${dialCode} ${digits}` : ""; }
+  const pick = (m: Method) => { if (status === "qr") cancelQr(); setMethod(m); if (m === "upi") setCountry("IN"); if (status === "error") setStatus("idle"); };
   const price = PRICES[method];
 
   const order = <aside className="co-order">
@@ -233,9 +247,9 @@ export function SponsorCheckout() {
         <div><span>Tax</span><span>{method === "upi" ? "₹0" : "$0.00"}</span></div>
         <div className="co-total"><span>Total</span><strong>{price}</strong></div>
       </div>
-    </div>
-    <div className="co-garden" aria-hidden="true">
-      {(["Lavender", "Tulip", "Sunflower", "Daisy", "Rose", "Cosmos"] as const).map((name, i) => <span key={name} style={{ left: `${6 + i * 15}%`, bottom: (i % 2) * 14 - 18 }}><Botanical name={name} size={i === 2 ? 118 : 92} title="" /></span>)}
+      <div className="co-garden" aria-hidden="true">
+        {(["Lavender", "Tulip", "Sunflower", "Daisy", "Rose", "Cosmos"] as const).map((name, i) => <span key={name}><Botanical name={name} size={i === 2 ? 84 : 64} title="" /></span>)}
+      </div>
     </div>
   </aside>;
 
@@ -251,7 +265,7 @@ export function SponsorCheckout() {
   else if (!details || editing) panel = <>
     <h1 className="co-title">Your details</h1>
     <p className="co-sub">Tell us about the product you want to feature.</p>
-    <SponsorForm initial={details} onSubmit={next => { saveSponsorDetails(next); setDetails(next); setEditing(false); }} />
+    <SponsorForm initial={details} onSubmit={next => { setDetails(saveSponsorDetails({ ...next, leadId: details?.leadId })); setEditing(false); }} />
   </>;
   else if (status === "qr") panel = <div className="qr-panel" aria-live="polite">
     <div className="qr-top"><h1 className="co-title">Scan to pay</h1><strong>{PRICES.upi}</strong></div>
@@ -266,10 +280,20 @@ export function SponsorCheckout() {
     <h1 className="co-title">Contact information</h1>
     <label className="co-field"><span>Full name <i>*</i></span><input value={name} onChange={e => setName(e.target.value)} maxLength={80} autoComplete="name" placeholder="e.g. Jane Doe" /></label>
     <div className="co-field-row">
-      <label className="co-field"><span>Email</span><input value={details.email} readOnly aria-readonly="true" /></label>
-      <label className="co-field"><span>Phone {method === "upi" ? <i>*</i> : <em>(optional)</em>}</span>
-        <span className="co-phone"><b>{method === "upi" ? "+91" : "+"}</b><input inputMode="tel" autoComplete="tel" maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder={method === "upi" ? "98765 43210" : "phone number"} /></span>
-      </label>
+      <label className="co-field"><span>Email <i>*</i></span><input type="email" value={details.email} title={details.email} autoComplete="email" onChange={e => setDetails({ ...details, email: e.target.value })} onBlur={() => setDetails(saveSponsorDetails(details))} /></label>
+      <div className="co-field"><span>Phone {method === "upi" ? <i>*</i> : <em>(optional)</em>}</span>
+        <span className="co-phone">
+          <span className="co-country">
+            <select aria-label="Country code" value={country} onChange={e => setCountry(e.target.value)} disabled={method === "upi"}>
+              {COUNTRIES.map(([code, , prefix]) => <option key={code} value={code}>{code} {prefix}</option>)}
+            </select>
+            <span className="co-country-code" aria-hidden="true">{country}</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </span>
+          <b>{dialCode}</b>
+          <input aria-label="Phone number" inputMode="tel" autoComplete="tel-national" maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder={method === "upi" ? "98765 43210" : ""} />
+        </span>
+      </div>
     </div>
     <h2 className="co-title co-title-gap">Payment method</h2>
     <div className="pay-methods" role="radiogroup" aria-label="Payment method">

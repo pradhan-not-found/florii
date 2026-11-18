@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
-import { supabaseInsert } from "@/lib/supabase";
+import { supabaseInsert, supabasePatch } from "@/lib/supabase";
+import { SPONSOR_PRICES } from "@/lib/prices";
 
-/** Prices are fixed here, on the server, so they can't be changed from the browser. Amounts are in the smallest unit. */
-export const SPONSOR_PRICES = {
-  card: { amount: 4999, currency: "USD" },   // $49.99, cards from anywhere
-  upi: { amount: 419900, currency: "INR" },  // ₹4,199, UPI in India
-} as const;
+
 
 const clean = (value: unknown, max: number) => (typeof value === "string" ? value.trim().slice(0, max) : "");
 
@@ -21,15 +18,20 @@ export async function POST(request: Request) {
   if (!product) return NextResponse.json({ error: "Add your product name." }, { status: 400 });
   if (!/^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/\S*)?$/i.test(link)) return NextResponse.json({ error: "Add a valid link, like example.com." }, { status: 400 });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Add a valid email so we can reach you." }, { status: 400 });
+  const name = clean(body?.name, 80), phone = clean(body?.phone, 24), leadId = clean(body?.leadId, 36);
+  const note = [name && `Name: ${name}`, phone && `Phone: ${phone}`, `Method: ${method === "upi" ? "UPI" : "card"}`].filter(Boolean).join(" · ");
 
   const response = await fetch("https://api.razorpay.com/v1/orders", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: "Basic " + Buffer.from(`${keyId}:${keySecret}`).toString("base64") },
-    body: JSON.stringify({ ...price, receipt: "florii_" + Date.now(), notes: { purpose: "florii sponsor spot", method, product, link, description, email } }),
+    body: JSON.stringify({ ...price, receipt: "florii_" + Date.now(), notes: { purpose: "florii sponsor spot", method, product, link, description, email, name, phone } }),
   });
   const order = await response.json().catch(() => null) as { id?: string; amount?: number; currency?: string; error?: { description?: string } } | null;
   if (!response.ok || !order?.id) return NextResponse.json({ error: order?.error?.description || "Could not start the payment." }, { status: 502 });
 
-  await supabaseInsert("florii_sponsors", { product, link, description, email, amount: order.amount, currency: order.currency, razorpay_order_id: order.id, status: "created" });
+  // attach the payment to the sponsor saved when they filled the form; otherwise record a new one
+  const row = { product, link, description, email, note, amount: order.amount, currency: order.currency, razorpay_order_id: order.id, status: "created" };
+  const linked = /^[0-9a-f-]{36}$/i.test(leadId) ? await supabasePatch("florii_sponsors", `id=eq.${leadId}&status=eq.created`, row) : 0;
+  if (!linked) await supabaseInsert("florii_sponsors", row);
   return NextResponse.json({ orderId: order.id, amount: order.amount, currency: order.currency, keyId });
 }
