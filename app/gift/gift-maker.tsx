@@ -218,14 +218,17 @@ function Preview({ gift }: { gift: Gift }) {
 
 // ---------- the recipient's envelope ----------
 function Envelope({ gift, onOpen }: { gift: Gift; onOpen: () => void }) {
-  const [stage, setStage] = useState<"closed" | "flap" | "rise" | "done">("closed");
+  // seal pops → flap swings open → card slides out → envelope sinks away → the gift appears
+  const [stage, setStage] = useState<"closed" | "seal" | "flap" | "rise" | "exit">("closed");
   function open() {
     if (stage !== "closed") return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) { onOpen(); return; }
-    setStage("flap");
-    window.setTimeout(() => setStage("rise"), 700);
-    window.setTimeout(() => { setStage("done"); onOpen(); }, 1900);
+    setStage("seal");
+    window.setTimeout(() => setStage("flap"), 280);
+    window.setTimeout(() => setStage("rise"), 950);
+    window.setTimeout(() => setStage("exit"), 1800);
+    window.setTimeout(onOpen, 2300);
   }
   return <div className={"envelope-scene stage-" + stage}>
     <button className="envelope" onClick={open} aria-label="Open your envelope">
