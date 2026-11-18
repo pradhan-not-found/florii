@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyticsKey, analyticsRedis, recordVisit, retentionSeconds } from "@/lib/analytics";
-import { supabaseCount, supabaseInsert, supabaseReady } from "@/lib/supabase";
+import { supabaseCount, supabaseInsert, supabaseReady, supabaseRpc } from "@/lib/supabase";
 import { MINUTE, guard } from "@/lib/guard";
 
 /**
- * The visitor counter. Uses Upstash Redis when it is connected, otherwise the florii_visits table in
- * Supabase. Each page view stores the path, the referring site's domain, the device type and country,
- * and a random browser id; never a name or an IP address.
+ * The visitor counter. Uses Upstash Redis when it is connected, otherwise Supabase. In Supabase every
+ * visit adds one to a daily total (per day, page, country, device and referring site), so storage stays
+ * small however busy the site gets. Nothing personal is kept: no name, no IP address, no visitor id.
  */
 export const dynamic = "force-dynamic";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 const BOT = /bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit|embedly|whatsapp|telegram/i;
 
-/** Visits (the first page of each visit) once the first_visit column exists; page views until then. */
+/** Total visits: from the daily totals, or from the older one-row-per-view table until that exists. */
 async function supabaseVisitors() {
+  const total = await supabaseRpc<number>("florii_visit_total");
+  if (typeof total === "number") return total;
   return (await supabaseCount("florii_visits", "first_visit=eq.true")) ?? (await supabaseCount("florii_visits"));
 }
 
@@ -62,8 +64,11 @@ export async function POST(request: NextRequest) {
   try { const host = new URL(String(data.referrer || "")).hostname; referrer = host && host !== request.nextUrl.hostname ? host : null; } catch { /* no referrer */ }
   const device = /ipad|tablet/i.test(agent) ? "tablet" : /mobi|android|iphone/i.test(agent) ? "mobile" : "desktop";
   const country = request.headers.get("x-vercel-ip-country") || null;
+  // daily totals: one counter row per day, page, country, device and source
+  const total = await supabaseRpc<number>("florii_track_visit", { p_path: path, p_country: country ?? "", p_device: device, p_referrer: referrer ?? "", p_new: data.first === true });
+  if (typeof total === "number") return json({ count: total });
+  // older setup, until the daily-totals function exists: one row per page view
   const row = { path, referrer, device, country, visitor: data.visitorId };
-  // first_visit needs one extra column (an optional extra column); without it the view is still recorded
   if (!(await supabaseInsert("florii_visits", { ...row, first_visit: data.first === true }))) await supabaseInsert("florii_visits", row);
   return json({ count: await supabaseVisitors() });
 }

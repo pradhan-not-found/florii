@@ -6,7 +6,7 @@ import type { BotanicalName } from "@/packages/florii/src";
 import { Icon } from "../components/icons";
 import { useCopy } from "../components/copy";
 import { BH, BW, Bouquet, Crayon, stalkTones, wraps } from "./bouquet";
-import { MAX_BOUQUET, MAX_MESSAGE, MAX_SPRIG, choices, decode, encode, pack } from "./codec";
+import { MAX_BOUQUET, MAX_MESSAGE, MAX_SPRIG, choices, decode, pack } from "./codec";
 import type { Gift, Mode } from "./codec";
 
 const stamps = [
@@ -188,15 +188,7 @@ export function GiftMaker({ shared }: { shared?: Gift | null } = {}) {
   }, []);
 
   const [linking, setLinking] = useState(false);
-  async function makeLink() {
-    setLinking(true);
-    try {
-      // a short, readable link (/g/maya-k3f9qz) when possible; otherwise the gift packed into the link
-      const response = await fetch("/api/gift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: encode(gift) }) }).catch(() => null);
-      const made = response?.ok ? await response.json().catch(() => null) as { id?: string } | null : null;
-      return `${window.location.origin}/g/${made?.id ?? await pack(gift)}`;
-    } finally { setLinking(false); }
-  }
+  async function makeLink() { setLinking(true); try { return `${window.location.origin}/g/${await pack(gift)}`; } finally { setLinking(false); } } // the gift travels inside the link; nothing is stored
   const set = (patch: Partial<Gift>) => setGift(current => ({ ...current, ...patch }));
   const ready = (gift.mode === "letter" || gift.flowers.length > 0) && (gift.mode === "bouquet" || gift.message.trim().length > 0);
 

@@ -53,3 +53,13 @@ export async function supabasePatch(table: string, filter: string, patch: Record
     return (await response.json() as unknown[]).length;
   } catch (error) { console.error("supabase patch error", table, error); return null; }
 }
+
+/** Calls a Postgres function. Returns its result, or undefined when the call fails (e.g. the function doesn't exist yet). */
+export async function supabaseRpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T | undefined> {
+  if (!supabaseReady()) return undefined;
+  try {
+    const response = await fetch(`${url()}/rest/v1/rpc/${name}`, { method: "POST", headers: headers(), body: JSON.stringify(args), cache: "no-store" });
+    if (!response.ok) return undefined;
+    return await response.json() as T;
+  } catch { return undefined; }
+}
