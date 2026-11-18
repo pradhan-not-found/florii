@@ -259,7 +259,12 @@ export function SponsorCheckout() {
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
         image: window.location.origin + "/logo.png",
-        prefill: { email: details.email, name: name.trim() }, theme: { color: "#131316", backdrop_color: "rgba(255,255,255,.92)" },
+        // reuse what the sponsor already typed, so the card form asks only for the card; no saved-card or OTP login prompts
+        prefill: { email: details.email, name: name.trim(), ...(phone.trim() ? { contact: dial(phone).replace(/\s/g, "") } : {}) },
+        readonly: { email: true, ...(phone.trim() ? { contact: true } : {}) },
+        hidden: { email: true, ...(phone.trim() ? { contact: true } : {}) },
+        remember_customer: false,
+        theme: { color: "#131316", backdrop_color: "rgba(255,255,255,.92)" },
         config: { display: { blocks: { card: { name: "Pay by card", instruments: [{ method: "card" }] } }, sequence: ["block.card"], preferences: { show_default_blocks: false } } },
         handler: (result: RazorpayResponse) => { unlockScroll(); settle(result); },
         modal: { ondismiss: () => { unlockScroll(); setStatus(current => (current === "working" ? "idle" : current)); } },
