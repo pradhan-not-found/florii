@@ -94,9 +94,9 @@ export function Hero() {
 export function Statement() {
   return <section className={`${s.wrap} ${s.say}`} aria-label="What florii is">
     <p className={s.statement}>
-      florii is a little box of <Sticker name="Poppy" /> flowers for your interface. pick one,
-      paint it your <Sticker name="ForgetMeNot" turn={-6} /> colors, set it swaying, and plant it
-      anywhere a page feels a bit <Sticker name="Sprig" turn={10} /> empty.
+      florii is a little box of&nbsp;<Sticker name="Poppy" />&nbsp;flowers for your interface. pick one,
+      paint it your&nbsp;<Sticker name="ForgetMeNot" turn={-6} />&nbsp;colors, set it swaying, and plant it
+      anywhere a page feels a <span className={s.keep}>bit <Sticker name="Sprig" turn={10} /> empty.</span>
     </p>
   </section>;
 }

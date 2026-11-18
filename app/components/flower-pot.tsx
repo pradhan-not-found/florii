@@ -4,78 +4,106 @@ import { useEffect, useRef, useState } from "react";
 import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
 
-/** name, position across the pot (%), stalk height (px), bloom size (px), lean (deg) */
-const PLANTS: [BotanicalName, number, number, number, number][] = [
-  ["Tulip", 18, 150, 96, -12],
-  ["Rose", 34, 210, 104, -5],
-  ["Sunflower", 50, 262, 124, 0],
-  ["Lavender", 66, 200, 92, 6],
-  ["Daisy", 82, 148, 96, 13],
+/** Each pot: its flower, its glaze and the darker rim. */
+const POTS: [BotanicalName, string, string][] = [
+  ["Tulip", "#d9825b", "#b8623d"],
+  ["Rose", "#e7a3b0", "#c97f8e"],
+  ["Sunflower", "#e9c46a", "#c9a246"],
+  ["Lavender", "#b9a7e0", "#957fc6"],
+  ["Daisy", "#9fc7e8", "#7aa7cc"],
+  ["Poppy", "#f0a07a", "#d67f58"],
+  ["Cosmos", "#a8d5b8", "#82b896"],
+  ["Peony", "#f2b8c6", "#d895a6"],
+  ["Marigold", "#cfc3ad", "#ad9f86"],
 ];
+const THIRST = 3; // waterings until a pot blooms
+
+// the cursor while the can is held: a small watering can, spout down-left
+const CAN_CURSOR = `url("data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g transform="rotate(-24 20 20)"><path d="M16 14h14a3 3 0 0 1 3 3v11a5 5 0 0 1-5 5H18a5 5 0 0 1-5-5V17a3 3 0 0 1 3-3Z" fill="#7aa7c7" stroke="#3d6a8a" stroke-width="1.4"/><path d="M13 20 4 13l-1.6 2.2 8.6 8Z" fill="#6b98b8" stroke="#3d6a8a" stroke-width="1.2" stroke-linejoin="round"/><path d="M19 14v-3a4 4 0 0 1 8 0v3" fill="none" stroke="#3d6a8a" stroke-width="2.2" stroke-linecap="round"/></g></svg>')}") 4 30, pointer`;
+
+type Drop = { id: number; pot: number; x: number };
 
 /**
- * A small potted garden. The flowers start a little thirsty; water them and they lift and bloom.
- * Hover a flower for its name, click it to open it in the flower library.
+ * A tray of potted seedlings. Pick up the watering can, then click or sweep across the pots to water them;
+ * each one grows and blooms after a few waterings. Without the can, a pot opens its flower in the library.
  */
 export function FlowerPot() {
-  const [watered, setWatered] = useState(false);
-  const [pouring, setPouring] = useState(false);
-  const timers = useRef<number[]>([]);
+  const [water, setWater] = useState<number[]>(() => POTS.map(() => 0));
+  const [holding, setHolding] = useState(false);
+  const [drops, setDrops] = useState<Drop[]>([]);
+  const pouring = useRef(false);
+  const last = useRef<number[]>(POTS.map(() => 0));
+  const dropId = useRef(0);
 
+  // reduced motion: everything is already in bloom, nothing to animate
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setWatered(true);
-    return () => timers.current.forEach(clearTimeout);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setWater(POTS.map(() => THIRST));
+  }, []);
+  useEffect(() => {
+    const stop = () => { pouring.current = false; };
+    const putDown = (e: KeyboardEvent) => { if (e.key === "Escape") setHolding(false); };
+    window.addEventListener("pointerup", stop);
+    window.addEventListener("keydown", putDown);
+    return () => { window.removeEventListener("pointerup", stop); window.removeEventListener("keydown", putDown); };
   }, []);
 
-  function water() {
-    if (pouring) return;
-    setPouring(true);
-    timers.current.push(window.setTimeout(() => setWatered(true), 900));
-    timers.current.push(window.setTimeout(() => setPouring(false), 2000));
+  /** Waters one pot (at most every 350ms while sweeping) and lets a few drops fall into it. */
+  function pour(i: number) {
+    const now = Date.now();
+    if (now - last.current[i] < 350) return;
+    last.current[i] = now;
+    setWater(w => w.map((v, j) => j === i ? Math.min(THIRST, v + 1) : v));
+    const fresh = [0, 1, 2].map(k => ({ id: ++dropId.current, pot: i, x: 32 + k * 16 + Math.round(Math.random() * 6) }));
+    setDrops(d => [...d, ...fresh]);
+    window.setTimeout(() => setDrops(d => d.filter(x => !fresh.includes(x))), 900);
   }
 
-  return <figure className={"pot" + (watered ? " is-watered" : "") + (pouring ? " is-pouring" : "")}>
-    <div className="pot-stage">
-      {/* the watering can tips over the pot while it pours */}
-      <svg className="pot-can" viewBox="0 0 120 90" aria-hidden="true">
-        <g transform="translate(120 0) scale(-1 1)">
-        <path d="M30 34h46a6 6 0 0 1 6 6v30a12 12 0 0 1-12 12H36a12 12 0 0 1-12-12V40a6 6 0 0 1 6-6Z" fill="#7aa7c7" />
-        <path d="M82 46 108 26l6 5-26 26Z" fill="#6b98b8" />
-        <rect x="104" y="20" width="14" height="10" rx="3" transform="rotate(-38 111 25)" fill="#5d8aab" />
-        <path d="M38 34V24a16 16 0 0 1 32 0v10" fill="none" stroke="#5d8aab" strokeWidth="6" strokeLinecap="round" />
-        <path d="M32 44h44" stroke="#9cc0d9" strokeWidth="3" strokeLinecap="round" opacity=".6" />
-        </g>
-      </svg>
-      <span className="pot-rain" aria-hidden="true">{Array.from({ length: 9 }, (_, i) => <i key={i} style={{ left: `${22 + i * 7}%`, animationDelay: `${(i % 3) * 0.12 + i * 0.05}s` }} />)}</span>
+  const bloomed = water.filter(v => v >= THIRST).length;
 
-      {PLANTS.map(([name, x, height, size, lean], i) => <a key={name} className="pot-plant" href={`/flowers#${name}`} style={{ left: `${x}%`, "--h": `${height}px`, "--lean": `${lean}deg`, "--delay": `${i * 0.14}s` } as React.CSSProperties} aria-label={`${name}: open in the flower library`}>
-        <svg className="pot-stem" viewBox={`0 0 40 ${height}`} preserveAspectRatio="none" aria-hidden="true">
-          <path d={`M20 ${height}C${20 + lean * 0.4} ${height * 0.62} ${20 - lean * 0.3} ${height * 0.3} 20 2`} stroke="#4f9a3f" strokeWidth="3.4" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        <span className="pot-leaf" style={{ bottom: `${height * 0.32}px` }} aria-hidden="true" />
-        <span className="pot-leaf is-right" style={{ bottom: `${height * 0.55}px` }} aria-hidden="true" />
-        <span className="pot-bloom"><Botanical name={name} size={size} title="" /></span>
-        <span className="pot-name">{name}</span>
-      </a>)}
-
-      {/* terracotta pot with soil */}
-      <svg className="pot-body" viewBox="0 0 300 150" aria-hidden="true">
-        <defs>
-          <linearGradient id="pot-clay" x1="0" x2="1"><stop offset="0" stopColor="#b8623d" /><stop offset=".45" stopColor="#d9825b" /><stop offset="1" stopColor="#a9552f" /></linearGradient>
-          <linearGradient id="pot-rim" x1="0" x2="1"><stop offset="0" stopColor="#c96f47" /><stop offset=".5" stopColor="#e39a73" /><stop offset="1" stopColor="#bf6440" /></linearGradient>
-        </defs>
-        <ellipse className="pot-soil" cx="150" cy="22" rx="128" ry="16" />
-        <path d="M30 34h240l-26 104a14 14 0 0 1-13.6 10.6H69.6A14 14 0 0 1 56 138Z" fill="url(#pot-clay)" />
-        <rect x="16" y="16" width="268" height="26" rx="9" fill="url(#pot-rim)" />
-        <path d="M44 62c40 6 172 6 212 0" stroke="#f0b392" strokeWidth="3" fill="none" strokeLinecap="round" opacity=".35" />
-      </svg>
-    </div>
-    <figcaption className="pot-caption">
-      <button type="button" className="pot-water" onClick={water} disabled={pouring}>
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11Z" /></svg>
-        {pouring ? "Watering…" : watered ? "Water again" : "Water the garden"}
+  return <figure className={"pot tray" + (holding ? " is-holding" : "")}>
+    <div className="tray-bar">
+      <button type="button" className={"tray-tool" + (holding ? " is-on" : "")} onClick={() => setHolding(h => !h)} aria-pressed={holding}>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 8h8a2 2 0 0 1 2 2v6a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3v-6a2 2 0 0 1 2-2Z" fill="currentColor" /><path d="M7 12 2.5 8.5l-1 1.3L6 14Z" fill="currentColor" /><path d="M11 8V6.5a2.5 2.5 0 0 1 5 0V8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+        {holding ? "Put the can down" : "Pick up the can"}
       </button>
-      <span>{watered ? "Tap a flower to see it in the library." : "They look a little thirsty."}</span>
+      <span className="tray-count" aria-live="polite">{bloomed}/{POTS.length} in bloom</span>
+    </div>
+
+    <div className="tray-box" style={holding ? { cursor: CAN_CURSOR } : undefined} onPointerLeave={() => { pouring.current = false; }}>
+      {POTS.map(([name, glaze, rim], i) => {
+        const level = water[i], open = level >= THIRST;
+        const art = <>
+          <span className="tray-plant" style={{ "--grow": 0.42 + 0.58 * (level / THIRST) } as React.CSSProperties}>
+            <svg className="tray-stem" viewBox="0 0 40 80" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M20 80C19 60 21 40 20 8" stroke="#4f9a3f" strokeWidth="3" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              <path d="M20 54C12 49 7 50 4 54C9 59 15 58 20 54Z" fill="#6cb456" />
+              <path d="M20 38C28 33 33 34 36 38C31 43 25 42 20 38Z" fill="#5fa94a" />
+            </svg>
+            <span className={"tray-bloom" + (open ? " is-open" : "")}><Botanical name={name} size={56} title="" /></span>
+          </span>
+          <svg className="tray-pot" viewBox="0 0 64 50" aria-hidden="true">
+            <ellipse cx="32" cy="8" rx="25" ry="5" fill={level ? "#4a2f20" : "#7a5240"} style={{ transition: "fill .6s ease" }} />
+            <path d="M9 12h46l-5.4 32.4A5 5 0 0 1 44.7 48.6H19.3a5 5 0 0 1-4.9-4.2Z" fill={glaze} />
+            <rect x="5" y="4" width="54" height="10" rx="4" fill={rim} />
+            <path d="M14 22c10 2 26 2 36 0" stroke="#fff" strokeOpacity=".3" strokeWidth="2" fill="none" strokeLinecap="round" />
+          </svg>
+          <span className="tray-meter" aria-hidden="true">{Array.from({ length: THIRST }, (_, k) => <i key={k} className={k < level ? "is-full" : ""} />)}</span>
+          {drops.filter(d => d.pot === i).map(d => <i key={d.id} className="tray-drop" style={{ left: `${d.x}%` }} aria-hidden="true" />)}
+          <span className="tray-name">{name}</span>
+        </>;
+        const label = open ? `${name}, in bloom` : `${name}, watered ${level} of ${THIRST} times`;
+        return holding
+          ? <button key={name} type="button" className="tray-cell" aria-label={`Water the ${label}`}
+              onPointerDown={e => { e.preventDefault(); pouring.current = true; pour(i); }}
+              onPointerEnter={() => { if (pouring.current) pour(i); }}
+              onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pour(i); } }}>{art}</button>
+          : <a key={name} className="tray-cell" href={`/flowers#${name}`} aria-label={`${label}: open in the flower library`}>{art}</a>;
+      })}
+    </div>
+
+    <figcaption className="tray-caption">
+      <span>{holding ? "Click a pot, or hold and sweep across them." : bloomed === POTS.length ? "All in bloom. Tap a flower to see it in the library." : "Pick up the can and water the seedlings."}</span>
+      {bloomed > 0 && !holding && <button type="button" className="tray-reset" onClick={() => setWater(POTS.map(() => 0))}>Replant</button>}
     </figcaption>
   </figure>;
 }

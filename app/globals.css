@@ -1257,45 +1257,43 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .mock-card-footer .mock-pill{margin-left:8px}
 .mock-corner{position:absolute;right:-2px;bottom:-2px;line-height:0;pointer-events:none}
 
-/* ---------- docs: a potted garden you can water ---------- */
-.pot{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;position:sticky;top:96px}
-.pot-stage{position:relative;width:360px;height:470px}
-.pot-body{position:absolute;left:30px;bottom:0;width:300px;height:150px;overflow:visible;z-index:2}
-.pot-soil{fill:#6b4631;transition:fill 1.2s ease}
-.is-watered .pot-soil{fill:#4a2f20}
-.pot-plant{position:absolute;bottom:128px;width:0;height:var(--h);transform-origin:bottom center;transform:rotate(calc(var(--lean) * 1.9)) scaleY(.9);transition:transform 1.4s cubic-bezier(.2,.9,.25,1.15) var(--delay);text-decoration:none;z-index:1}
-.is-watered .pot-plant{transform:rotate(var(--lean));animation:pot-sway 7s ease-in-out calc(var(--delay) + 1.6s) infinite alternate}
-.pot-stem{position:absolute;left:-20px;bottom:0;width:40px;height:100%;overflow:visible}
-.pot-leaf{position:absolute;left:0;width:26px;height:12px;border-radius:0 100% 0 100%;background:linear-gradient(135deg,#6cb456,#3f8a35);transform-origin:left center;transform:rotate(-30deg) scale(.7);transition:transform 1.2s ease var(--delay)}
-.pot-leaf.is-right{left:auto;right:0;border-radius:100% 0 100% 0;transform-origin:right center;transform:rotate(30deg) scale(.7)}
-.is-watered .pot-leaf{transform:rotate(-22deg) scale(1)}
-.is-watered .pot-leaf.is-right{transform:rotate(22deg) scale(1)}
-.pot-bloom{position:absolute;top:0;left:0;transform:translate(-50%,-58%) scale(.82) rotate(8deg);filter:saturate(.45) brightness(.97);transition:transform 1.2s cubic-bezier(.2,.9,.3,1.25) calc(var(--delay) + .25s),filter 1.2s ease calc(var(--delay) + .25s);line-height:0}
-.pot-bloom svg{max-width:none !important;display:block}
-.is-watered .pot-bloom{transform:translate(-50%,-58%) scale(1);filter:none}
-.pot-plant:hover .pot-bloom,.pot-plant:focus-visible .pot-bloom{transform:translate(-50%,-58%) scale(1.08)}
-.pot-name{position:absolute;top:0;left:0;transform:translate(-50%,calc(-100% - 56px));padding:4px 10px;border-radius:999px;background:#131316;color:#fff;font-size:12px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s}
-.pot-plant:hover .pot-name,.pot-plant:focus-visible .pot-name{opacity:1;transform:translate(-50%,calc(-100% - 62px))}
-.pot-plant:focus-visible{outline:none}
-.pot-can{position:absolute;right:-20px;top:-64px;width:112px;opacity:0;transform:translate(30px,-10px) rotate(0);transform-origin:70% 70%;transition:opacity .3s,transform .5s ease;z-index:3;pointer-events:none}
-.is-pouring .pot-can{opacity:1;animation:pot-pour 2s ease-in-out both}
-.pot-rain{position:absolute;inset:-6px 30px 140px 60px;pointer-events:none;z-index:2}
-.pot-rain i{position:absolute;top:0;width:4px;height:10px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#7fb6dd;opacity:0}
-.is-pouring .pot-rain i{animation:pot-drop .9s ease-in .5s 2}
-.pot-caption{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:#6b6b75}
-.pot-water{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;background:#131316;color:#fff;font-size:14px;font-weight:500;transition:opacity .15s}
-.pot-water:disabled{opacity:.6;cursor:default}
-.pot-water svg{color:#9cc8e8}
-@keyframes pot-sway{from{transform:rotate(calc(var(--lean) - 1.6deg))}to{transform:rotate(calc(var(--lean) + 1.6deg))}}
-@keyframes pot-pour{0%{transform:translate(30px,-10px) rotate(0)}25%,75%{transform:translate(-70px,0) rotate(-34deg)}100%{transform:translate(30px,-10px) rotate(0);opacity:0}}
-@keyframes pot-drop{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(300px)}}
-@media (prefers-reduced-motion:reduce){.pot-plant,.pot-bloom,.pot-leaf{transition:none}.is-watered .pot-plant{animation:none}.is-pouring .pot-can,.is-pouring .pot-rain i{animation:none}}
+/* ---------- docs: a tray of potted seedlings you can water ---------- */
+.tray{margin:0;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px;position:sticky;top:96px;user-select:none;-webkit-user-select:none}
+.tray-bar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tray-tool{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px 0 12px;border-radius:999px;border:1px solid #e4e4e0;background:#fff;color:#131316;font-size:13.5px;font-weight:500;transition:background .15s,color .15s,border-color .15s}
+.tray-tool svg{color:#7aa7c7}
+.tray-tool:hover{background:#f6f6f4}
+.tray-tool.is-on{background:#131316;border-color:#131316;color:#fff}
+.tray-tool.is-on svg{color:#9cc8e8}
+.tray-count{font-size:12.5px;color:#6b6b75;font-variant-numeric:tabular-nums}
+.tray-box{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px;border-radius:22px;background:linear-gradient(#f3f8f3,#eef4ee);box-shadow:inset 0 0 0 1px #e3ebe3,inset 0 2px 6px rgba(19,60,30,.06)}
+.tray-cell{position:relative;display:block;height:136px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px #ececea,0 4px 12px -10px rgba(19,19,22,.35);text-decoration:none;color:inherit;overflow:hidden;transition:box-shadow .15s,transform .15s}
+.tray-cell:hover,.tray-cell:focus-visible{box-shadow:0 0 0 1px #d8d8d4,0 8px 18px -12px rgba(19,19,22,.4);outline:none}
+.tray-cell:focus-visible{box-shadow:0 0 0 2px #131316}
+.is-holding .tray-cell{cursor:inherit}
+.tray-pot{position:absolute;left:50%;bottom:16px;width:58px;height:46px;transform:translateX(-50%);z-index:2}
+.tray-plant{position:absolute;left:50%;bottom:56px;width:40px;height:62px;transform:translateX(-50%) scaleY(var(--grow));transform-origin:bottom center;transition:transform .9s cubic-bezier(.2,.9,.25,1.15);z-index:1}
+.tray-stem{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tray-bloom{position:absolute;left:50%;top:0;line-height:0;transform:translate(-50%,-55%) scale(0);transition:transform .7s cubic-bezier(.2,.9,.3,1.3) .25s}
+.tray-bloom svg{max-width:none !important;display:block}
+.tray-bloom.is-open{transform:translate(-50%,-55%) scale(1)}
+.tray-cell:hover .tray-bloom.is-open{transform:translate(-50%,-55%) scale(1.07)}
+.tray-meter{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);display:flex;gap:4px;z-index:2}
+.tray-meter i{width:5px;height:5px;border-radius:50%;background:#e2e2de;transition:background .3s}
+.tray-meter i.is-full{background:#7fb6dd}
+.tray-drop{position:absolute;top:6px;width:4px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#7fb6dd;opacity:0;z-index:3;animation:tray-drop .8s ease-in forwards;pointer-events:none}
+.tray-name{position:absolute;left:8px;top:7px;font-size:11px;font-weight:500;color:#9a9aa2;letter-spacing:.01em;z-index:2}
+.tray-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:28px;font-size:12.5px;color:#6b6b75}
+.tray-reset{height:28px;padding:0 12px;border-radius:999px;border:1px solid #e4e4e0;background:#fff;font-size:12px;font-weight:500;color:#131316;flex-shrink:0}
+.tray-reset:hover{background:#f6f6f4}
+@keyframes tray-drop{0%{opacity:0;transform:translateY(0)}20%{opacity:.95}100%{opacity:0;transform:translateY(74px)}}
+@media (prefers-reduced-motion:reduce){.tray-plant,.tray-bloom{transition:none}.tray-drop{animation:none;display:none}}
+@media (max-width:420px){.tray-cell{height:122px}.tray-box{gap:8px;padding:10px}}
 /* docs layout: steps on the left, the pot on the right */
 .docs-page .docs{display:grid !important;grid-template-columns:minmax(0,1fr) 380px !important;gap:48px !important;max-width:none;align-items:start}
 .docs-page .docs>.steps,.docs-page .docs>.anywhere{grid-column:1}
 .docs-page .docs>.pot{grid-column:2;grid-row:1 / span 2}
-@media (max-width:980px){.docs-page .docs{grid-template-columns:minmax(0,1fr) !important}.docs-page .docs>.pot{grid-column:1;grid-row:auto;position:static;margin-top:24px;overflow-x:clip}}
-@media (max-width:420px){.pot-stage{zoom:.84}}
+@media (max-width:980px){.docs-page .docs{grid-template-columns:minmax(0,1fr) !important}.docs-page .docs>.pot{grid-column:1;grid-row:auto;position:static;margin:24px auto 0}}
 
 /* header visitor count: new numbers lift in from a soft blur */
 .visitors strong{display:inline-flex;min-width:2.2ch;justify-content:center;overflow:hidden}
@@ -1353,3 +1351,11 @@ html:has(dialog.checkout[open]) body{overflow:hidden}
   .plot-name{bottom:auto !important;top:calc(100% + 10px)}
   .plot-taken::after{bottom:auto;top:calc(100% + 6px)}
 }
+/* tray tiles: name and water dots along the bottom, the plant has the whole top to grow into */
+.tray-cell{height:150px}
+.tray-pot{bottom:30px}
+.tray-plant{bottom:70px;height:50px}
+.tray-bloom svg{width:50px !important;height:50px !important}
+.tray-name{top:auto;bottom:9px;left:10px;color:#8a8a93}
+.tray-meter{left:auto;right:10px;bottom:13px;transform:none}
+@media (max-width:420px){.tray-cell{height:140px}.tray-name{font-size:10px}}

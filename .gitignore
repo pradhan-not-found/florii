@@ -17,5 +17,5 @@ next-env.d.ts
 # database setup scripts stay private
 supabase/
 
-# promo images and captions, kept locally
-promotions/
+# brand kit: logos, promo images and captions, kept locally
+brand/

@@ -453,3 +453,6 @@
   .faqArt { overflow: hidden !important; margin-bottom: 8px !important; }
   .faq { row-gap: 16px !important; }
 }
+/* flowers inside the statement: centred on the letters, sized to them, no wide gaps around them */
+.statement .sticker { width: 1.12em; height: 1.12em; vertical-align: -.14em; margin: 0 -.08em; }
+.keep { white-space: nowrap; }
