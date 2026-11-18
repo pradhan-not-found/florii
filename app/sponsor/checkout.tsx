@@ -4,17 +4,65 @@ import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import type { FormEvent } from "react";
 import { Botanical } from "@/packages/florii/src";
+import type { BotanicalName } from "@/packages/florii/src";
 import { Icon } from "../components/icons";
 
 export type SponsorDetails = { product: string; link: string; description: string; email: string; leadId?: string };
 const COUNTRIES = [
-  ["IN", "🇮🇳", "+91"], ["US", "🇺🇸", "+1"], ["GB", "🇬🇧", "+44"], ["CA", "🇨🇦", "+1"], ["AU", "🇦🇺", "+61"], ["DE", "🇩🇪", "+49"],
-  ["FR", "🇫🇷", "+33"], ["NL", "🇳🇱", "+31"], ["SG", "🇸🇬", "+65"], ["AE", "🇦🇪", "+971"], ["JP", "🇯🇵", "+81"], ["BR", "🇧🇷", "+55"],
+  ["IN", "India", "+91"], ["US", "United States", "+1"], ["GB", "United Kingdom", "+44"], ["CA", "Canada", "+1"], ["AU", "Australia", "+61"], ["DE", "Germany", "+49"],
+  ["FR", "France", "+33"], ["NL", "Netherlands", "+31"], ["SG", "Singapore", "+65"], ["AE", "United Arab Emirates", "+971"], ["JP", "Japan", "+81"], ["BR", "Brazil", "+55"],
 ] as const;
 const STORAGE_KEY = "florii-sponsor";
 const PRICE = "$49.99";
-const PRICES = { card: "$49.99", upi: "₹4,199" } as const; // the server holds the real amounts
+const PRICES = { card: "$49.99", upi: "₹4,199" } as const;
 type Method = keyof typeof PRICES;
+/** Amount choices in the smallest unit. The first is the minimum; the server checks the bounds again. */
+const AMOUNTS: Record<Method, number[]> = { card: [4999, 9900, 19900], upi: [419900, 829900, 1659900] };
+const LIMITS: Record<Method, [number, number]> = { card: [4999, 500000], upi: [419900, 42000000] };
+const money = (minor: number, method: Method) => new Intl.NumberFormat(method === "upi" ? "en-IN" : "en-US", { style: "currency", currency: method === "upi" ? "INR" : "USD", minimumFractionDigits: method === "upi" || minor % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(minor / 100);
+const REGIONS = ["India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Netherlands", "Singapore", "United Arab Emirates", "Japan", "Brazil", "Other"];
+
+/** A small, styled dropdown (the browser's own select list can't be styled). */
+function Dropdown<T extends string>({ value, options, onChange, label, className = "", disabled, show }: {
+  value: T; options: { value: T; label: string; hint?: string }[]; onChange: (value: T) => void; label: string; className?: string; disabled?: boolean; show?: (option: { value: T; label: string }) => string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const box = useRef<HTMLDivElement>(null);
+  const index = Math.max(0, options.findIndex(o => o.value === value));
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: MouseEvent) => { if (!box.current?.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+  function key(event: React.KeyboardEvent) {
+    if (event.key === "Escape") { setOpen(false); return; }
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      if (!open) { setOpen(true); setActive(index); return; }
+      setActive(a => (a + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length);
+    }
+    if ((event.key === "Enter" || event.key === " ") && open) { event.preventDefault(); onChange(options[active].value); setOpen(false); }
+  }
+  const current = options[index];
+  return <div className={"dd " + className} ref={box}>
+    <button type="button" className="dd-button" aria-haspopup="listbox" aria-expanded={open} aria-label={label} disabled={disabled} onClick={() => { setOpen(o => !o); setActive(index); }} onKeyDown={key}>
+      <span>{show ? show(current) : current.label}</span>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+    </button>
+    {open && <ul className="dd-list" role="listbox" aria-label={label}>
+      {options.map((option, i) => <li key={option.value} role="option" aria-selected={option.value === value} className={i === active ? "is-active" : ""} onMouseEnter={() => setActive(i)} onMouseDown={event => { event.preventDefault(); onChange(option.value); setOpen(false); }}>
+        <span>{option.label}</span>{option.hint && <em>{option.hint}</em>}
+        {option.value === value && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>}
+      </li>)}
+    </ul>}
+  </div>;
+}
+
+/* the networks' own marks, served from /public/pay */
+// eslint-disable-next-line @next/next/no-img-element
+const Mark = ({ src, alt, height }: { src: string; alt: string; height: number }) => <img src={src} alt={alt} height={height} className="pay-mark" />;
 
 type RazorpayResponse = { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
 type RazorpayInstance = {
@@ -42,7 +90,7 @@ function loadScript(src: string): Promise<boolean> {
 const loadHosted = () => loadScript("https://checkout.razorpay.com/v1/checkout.js");
 const loadCustom = () => loadScript("https://checkout.razorpay.com/v1/razorpay.js");
 
-async function createOrder(details: SponsorDetails, method: Method, contact: { name: string; phone: string }) {
+async function createOrder(details: SponsorDetails, method: Method, contact: { name: string; phone: string; country: string; address: string; amount: number }) {
   const response = await fetch("/api/razorpay/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, ...contact, method }) });
   const order = await response.json();
   if (!response.ok) throw new Error(order.error || "Couldn't start the payment.");
@@ -52,6 +100,42 @@ async function createOrder(details: SponsorDetails, method: Method, contact: { n
 async function confirm(result: RazorpayResponse) {
   const check = await fetch("/api/razorpay/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(result) });
   return check.ok;
+}
+
+/** The site's real icon, read from its own page by our /api/favicon route (shown once the link looks like a real domain). */
+function hostOf(link: string) {
+  try { const host = new URL(/^https?:\/\//i.test(link.trim()) ? link.trim() : `https://${link.trim()}`).hostname; return /\.[a-z]{2,}$/i.test(host) ? host : ""; } catch { return ""; }
+}
+
+/**
+ * Looks at a loaded logo and says whether it is nearly white or nearly black, so it can be given a
+ * contrasting tile (a white logo on a white page would otherwise vanish). Works because our icon route is same-origin.
+ */
+export function toneOf(img: HTMLImageElement): string[] {
+  try {
+    const size = 16, canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return [];
+    ctx.drawImage(img, 0, 0, size, size);
+    const { data } = ctx.getImageData(0, 0, size, size);
+    let total = 0, count = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 60) continue; // ignore transparent pixels
+      total += (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255; count++;
+    }
+    if (!count) return [];
+    const light = total / count;
+    return light > 0.8 ? ["is-light"] : light < 0.2 ? ["is-dark"] : [];
+  } catch { return []; }
+}
+
+export function Favicon({ link, size = 16 }: { link: string; size?: number }) {
+  const host = hostOf(link);
+  const [failed, setFailed] = useState("");
+  if (!host || failed === host) return null;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img className="favicon" src={`/api/favicon?url=${encodeURIComponent(host)}`} alt="" width={size} height={size} loading="lazy" referrerPolicy="no-referrer" onLoad={e => { e.currentTarget.classList.add("is-loaded", ...toneOf(e.currentTarget)); }} onError={() => setFailed(host)} />;
 }
 
 /** Saves the sponsor's details for the checkout page. Kept in this tab only. */
@@ -79,7 +163,7 @@ export function SponsorForm({ onSubmit, initial }: { onSubmit: (details: Sponsor
   return <form className="sponsor-form" onSubmit={submit}>
     <div className="pay-fields">
       <label><span className="pay-label">product</span><input required maxLength={80} value={product} onChange={event => setProduct(event.target.value)} placeholder="e.g. Acme Studio" /></label>
-      <label><span className="pay-label">link <em>where it points</em></span><input required maxLength={200} value={link} onChange={event => setLink(event.target.value)} placeholder="example.com" inputMode="url" autoComplete="url" /></label>
+      <label><span className="pay-label">link <em>where it points</em></span><span className="link-field"><Favicon link={link} /><input required maxLength={200} value={link} onChange={event => setLink(event.target.value)} placeholder="example.com" inputMode="url" autoComplete="url" /></span></label>
       <label><span className="pay-label">description <em>up to 200 characters</em></span><textarea maxLength={200} rows={2} value={description} onChange={event => setDescription(event.target.value)} placeholder="Short description highlighting what your product does." /><span className="pay-count">{description.length}/200</span></label>
       <label><span className="pay-label">email <em>where we reach you</em></span><input required type="email" maxLength={160} value={email} onChange={event => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" /></label>
     </div>
@@ -106,6 +190,10 @@ export function SponsorCheckout() {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [country, setCountry] = useState("US");
+  const [region, setRegion] = useState("United States");
+  const [address, setAddress] = useState("");
+  const [choice, setChoice] = useState(0); // index into AMOUNTS, or -1 for a custom amount
+  const [custom, setCustom] = useState("");
   const [status, setStatus] = useState<"idle" | "working" | "qr" | "paid" | "error">("idle");
   const [message, setMessage] = useState("");
   const [qrLink, setQrLink] = useState("");
@@ -136,10 +224,12 @@ export function SponsorCheckout() {
   async function payByCard() {
     if (!details) return;
     if (!name.trim()) { fail("Add your full name."); return; }
+    if (!address.trim()) { fail("Add your billing address."); return; }
+    if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
     setStatus("working"); setMessage("");
     try {
       if (!(await loadHosted()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "card", { name: name.trim(), phone: dial(phone) });
+      const order = await createOrder(details, "card", { name: name.trim(), phone: dial(phone), country: region, address: address.trim(), amount });
       const checkout = new window.Razorpay({
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
@@ -158,13 +248,15 @@ export function SponsorCheckout() {
   async function payByUpi() {
     if (!details) return;
     if (!name.trim()) { fail("Add your full name."); return; }
+    if (!address.trim()) { fail("Add your billing address."); return; }
+    if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
     const contact = phone.replace(/\D/g, "").slice(-10);
     if (contact.length !== 10) { fail("Add your 10-digit mobile number. It's only used for the payment receipt."); return; }
     const mine = ++session.current;
     setStatus("working"); setMessage(""); setQrLink("");
     try {
       if (!(await loadCustom()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "upi", { name: name.trim(), phone: dial(phone) });
+      const order = await createOrder(details, "upi", { name: name.trim(), phone: dial(phone), country: region, address: address.trim(), amount });
       const gateway = new window.Razorpay({ key: order.keyId, image: window.location.origin + "/logo.png" });
       if (!gateway.createPayment) throw new Error("UPI isn't available right now. Try paying by card.");
       let qrArrived = false;
@@ -203,8 +295,11 @@ export function SponsorCheckout() {
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0"), ss = String(seconds % 60).padStart(2, "0");
   const dialCode = COUNTRIES.find(c => c[0] === country)?.[2] ?? "+1";
   function dial(value: string) { const digits = value.replace(/\D/g, ""); return digits ? `${dialCode} ${digits}` : ""; }
-  const pick = (m: Method) => { if (status === "qr") cancelQr(); setMethod(m); if (m === "upi") setCountry("IN"); if (status === "error") setStatus("idle"); };
-  const price = PRICES[method];
+  const pick = (m: Method) => { if (status === "qr") cancelQr(); setMethod(m); if (m === "upi") { setCountry("IN"); setRegion("India"); } if (choice === -1) setCustom(""); if (status === "error") setStatus("idle"); };
+  const customMinor = Math.round((Number(custom.replace(/[^\d.]/g, "")) || 0) * 100);
+  const amount = choice >= 0 ? AMOUNTS[method][choice] : customMinor;
+  const amountOk = amount >= LIMITS[method][0] && amount <= LIMITS[method][1];
+  const price = money(amountOk ? amount : LIMITS[method][0], method);
 
   const order = <aside className="co-order">
     <div className="co-order-inner">
@@ -217,26 +312,19 @@ export function SponsorCheckout() {
             <circle cx="57.5" cy="8.2" r="0.6" /><circle cx="64.5" cy="8.2" r="0.6" />
           </svg>
         </a>
-        {status !== "paid" && <label className="co-currency">
-          <span className="sr-only">Currency</span>
-          <select value={method} onChange={e => pick(e.target.value as Method)}>
-            <option value="card">Pay in USD</option>
-            <option value="upi">Pay in INR</option>
-          </select>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-        </label>}
+        {status !== "paid" && <Dropdown className="dd-currency" label="Currency" value={method} onChange={pick} options={[{ value: "card", label: "Pay in USD" }, { value: "upi", label: "Pay in INR" }]} />}
       </div>
 
       <div className="co-item">
         <span className="co-item-art" aria-hidden="true"><Botanical name="Sunflower" size={58} title="" /></span>
-        <div className="co-item-text"><b>Sponsor spot</b><p>Lifetime listing on florii and a shoutout on X</p></div>
+        <div className="co-item-text"><b>Sponsor spot</b><p>{amountOk && amount > LIMITS[method][0] ? `Lifetime listing and a shoutout on X, plus ${money(amount - LIMITS[method][0], method)} extra support` : "Lifetime listing on florii and a shoutout on X"}</p></div>
         <strong>{price}</strong>
       </div>
 
       {details && !editing && <div className="co-details">
         <div className="co-details-head"><span>Your listing</span>{status !== "paid" && <button className="co-link" onClick={() => { cancelQr(); setEditing(true); }}>Edit</button>}</div>
         <dl>
-          <div><dt>Product</dt><dd>{details.product}</dd></div>
+          <div><dt>Product</dt><dd className="co-product"><Favicon link={details.link} />{details.product}</dd></div>
           <div><dt>Link</dt><dd>{details.link}</dd></div>
           {details.description && <div><dt>About</dt><dd>{details.description}</dd></div>}
         </dl>
@@ -244,11 +332,8 @@ export function SponsorCheckout() {
 
       <div className="co-lines">
         <div><span>Subtotal</span><span>{price}</span></div>
-        <div><span>Tax</span><span>{method === "upi" ? "₹0" : "$0.00"}</span></div>
+        <div><span>Tax</span><span>{money(0, method)}</span></div>
         <div className="co-total"><span>Total</span><strong>{price}</strong></div>
-      </div>
-      <div className="co-garden" aria-hidden="true">
-        {(["Lavender", "Tulip", "Sunflower", "Daisy", "Rose", "Cosmos"] as const).map((name, i) => <span key={name}><Botanical name={name} size={i === 2 ? 84 : 64} title="" /></span>)}
       </div>
     </div>
   </aside>;
@@ -268,7 +353,7 @@ export function SponsorCheckout() {
     <SponsorForm initial={details} onSubmit={next => { setDetails(saveSponsorDetails({ ...next, leadId: details?.leadId })); setEditing(false); }} />
   </>;
   else if (status === "qr") panel = <div className="qr-panel" aria-live="polite">
-    <div className="qr-top"><h1 className="co-title">Scan to pay</h1><strong>{PRICES.upi}</strong></div>
+    <div className="qr-top"><h1 className="co-title">Scan to pay</h1><strong>{price}</strong></div>
     <UpiQr link={qrLink} />
     <p className="qr-hint">Open any UPI app, scan the code and approve the payment.</p>
     <div className="qr-apps" aria-hidden="true"><span>Google Pay</span><span>PhonePe</span><span>Paytm</span><span>BHIM</span></div>
@@ -283,28 +368,44 @@ export function SponsorCheckout() {
       <label className="co-field"><span>Email <i>*</i></span><input type="email" value={details.email} title={details.email} autoComplete="email" onChange={e => setDetails({ ...details, email: e.target.value })} onBlur={() => setDetails(saveSponsorDetails(details))} /></label>
       <div className="co-field"><span>Phone {method === "upi" ? <i>*</i> : <em>(optional)</em>}</span>
         <span className="co-phone">
-          <span className="co-country">
-            <select aria-label="Country code" value={country} onChange={e => setCountry(e.target.value)} disabled={method === "upi"}>
-              {COUNTRIES.map(([code, , prefix]) => <option key={code} value={code}>{code} {prefix}</option>)}
-            </select>
-            <span className="co-country-code" aria-hidden="true">{country}</span>
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-          </span>
+          <Dropdown className="dd-code" label="Country code" value={country} onChange={setCountry} disabled={method === "upi"} show={o => o.value} options={COUNTRIES.map(([code, label, prefix]) => ({ value: code as string, label, hint: prefix }))} />
           <b>{dialCode}</b>
           <input aria-label="Phone number" inputMode="tel" autoComplete="tel-national" maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder={method === "upi" ? "98765 43210" : ""} />
         </span>
       </div>
     </div>
-    <h2 className="co-title co-title-gap">Payment method</h2>
-    <div className="pay-methods" role="radiogroup" aria-label="Payment method">
-      {(["upi", "card"] as Method[]).map(m => <button key={m} role="radio" aria-checked={method === m} className="pay-method" onClick={() => pick(m)}>
-        <span className="pay-method-radio" aria-hidden="true" />
-        <span className="pay-method-text"><b>{m === "upi" ? "UPI" : "Card"}</b><small>{m === "upi" ? "Scan a QR with any UPI app · India" : "Visa, Mastercard, Amex · worldwide"}</small></span>
-        <span className="pay-method-icon" aria-hidden="true">{m === "upi" ? <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM18 18h3v3h-3zM14 20h1M20 14h1" /></svg> : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5" /><path d="M2.5 10h19M6.5 15h4" /></svg>}</span>
-      </button>)}
+
+    <div className="co-field"><span>Billing address <i>*</i></span>
+      <div className="co-address">
+        <Dropdown className="dd-region" label="Country or region" value={region} onChange={setRegion} options={REGIONS.map(r => ({ value: r, label: r }))} />
+        <input aria-label="Address" value={address} onChange={e => setAddress(e.target.value)} maxLength={200} autoComplete="street-address" placeholder="Address, city, postal code" />
+      </div>
     </div>
+
+    <div className="co-field"><span>Amount</span>
+      <div className="co-amount-box">
+        {choice === -1
+          ? <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value)} placeholder={(LIMITS[method][0] / 100).toFixed(method === "upi" ? 0 : 2)} aria-label="Custom amount" /><em>min {money(LIMITS[method][0], method)}</em></span>
+          : <strong>{money(LIMITS[method][0], method)}</strong>}
+        <button className="co-link" onClick={() => { setChoice(choice === -1 ? 0 : -1); setCustom(""); }}>{choice === -1 ? "Standard price" : "Custom amount"}</button>
+      </div>
+    </div>
+
+    <div className="co-field"><span>Payment method</span>
+      <div className="co-paylist" role="radiogroup" aria-label="Payment method">
+        <button role="radio" aria-checked={method === "upi"} onClick={() => pick("upi")}>
+          <span className="pay-method-radio" aria-hidden="true" /><b>UPI</b>
+          <span className="pay-marks"><Mark src="/pay/upi.svg" alt="UPI" height={22} /></span>
+        </button>
+        <button role="radio" aria-checked={method === "card"} onClick={() => pick("card")}>
+          <span className="pay-method-radio" aria-hidden="true" /><b>Card</b>
+          <span className="pay-marks"><Mark src="/pay/visa.svg" alt="Visa" height={12} /><Mark src="/pay/mastercard.svg" alt="Mastercard" height={18} /><Mark src="/pay/amex.svg" alt="American Express" height={20} /></span>
+        </button>
+      </div>
+    </div>
+
     <button className="co-pay-btn" onClick={method === "upi" ? payByUpi : payByCard} disabled={status === "working"}>
-      {status === "working" ? (method === "upi" ? "Making your QR code…" : "Opening secure card form…") : method === "upi" ? `Show QR · ${PRICES.upi}` : `Pay ${PRICES.card}`}
+      {status === "working" ? (method === "upi" ? "Making your QR code…" : "Opening secure card form…") : method === "upi" ? `Show QR · ${price}` : `Pay ${price}`}
     </button>
   </>;
 
@@ -314,8 +415,10 @@ export function SponsorCheckout() {
       <div className="co-pay-inner">
         {panel}
         {status === "error" && <p className="pay-error" role="alert">{message}</p>}
-        <p className="co-foot"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" /></svg> Payments are encrypted and processed securely. florii never sees your card details.</p>
-        <nav className="co-legal" aria-label="Policies"><a href="/terms" target="_blank" rel="noopener">Terms</a><a href="/refunds" target="_blank" rel="noopener">Refund policy</a><a href="/privacy" target="_blank" rel="noopener">Privacy policy</a><a href="/contact" target="_blank" rel="noopener">Contact</a></nav>
+        <footer className="co-footer">
+          <p className="co-foot"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" /></svg>Secured with end-to-end encryption</p>
+          <nav className="co-legal" aria-label="Policies"><a href="/terms" target="_blank" rel="noopener">Terms</a><a href="/refunds" target="_blank" rel="noopener">Refunds</a><a href="/privacy" target="_blank" rel="noopener">Privacy</a><a href="/contact" target="_blank" rel="noopener">Contact</a></nav>
+        </footer>
       </div>
     </section>
   </div>;

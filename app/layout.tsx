@@ -63,6 +63,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <head>
         <JsonLd data={jsonLd} />
+        {/* Safari (and every iOS browser) paints SVG filters on the CPU; mark it so the grain filter can be skipped there */}
+        <script dangerouslySetInnerHTML={{ __html: `if(/AppleWebKit/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg|OPR/.test(navigator.userAgent))document.documentElement.classList.add("webkit")` }} />
       </head>
       <body><VisitorTracker />{children}</body>
     </html>

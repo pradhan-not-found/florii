@@ -123,8 +123,10 @@ function GardenScene({ height = 320, plants: plantCount = 11, density = 1, kind 
       plants.forEach((plant, i) => {
         const target = px === null ? 0 : bendFor(((taper ? 8 + plant.left * 0.84 : plant.left) / 100) * width - px) * 26;
         plantBend[i] += (target - plantBend[i]) * EASE;
+        // only touch the DOM when the tilt really changes; idle flowers then cost nothing per frame
+        const value = plantBend[i].toFixed(2);
         const node = plantRefs.current[i];
-        if (node) node.style.transform = `rotate(${plantBend[i].toFixed(2)}deg)`;
+        if (node && node.dataset.bend !== value) { node.dataset.bend = value; node.style.transform = `rotate(${value}deg)`; }
       });
       butterflies.forEach((fly, i) => {
         const node = flyerRefs.current[i];

@@ -945,3 +945,183 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .not-found-bloom svg{width:100%;height:100%;filter:drop-shadow(0 10px 18px rgba(183,121,31,.25))}
 @keyframes nf-bloom{from{transform:scale(.4) rotate(-40deg);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.not-found-bloom{animation:none}}
+
+/* Safari and iOS: skip the paint-grain filter on flowers so pages load fast and animate smoothly.
+   Colours and shapes stay the same. The gift bouquet keeps its texture (it is drawn once, not animated). */
+.webkit .florii-botanical:not(.gift-stage *):not(.envelope *):not(.og *) [filter]{filter:none !important}
+
+/* the sponsor's site icon, next to their link and product */
+.favicon{flex-shrink:0;width:16px;height:16px;border-radius:4px;object-fit:contain;background:#fff}
+.link-field{position:relative;display:flex;align-items:center}
+.link-field .favicon{position:absolute;left:12px;pointer-events:none}
+.link-field .favicon+input{padding-left:36px !important}
+.co-product{display:flex;align-items:center;gap:8px}
+
+/* ---------- checkout v3: centred columns, closer together, new controls ---------- */
+.co{--w:500px;--pad:clamp(20px,4.5vw,64px);--gap:18px}
+.co-order-inner,.co-pay-inner{min-height:100%}
+.co-order-inner>.co-top{margin-top:auto}
+.co-pay-inner>:first-child{margin-top:auto}
+.co-secure{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--soft)}
+.co-req{font-style:normal;color:#dc2626;margin-left:2px}
+.co-title-gap{margin-top:2px;margin-bottom:-6px;min-height:0}
+/* flowers on stalks */
+.co-stalks{position:relative;flex-shrink:0;height:150px;margin-top:auto;pointer-events:none}
+.co-stalk{position:absolute;bottom:-2px;width:3px;margin-left:-1.5px;transform-origin:bottom center}
+.co-stem{position:absolute;inset:0;border-radius:3px;background:linear-gradient(#6cb456,#3f8a35)}
+.co-leaf{position:absolute;left:2px;bottom:34%;width:18px;height:9px;border-radius:0 100% 0 100%;background:#5fa94a;transform:rotate(-28deg);transform-origin:left center}
+.co-stalk:nth-child(even) .co-leaf{left:auto;right:2px;bottom:46%;border-radius:100% 0 100% 0;transform:rotate(28deg);transform-origin:right center}
+.co-bloom{position:absolute;top:0;left:50%;transform:translate(-50%,-62%);line-height:0}
+/* billing address: country and address joined, like one field */
+.co-address{display:flex;flex-direction:column;border:1px solid var(--field);border-radius:8px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03);overflow:hidden}
+.co-address:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px rgba(19,19,22,.07)}
+.co-select{position:relative;display:flex;align-items:center;border-bottom:1px solid var(--field)}
+.co-select select{appearance:none;width:100%;height:40px;padding:0 34px 0 12px;border:0;background:none;font:inherit;font-size:14px;color:var(--ink);outline:0;cursor:pointer}
+.co-select svg{position:absolute;right:12px;color:var(--soft);pointer-events:none}
+.co-address input{height:40px;padding:0 12px;border:0;background:none;font:inherit;font-size:14px;color:var(--ink);outline:0}
+/* amount */
+.co-amounts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.co-amount{height:40px;border:1px solid var(--field);border-radius:8px;background:#fff;font-size:14px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:0 1px 2px rgba(0,0,0,.03);transition:border-color .15s,box-shadow .15s}
+.co-amount:hover{border-color:#c9c9cf}
+.co-amount[aria-checked="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.co-custom{display:flex;align-items:center;gap:6px;height:40px;margin-top:-8px;padding:0 12px;border:1px solid var(--field);border-radius:8px;background:#fff;font-size:14px;color:var(--soft)}
+.co-custom:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px rgba(19,19,22,.07)}
+.co-custom input{flex:1;min-width:0;border:0;outline:0;background:none;font:inherit;color:var(--ink);font-variant-numeric:tabular-nums}
+.co-custom em{font-style:normal;font-size:12px;color:#8a8a93;white-space:nowrap}
+/* payment method: two tiles with real marks */
+.co-methods{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.co-method{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 14px;border:1px solid var(--field);border-radius:10px;background:#fff;text-align:left;box-shadow:0 1px 2px rgba(0,0,0,.03);transition:border-color .15s,box-shadow .15s}
+.co-method:hover{border-color:#c9c9cf}
+.co-method[aria-checked="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.co-method-top{display:flex;align-items:center;gap:10px;width:100%;min-height:22px}
+.co-method-top b{font-size:14px;font-weight:600}
+.co-method small{font-size:12px;color:var(--soft);padding-left:26px}
+.card-logos{display:flex;gap:4px;margin-left:auto}
+.card-logos svg{display:block;width:28px;height:18px}
+/* footer: one short line and the policy links, pinned to the bottom */
+.co-footer{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:auto;padding-top:12px}
+.co-footer .co-foot{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.co-footer .co-legal{margin:0;font-size:12px}
+@media (max-height:760px) and (min-width:901px){.co{--gap:13px}.co-stalks{height:120px}.co-stalk{transform-origin:bottom center}.co-bloom{transform:translate(-50%,-62%) scale(.85)}}
+@media (max-width:900px){
+  .co-order-inner>.co-top,.co-pay-inner>:first-child{margin-top:0}
+  .co-stalks{height:130px;margin-top:8px}
+  .co-footer{margin-top:8px}
+}
+@media (max-width:420px){.co-amounts{grid-template-columns:repeat(2,minmax(0,1fr))}.co-methods{grid-template-columns:minmax(0,1fr)}.card-logos svg{width:26px}}
+
+/* checkout v3 fixes: real-size blooms, stalks rising from the bottom edge, one shared top line */
+.co-bloom{width:max-content}
+.co-bloom svg{max-width:none !important;width:auto;height:auto}
+.co-order{position:relative}
+.co-order-inner{min-height:0}
+.co-order-inner>.co-top,.co-pay-inner>:first-child{margin-top:0}
+.co-order,.co-pay{padding-top:clamp(32px,9vh,88px)}
+.co-order{padding-bottom:170px}
+.co-stalks{position:absolute;left:var(--pad);right:var(--pad);bottom:0;height:150px;margin:0}
+@media (min-width:901px){.co-stalks{left:auto;right:var(--pad);width:min(var(--w),calc(100% - 2*var(--pad)))}}
+.co-pay-inner>*{flex-shrink:0}
+.favicon{opacity:0;transition:opacity .2s}
+.favicon.is-loaded{opacity:1}
+@media (max-height:760px) and (min-width:901px){.co-order{padding-bottom:130px}.co-stalks{height:118px}}
+@media (max-width:900px){.co-order{padding-bottom:150px}.co-stalks{height:130px}}
+
+/* a near-white logo gets a dark tile so it never disappears on a light page */
+.favicon.is-light{background:#131316;padding:2px;box-sizing:content-box}
+.link-field .favicon.is-light+input{padding-left:40px !important}
+/* short laptop screens: the payment column fits without scrolling */
+@media (max-height:720px) and (min-width:901px){
+  .co{--gap:11px}
+  .co-order,.co-pay{padding-top:24px}
+  .co-pay{padding-bottom:16px}
+  .co-field input,.co-phone,.co-select select,.co-address input,.co-amount,.co-custom{height:36px}
+  .co .pay-fields input{height:36px}
+  .co-method{padding:9px 12px;gap:4px}
+  .co-pay-btn,.co-continue{height:42px}
+  .co-title{font-size:15px}
+  .co-footer{padding-top:4px;gap:3px}
+}
+
+/* currency pane, top right of the order summary */
+.co-pane{display:inline-flex;padding:3px;border:1px solid var(--field);border-radius:9px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.co-pane button{height:28px;padding:0 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--soft);transition:background .15s,color .15s}
+.co-pane button[aria-checked="true"]{background:var(--ink);color:#fff}
+/* amount: the standard price, or a custom amount */
+.co-amount-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;min-height:40px;padding:0 0 0 2px}
+.co-amount-label{font-size:16px;font-weight:600}
+.co-amount-fixed{justify-self:end;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.co-amount-row .co-custom{margin:0;justify-self:stretch}
+.co-amount-row .co-link{white-space:nowrap}
+.co-stalk{bottom:0}
+@media (max-width:420px){.co-amount-row{grid-template-columns:auto minmax(0,1fr)}.co-amount-row .co-link{grid-column:1/-1;justify-self:start}}
+
+/* ---------- checkout v4: one label style, styled dropdowns, real payment marks ---------- */
+.co-field>span:first-child{font-size:13.5px;font-weight:500;color:#3f3f46}
+/* dropdown */
+.dd{position:relative}
+.dd-button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;height:40px;padding:0 12px;font-size:14px;color:var(--ink);background:none;text-align:left}
+.dd-button:disabled{cursor:default;opacity:.75}
+.dd-button svg{flex-shrink:0;color:var(--soft);transition:transform .15s}
+.dd-button[aria-expanded="true"] svg{transform:rotate(180deg)}
+.dd-list{position:absolute;left:0;top:calc(100% + 6px);z-index:30;min-width:100%;max-height:260px;overflow-y:auto;margin:0;padding:5px;list-style:none;border:1px solid var(--field);border-radius:10px;background:#fff;box-shadow:0 18px 40px -16px rgba(19,19,22,.25);animation:dd-in .14s ease-out}
+.dd-list li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;font-size:14px;color:var(--ink);cursor:pointer;white-space:nowrap}
+.dd-list li.is-active{background:#f4f4f5}
+.dd-list li em{margin-left:auto;font-style:normal;font-size:12.5px;color:#8a8a93;font-variant-numeric:tabular-nums}
+.dd-list li svg{flex-shrink:0;margin-left:8px;color:var(--ink)}
+.dd-list li em+svg{margin-left:4px}
+@keyframes dd-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dd-currency .dd-button{height:36px;min-width:132px;border:1px solid var(--field);border-radius:8px;background:#fff;font-size:13.5px;font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.dd-currency .dd-list{left:auto;right:0}
+.dd-code{height:100%;border-right:1px solid var(--field)}
+.dd-code .dd-button{height:100%;width:auto;padding:0 8px 0 10px;font-size:13px;font-weight:600;gap:4px}
+.dd-code .dd-list{min-width:240px}
+.dd-region{border-bottom:1px solid var(--field)}
+.dd-region .dd-list{max-height:220px}
+.co-address{overflow:visible}
+/* amount */
+.co-amount-box{display:flex;align-items:center;justify-content:space-between;gap:12px;height:40px;padding:0 12px;border:1px solid var(--field);border-radius:8px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.co-amount-box:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px rgba(19,19,22,.07)}
+.co-amount-box strong{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.co-custom-in{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+.co-custom-in b{font-weight:500}
+.co-custom-in input{flex:1;min-width:0;border:0;outline:0;background:none;font:inherit;font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+.co-custom-in em{font-style:normal;font-size:12px;color:#8a8a93;white-space:nowrap}
+/* payment method: one list, two rows, the networks' own marks */
+.co-paylist{display:flex;flex-direction:column;border:1px solid var(--field);border-radius:8px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03);overflow:hidden}
+.co-paylist button{display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;text-align:left;transition:background .15s}
+.co-paylist button+button{border-top:1px solid var(--field)}
+.co-paylist button:hover{background:#fafafa}
+.co-paylist button[aria-checked="true"]{background:#fafafa}
+.co-paylist b{font-size:14px;font-weight:600}
+.pay-marks{display:flex;align-items:center;gap:10px;margin-left:auto}
+.pay-mark{display:block;width:auto}
+/* flowers: a loose bunch rising from the bottom edge */
+.co-blooms{position:absolute;left:var(--pad);right:var(--pad);bottom:0;height:170px;pointer-events:none}
+@media (min-width:901px){.co-blooms{left:auto;right:var(--pad);width:min(var(--w),calc(100% - 2*var(--pad)))}}
+.co-blooms-stems{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.co-blooms-head{position:absolute;transform:translateX(-50%);line-height:0}
+.co-blooms-head svg{max-width:none !important}
+.co-order{padding-bottom:190px}
+@media (max-height:760px) and (min-width:901px){.co-blooms{height:130px;transform:scale(.8);transform-origin:bottom center}.co-order{padding-bottom:140px}}
+@media (max-width:900px){.co-blooms{height:150px}.co-order{padding-bottom:170px}}
+@media (max-height:720px) and (min-width:901px){.dd-button,.co-amount-box{height:36px}.co-paylist button{height:42px}}
+.co-paylist button[aria-checked="true"] .pay-method-radio{border:4.5px solid var(--ink)}
+
+/* payment method: UPI and Card side by side; no flower art; the phone code list is not clipped */
+.co-paylist{flex-direction:row;overflow:visible;border:0;box-shadow:none;background:none;gap:10px}
+.co-paylist button{flex:1;min-width:0;height:48px;padding:0 12px;border:1px solid var(--field);border-radius:8px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.co-paylist button+button{border-top:1px solid var(--field)}
+.co-paylist button:hover{background:#fff;border-color:#c9c9cf}
+.co-paylist button[aria-checked="true"]{background:#fff;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.co-paylist .pay-marks{gap:6px}
+.co-paylist .pay-mark[alt="UPI"]{height:18px}
+.co-paylist .pay-mark[alt="Visa"]{height:10px}
+.co-paylist .pay-mark[alt="Mastercard"]{height:15px}
+.co-paylist .pay-mark[alt="American Express"]{height:17px}
+.co-phone{overflow:visible}
+.dd-code .dd-button{border-radius:8px 0 0 8px}
+.co-order{padding-bottom:28px !important}
+@media (max-width:420px){.co-paylist{flex-direction:column}}
+.co-phone input{background:none !important;border-radius:0 8px 8px 0}
+@media (max-width:900px){.co-order,.co-pay{padding-top:24px !important}.co-order{padding-bottom:24px !important}}
+@media (max-width:420px){.co-paylist button{flex:none;height:48px}}

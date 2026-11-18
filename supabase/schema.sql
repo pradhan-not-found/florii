@@ -91,3 +91,11 @@ create trigger florii_sponsors_touch
 alter table public.florii_sponsors enable row level security;
 alter table public.florii_visits   enable row level security;
 alter table public.dashboard_apps  enable row level security;
+
+-- ─────────────────────────────────────────────────────────────
+-- Checkout contact details (added later; safe to run more than once).
+-- ─────────────────────────────────────────────────────────────
+alter table public.florii_sponsors add column if not exists name    text;
+alter table public.florii_sponsors add column if not exists phone   text;
+alter table public.florii_sponsors add column if not exists country text;
+alter table public.florii_sponsors add column if not exists address text;
