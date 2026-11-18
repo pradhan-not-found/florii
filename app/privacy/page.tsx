@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 
-export const metadata: Metadata = { title: "Privacy Policy · florii", description: "What the florii website does and does not collect." };
+export const metadata: Metadata = {
+  title: "Privacy Policy · florii", description: "What the florii website does and does not collect.",
+  openGraph: { title: "Privacy · florii", description: "What the florii website does and does not collect.", images: [{ url: "/og/privacy.png", width: 1200, height: 630, alt: "A forget-me-not and a daisy" }] },
+  twitter: { card: "summary_large_image", title: "Privacy · florii", description: "What the florii website does and does not collect.", images: ["/og/privacy.png"] },
+};
 
 export default function Page() {
   return <>

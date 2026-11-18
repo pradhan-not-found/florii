@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { githubRepo } from "@/config/project";
 
 export const formatCount = (value: number) => new Intl.NumberFormat("en-US").format(value);
-const visitorStartingCount = 100;
 
 function readCache(key: string): number | null {
   try { const value = sessionStorage.getItem(key); return value ? Number(value) : null; } catch { return null; }
@@ -13,10 +12,10 @@ function writeCache(key: string, value: number) {
   try { sessionStorage.setItem(key, String(value)); } catch { /* storage unavailable */ }
 }
 
-/** Live GitHub stars and visitor count with the configured starting offset. */
+/** Live GitHub stars and the real number of unique visitors (null until it loads). */
 export function useCounts() {
   const [stars, setStars] = useState<number | null>(null);
-  const [visitors, setVisitors] = useState<number | null>(visitorStartingCount);
+  const [visitors, setVisitors] = useState<number | null>(null);
 
   useEffect(() => {
     const repo = githubRepo();
@@ -27,7 +26,7 @@ export function useCounts() {
         if (typeof data?.stargazers_count === "number") { setStars(data.stargazers_count); writeCache("florii-stars", data.stargazers_count); }
       }).catch(() => {});
     }
-    const applyCount = (count: number) => setVisitors(current => Math.max(current ?? visitorStartingCount, visitorStartingCount + count));
+    const applyCount = (count: number) => setVisitors(current => Math.max(current ?? 0, count));
     const update = (event: Event) => applyCount((event as CustomEvent<number>).detail);
     window.addEventListener("florii-visitors", update);
     fetch("/api/visitors", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {

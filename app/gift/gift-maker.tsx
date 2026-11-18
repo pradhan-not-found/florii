@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
-import { Botanical, botanicalCatalog } from "@/packages/florii/src";
+import { useEffect, useId, useState } from "react";
+import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
 import { Icon } from "../components/icons";
 import { useCopy } from "../components/copy";
+import { MAX_BOUQUET, MAX_MESSAGE, MAX_SPRIG, choices, decode, pack, unpack } from "./codec";
+import type { Gift, Mode } from "./codec";
 
-type Mode = "bouquet" | "letter" | "both";
-type Gift = { mode: Mode; flowers: BotanicalName[]; wrap: string; sprig: BotanicalName[]; stamp: string; to: string; message: string; from: string };
-
-const MAX_BOUQUET = 9, MAX_SPRIG = 3;
-const choices = botanicalCatalog.filter(item => item.category === "flower").map(item => item.id);
 const wraps = [
   { id: "none", label: "no paper", back: "", front: "", fold: "" },
   { id: "kraft", label: "burlap", back: "#dcc196", front: "#d2b383", fold: "#a8875a" },
@@ -28,21 +25,6 @@ const stamps = [
 ];
 const empty: Gift = { mode: "both", flowers: [], wrap: "kraft", sprig: [], stamp: "rose", to: "", message: "", from: "" };
 
-// ---------- share link: the whole gift lives in the URL ----------
-function encode(gift: Gift) {
-  const json = JSON.stringify({ o: gift.mode, f: gift.flowers, w: gift.wrap, l: gift.sprig, p: gift.stamp, t: gift.to, m: gift.message, s: gift.from });
-  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-function decode(token: string): Gift | null {
-  try {
-    const raw = JSON.parse(decodeURIComponent(escape(atob(token.replace(/-/g, "+").replace(/_/g, "/"))))) as Record<string, unknown>;
-    const list = (value: unknown, max: number) => (Array.isArray(value) ? value.filter((n): n is BotanicalName => typeof n === "string" && choices.includes(n as BotanicalName)).slice(0, max) : []);
-    const text = (value: unknown, max: number) => (typeof value === "string" ? value.slice(0, max) : "");
-    const mode: Mode = raw.o === "bouquet" || raw.o === "letter" ? raw.o : "both";
-    return { mode, flowers: list(raw.f, MAX_BOUQUET), wrap: wraps.some(w => w.id === raw.w) ? String(raw.w) : "kraft", sprig: list(raw.l, MAX_SPRIG), stamp: stamps.some(s => s.id === raw.p) ? String(raw.p) : "rose", to: text(raw.t, 40), message: text(raw.m, 400), from: text(raw.s, 40) };
-  } catch { return null; }
-}
-
 // ---------- crayon texture shared by stalks, leaves and twine ----------
 function Crayon({ id }: { id: string }) {
   return <filter id={id} x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
@@ -56,10 +38,25 @@ function Crayon({ id }: { id: string }) {
 
 // ---------- bouquet: flowers on long stalks, wrapped in paper like a florist would ----------
 const BW = 420, BH = 600, GATHER: [number, number] = [210, 436];
-const slots: [number, number, number][] = [
-  [210, 188, 146], [142, 224, 128], [280, 222, 128], [176, 134, 126], [246, 130, 126],
-  [104, 284, 108], [318, 282, 108], [212, 278, 120], [210, 104, 104],
-];
+/**
+ * Where each flower sits: a rounded dome, the way a florist packs a bunch. Flowers follow a
+ * golden-angle spiral inside an ellipse, so any count spreads evenly with no gaps or pile-ups.
+ * The dome grows with the count, and each flower shrinks just enough to fit.
+ * Returns [x, y, size, tilt] per flower, the first one in the middle.
+ */
+function arrange(n: number): [number, number, number, number][] {
+  if (n === 0) return [];
+  const spread = Math.min(1, 0.5 + 0.06 * n);
+  const rx = 138 * spread, ry = 100 * spread, cx = 210, cy = 188;
+  const size = Math.min(230, Math.max(104, Math.sqrt((Math.PI * Math.max(rx, 80) * Math.max(ry, 64)) / n) * 2.05));
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  return Array.from({ length: n }, (_, i) => {
+    const t = n === 1 ? 0 : Math.sqrt((i + 0.35) / n);
+    const a = i * golden - Math.PI / 2;
+    const tilt = ((i * 37) % 17) - 8;
+    return [cx + Math.cos(a) * rx * t, cy + Math.sin(a) * ry * t, size * (1 - 0.1 * t), tilt];
+  });
+}
 const stalkTones = ["#4f9a3f", "#5fa94a", "#468f39", "#6cb456"];
 const RIBBON = { fill: "#f6dccb", shade: "#e6bfa6", edge: "#d4a487" };
 const BACK = "M20 112Q38 92 60 106Q82 84 108 100Q132 78 158 94Q184 72 210 90Q236 72 262 94Q288 78 312 100Q336 84 358 104Q380 90 400 102C402 232 346 340 240 440L180 440C74 340 18 232 20 112Z";
@@ -110,9 +107,8 @@ export function Bouquet({ flowers, wrap = "kraft", className = "gift-bouquet" }:
   const paper = wraps.find(w => w.id === wrap && w.back);
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const filter = "crayon-" + uid, texture = "weave-" + uid;
-  // fewer flowers are drawn larger and spread wider, so a small bunch still fills the paper
-  const k = [1, 1.45, 1.4, 1.32, 1.22, 1.14, 1.08, 1.04, 1, 1][flowers.length] ?? 1;
-  const items = flowers.map((name, i) => { const [x, y, size] = slots[i]; return { name, slot: [210 + (x - 210) * k, 200 + (y - 200) * k, size * k] as [number, number, number], i }; });
+  const spots = arrange(flowers.length);
+  const items = flowers.map((name, i) => { const [x, y, size, tilt] = spots[i]; return { name, slot: [x, y, size] as [number, number, number], tilt, i }; });
   const n = items.length;
   const [gx, gy] = GATHER;
   return <svg className={className} viewBox={`0 0 ${BW} ${BH}`} role="img" aria-label={n ? `A bouquet of ${n} flowers` : "An empty bouquet"}>
@@ -134,12 +130,12 @@ export function Bouquet({ flowers, wrap = "kraft", className = "gift-bouquet" }:
           {!paper && <path d={`M${gx + (i - (n - 1) / 2) * 2} ${gy} L${endX} ${BH - 18}`} strokeWidth="5" />}
         </g>;
       })}
-      {items.filter(({ i }) => i % 2 === 0).map(({ slot: [x, y, size], i }) => {
+      {items.filter(({ i }) => i % 2 === 0 && i < 10).map(({ slot: [x, y, size], i }) => {
         const mx = (x + gx) / 2, my = (y + size * 0.28 + gy) / 2 + 10, side = x < gx ? -1 : 1;
         return <path key={"leaf" + i} d="M0 0C-10-14-10-34 0-48C10-34 10-14 0 0Z" fill={stalkTones[(i + 1) % stalkTones.length]} stroke="none" transform={`translate(${mx} ${my}) rotate(${side * 52})`} />;
       })}
     </g>
-    {[...items].sort((a, b) => a.slot[1] - b.slot[1]).map(({ name, slot: [x, y, size], i }) => <g key={name + i} transform={`translate(${x - size / 2} ${y - size / 2})`}><Botanical name={name} size={size} title="" /></g>)}
+    {[...items].sort((a, b) => a.slot[1] - b.slot[1]).map(({ name, slot: [x, y, size], tilt, i }) => <g key={name + i} transform={`translate(${x} ${y}) rotate(${tilt}) translate(${-size / 2} ${-size / 2})`}><Botanical name={name} size={size} title="" /></g>)}
     {paper && n > 0 && <><Wrap paper={paper} filter={filter} texture={texture} part="front" uid={uid} /><Ribbon filter={filter} /></>}
     {!paper && n > 0 && <g filter={`url(#${filter})`} fill="none" stroke="#b48a5a" strokeLinecap="round">
       <path d={`M${gx - 20} ${gy - 4} Q${gx} ${gy + 8} ${gx + 20} ${gy - 4}`} strokeWidth="5" />
@@ -250,9 +246,20 @@ async function downloadCard(gift: Gift) {
   const bouquet = document.querySelector(".gift-stage svg.gift-bouquet");
   const font = await fetch("/fonts/instrument-sans-latin.woff2").then(r => r.arrayBuffer()).then(buffer => { let binary = ""; new Uint8Array(buffer).forEach(b => { binary += String.fromCharCode(b); }); return btoa(binary); }).catch(() => "");
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  const lines: string[] = []; let line = "";
-  for (const word of (gift.message || "").split(/\s+/)) { if ((line + " " + word).trim().length > 36) { lines.push(line.trim()); line = word; } else line += " " + word; }
-  if (line.trim()) lines.push(line.trim());
+  // pick the largest text size at which the whole letter fits on the card
+  const wrap = (perLine: number) => {
+    const out: string[] = [];
+    for (const para of (gift.message || "").split(/\n/)) {
+      let line = "";
+      for (const word of para.split(/\s+/)) { if ((line + " " + word).trim().length > perLine && line) { out.push(line.trim()); line = word; } else line += " " + word; }
+      out.push(line.trim());
+    }
+    return out;
+  };
+  const room = 330;
+  let fontSize = 24, lines = wrap(36);
+  for (const size of [24, 21, 18, 16, 14, 12.5]) { fontSize = size; lines = wrap(Math.floor(430 / (size * 0.5))); if (lines.length * size * 1.55 <= room) break; }
+  const lineHeight = fontSize * 1.55;
   const showBouquet = gift.mode !== "letter" && bouquet, showLetter = gift.mode !== "bouquet";
   const inner = showBouquet ? new XMLSerializer().serializeToString(bouquet as Element).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "") : "";
   const letterX = showBouquet ? 620 : 340;
@@ -262,8 +269,8 @@ async function downloadCard(gift: Gift) {
 ${showBouquet ? `<svg x="${showLetter ? 70 : 340}" y="40" width="520" height="720" viewBox="0 0 ${BW} ${BH}">${inner}</svg>` : ""}
 ${showLetter ? `<rect x="${letterX}" y="110" width="520" height="580" rx="10" fill="#fffdf8" stroke="#e8dfcd"/>
 <text x="${letterX + 50}" y="200" font-size="32" font-weight="600">${esc(gift.to ? `dear ${gift.to},` : "dear you,")}</text>
-${lines.slice(0, 9).map((l, i) => `<text x="${letterX + 50}" y="${260 + i * 38}" font-size="24" fill="#44444d">${esc(l)}</text>`).join("")}
-<text x="${letterX + 50}" y="${Math.max(520, 300 + Math.min(lines.length, 9) * 38)}" font-size="24" font-weight="600">${esc(gift.from ? `with love, ${gift.from}` : "with love")}</text>` : ""}
+${lines.slice(0, Math.floor(room / lineHeight)).map((l, i) => `<text x="${letterX + 50}" y="${250 + i * lineHeight}" font-size="${fontSize}" fill="#44444d">${esc(l)}</text>`).join("")}
+<text x="${letterX + 50}" y="${Math.max(560, 250 + Math.min(lines.length, Math.floor(room / lineHeight)) * lineHeight + 40)}" font-size="22" font-weight="600">${esc(gift.from ? `with love, ${gift.from}` : "with love")}</text>` : ""}
 <text x="1150" y="770" font-size="16" text-anchor="end" fill="#8a8a93">made with florii</text></svg>`;
   const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
   const image = new Image();
@@ -286,7 +293,7 @@ function Picker({ selected, max, onAdd, onRemove, onClear }: { selected: Botanic
   </>;
 }
 
-export function GiftMaker() {
+export function GiftMaker({ code }: { code?: string } = {}) {
   const { copy, toast } = useCopy();
   const [gift, setGift] = useState<Gift>(empty);
   const [received, setReceived] = useState(false);
@@ -294,12 +301,14 @@ export function GiftMaker() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const token = new URLSearchParams(window.location.hash.slice(1)).get("g");
-    const shared = token ? decode(token) : null;
-    if (shared) { setGift(shared); setReceived(true); }
+    const open = (found: Gift | null) => { if (found) { setGift(found); setReceived(true); } };
+    if (code) { unpack(code).then(open); return; }
+    const token = new URLSearchParams(window.location.hash.slice(1)).get("g"); // older long links
+    if (token) open(decode(token));
   }, []);
 
-  const link = useMemo(() => (typeof window === "undefined" ? "" : `${window.location.origin}/gift#g=${encode(gift)}`), [gift]);
+  const [linking, setLinking] = useState(false);
+  async function makeLink() { setLinking(true); try { return `${window.location.origin}/g/${await pack(gift)}`; } finally { setLinking(false); } }
   const set = (patch: Partial<Gift>) => setGift(current => ({ ...current, ...patch }));
   const ready = (gift.mode === "letter" || gift.flowers.length > 0) && (gift.mode === "bouquet" || gift.message.trim().length > 0);
 
@@ -308,6 +317,7 @@ export function GiftMaker() {
     try { await downloadCard(gift); copy("", "Saved to your downloads"); } catch { copy("", "Couldn't make the image. Try again."); } finally { setBusy(false); }
   }
   async function send() {
+    const link = await makeLink();
     if (navigator.share) { try { await navigator.share({ title: "something for you", text: gift.to ? `a little something for ${gift.to}` : "a little something for you", url: link }); return; } catch { /* cancelled */ } }
     copy(link, "Link copied, ready to send");
   }
@@ -316,7 +326,7 @@ export function GiftMaker() {
     {!opened ? <Envelope gift={gift} onOpen={() => setOpened(true)} /> : <div className="gift-reveal"><div className="gift-stage"><Preview gift={gift} /></div>
       <div className="gift-actions">
         <button className="btn btn-dark" onClick={download} disabled={busy}><Icon name="download" size={15} /> {busy ? "preparing…" : "keep this card"}</button>
-        <a className="btn btn-ghost" href="/gift" onClick={() => { history.replaceState(null, "", "/gift"); }}>send one back</a>
+        <a className="btn btn-ghost" href="/gift">send one back</a>
       </div></div>}
     {toast}
   </section>;
@@ -351,7 +361,7 @@ export function GiftMaker() {
           </div>
           <div className="pay-fields gift-label-gap">
             <label><span className="pay-label">to</span><input maxLength={40} value={gift.to} onChange={e => set({ to: e.target.value })} placeholder="their name" /></label>
-            <label><span className="pay-label">your letter</span><textarea maxLength={400} rows={5} value={gift.message} onChange={e => set({ message: e.target.value })} placeholder="write something kind…" /><span className="pay-count">{gift.message.length}/400</span></label>
+            <label><span className="pay-label">your letter</span><textarea maxLength={MAX_MESSAGE} rows={5} value={gift.message} onChange={e => set({ message: e.target.value })} placeholder="write something kind…" /><span className="pay-count">{gift.message.length}/{MAX_MESSAGE}</span></label>
             <label><span className="pay-label">from</span><input maxLength={40} value={gift.from} onChange={e => set({ from: e.target.value })} placeholder="your name" /></label>
           </div>
         </div>}
@@ -361,7 +371,7 @@ export function GiftMaker() {
         <div className="gift-stage"><Preview gift={gift} /></div>
         <div className="gift-actions">
           <button className="btn btn-dark" onClick={send} disabled={!ready}><Icon name="external" size={15} /> send it</button>
-          <button className="btn btn-ghost" onClick={() => copy(link, "Link copied")} disabled={!ready}><Icon name="copy" size={15} /> copy link</button>
+          <button className="btn btn-ghost" onClick={async () => copy(await makeLink(), "Link copied")} disabled={!ready || linking}><Icon name="copy" size={15} /> copy link</button>
           <button className="btn btn-ghost" onClick={download} disabled={busy || !ready}><Icon name="download" size={15} /> {busy ? "preparing…" : "download"}</button>
         </div>
         <p className="gift-note">{ready ? "they'll get it sealed in an envelope with your stamp. nothing is stored on our side." : gift.mode === "letter" ? "write your letter to send it." : gift.mode === "bouquet" ? "add a flower to send your bouquet." : "add a flower and write your letter to send them."}</p>

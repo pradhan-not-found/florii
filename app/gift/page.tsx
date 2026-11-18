@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   title: "Send a bouquet",
   description: "Make a hand-painted bouquet, write a little letter, and send it as a link or download it as a card. Free, with florii.",
   alternates: { canonical: "/gift" },
+  openGraph: { title: "Send a bouquet · florii", description: "Pick hand-painted flowers, wrap them up and write a little letter. Send it as a link.", images: [{ url: "/og/gift.png", width: 1200, height: 630, alt: "A hand-painted bouquet wrapped in burlap" }] },
+  twitter: { card: "summary_large_image", title: "Send a bouquet · florii", description: "Pick hand-painted flowers, wrap them up and write a little letter. Send it as a link.", images: ["/og/gift.png"] },
 };
 
 export default function GiftPage() {

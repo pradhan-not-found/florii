@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 
-export const metadata: Metadata = { title: "About the Design · florii", description: "How florii is drawn, colored, and built." };
+export const metadata: Metadata = {
+  title: "About the Design · florii", description: "How florii is drawn, colored, and built.",
+  openGraph: { title: "About the design · florii", description: "How florii is painted, colored and built.", images: [{ url: "/og/about.png", width: 1200, height: 630, alt: "Hand-painted roses and peonies" }] },
+  twitter: { card: "summary_large_image", title: "About the design · florii", description: "How florii is painted, colored and built.", images: ["/og/about.png"] },
+};
 
 export default function Page() {
   return <>
