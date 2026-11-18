@@ -217,6 +217,7 @@ export function SponsorCheckout() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [postal, setPostal] = useState("");
+  const [copied, setCopied] = useState(false);
   const [choice, setChoice] = useState(0); // index into AMOUNTS, or -1 for a custom amount
   const [custom, setCustom] = useState("");
   const [status, setStatus] = useState<"idle" | "working" | "qr" | "paid" | "error">("idle");
@@ -365,11 +366,17 @@ export function SponsorCheckout() {
   let panel;
   if (!ready) panel = <div className="co-loading" aria-busy="true" />;
   else if (status === "paid" && details) panel = <div className="co-done">
-    <span aria-hidden="true"><Botanical name="Sunflower" size={96} animate="bloom" speed={3} title="" /></span>
-    <h1>Thank you for sponsoring florii.</h1>
-    <p>{details.product} will be featured in our sponsor section soon. We&apos;ll reach you at {details.email}.</p>
-    <p className="co-ref">Payment ID · <code>{message}</code></p>
-    <a className="co-pay-btn" href="/">Back to the garden</a>
+    <span className="co-done-bloom" aria-hidden="true"><Botanical name="Sunflower" size={88} animate="bloom" speed={3} title="" /></span>
+    <h1>Thank you for sponsoring florii</h1>
+    <p>{details.product} is now live in our sponsor section. We'll reach you at {details.email} if we need anything.</p>
+    <dl className="co-receipt">
+      <div><dt>Amount</dt><dd>{price}</dd></div>
+      <div><dt>Payment ID</dt><dd><code>{message}</code><button type="button" className="co-receipt-copy" onClick={() => { navigator.clipboard?.writeText(message).then(() => { setCopied(true); window.setTimeout(() => setCopied(false), 1800); }).catch(() => {}); }} aria-label="Copy payment ID">{copied ? "Copied" : "Copy"}</button></dd></div>
+    </dl>
+    <div className="co-done-actions">
+      <a className="co-done-btn is-primary" href="/#sponsors">See your listing</a>
+      <a className="co-done-btn" href="/">Back to florii</a>
+    </div>
   </div>;
   else if (!details || editing) panel = <>
     <h1 className="co-title">Your details</h1>
@@ -413,7 +420,7 @@ export function SponsorCheckout() {
       <div className="co-amount-box">
         {choice === -1
           ? <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value.replace(/[^\d.]/g, ""))} placeholder="Any amount" aria-label="Custom amount" />{custom && !amountOk && <em className="is-error">{amount < LIMITS[method][0] ? `at least ${money(LIMITS[method][0], method)}` : `at most ${money(LIMITS[method][1], method)}`}</em>}</span>
-          : <strong>{money(LIMITS[method][0], method)}</strong>}
+          : <strong>{money(amount, method)}</strong>}
         <button className="co-link" onClick={() => { setChoice(choice === -1 ? 0 : -1); setCustom(""); }}>{choice === -1 ? "Standard price" : "Custom amount"}</button>
       </div>
     </div>

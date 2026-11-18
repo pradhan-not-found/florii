@@ -24,7 +24,8 @@ export function SponsorBed() {
     return () => window.clearInterval(timer);
   }, []);
   const taken = sponsors.slice(0, cells - 1);
-  const openPlots = Math.min(cells - taken.length, Math.max(1, plots - taken.length));
+  // always leave six open plots after the sponsors, so there is room for the next one
+  const openPlots = Math.min(cells - taken.length, plots);
 
   return <section className="container section" id="sponsors" aria-labelledby="sponsors-title">
     <div className="sponsor-card">

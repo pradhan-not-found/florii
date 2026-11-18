@@ -916,10 +916,24 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .co-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:-10px 0 0;font-size:12px}
 .co-legal a{color:#8a8a93;text-decoration:none}
 .co-legal a:hover{color:var(--ink)}
-.co-done{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
-.co-done h1{font-size:24px;font-weight:600;letter-spacing:-.025em}
-.co-done p{color:var(--soft)}
-.co-ref code{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.co-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;max-width:420px;margin:auto;padding:24px 0;min-height:min(560px,70vh);justify-content:center}
+.co-done-bloom{line-height:0;margin-bottom:18px}
+.co-done h1{font-size:26px;font-weight:600;letter-spacing:-.03em;color:#131316;margin:0}
+.co-done>p{margin:10px 0 0;font-size:14.5px;line-height:1.55;color:#6b6b75}
+.co-receipt{width:100%;margin:24px 0 0;padding:4px 16px;border:1px solid #ececea;border-radius:14px;background:#fff;text-align:left}
+.co-receipt>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;font-size:13.5px}
+.co-receipt>div+div{border-top:1px solid #f0f0ee}
+.co-receipt dt{color:#6b6b75}
+.co-receipt dd{margin:0;display:flex;align-items:center;gap:10px;color:#131316;font-weight:500;min-width:0}
+.co-receipt code{font-family:var(--mono);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.co-receipt-copy{height:26px;padding:0 10px;border-radius:999px;border:1px solid #e4e4e0;background:#fff;font-size:12px;font-weight:500;color:#131316;flex-shrink:0}
+.co-receipt-copy:hover{background:#f6f6f4}
+.co-done-actions{display:flex;gap:10px;margin-top:22px;width:100%}
+.co-done-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;height:44px;border-radius:999px;border:1px solid #e4e4e0;background:#fff;color:#131316;font-size:14px;font-weight:500;text-decoration:none;transition:background .15s}
+.co-done-btn:hover{background:#f6f6f4}
+.co-done-btn.is-primary{background:#131316;border-color:#131316;color:#fff}
+.co-done-btn.is-primary:hover{background:#2a2a30}
+@media (max-width:420px){.co-done-actions{flex-direction:column}}
 .co-loading{height:320px;border-radius:12px;background:linear-gradient(110deg,#f4f4f5 30%,#fafafa 50%,#f4f4f5 70%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
 .co .qr-panel{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0;border:0;background:none}
 .co .qr-top{display:flex;align-items:center;justify-content:space-between;width:100%}
@@ -1295,7 +1309,7 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 /* sponsor plots taken by paid sponsors: their site icon, with the name on hover */
 .plot-taken{position:relative;background:#fff;box-shadow:0 0 0 1px #ececea,0 4px 12px -8px rgba(19,19,22,.3);text-decoration:none;transition:box-shadow .2s ease}
 .plot-taken:hover,.plot-taken:focus-visible{box-shadow:0 0 0 1px #d8d8d4,0 8px 18px -10px rgba(19,19,22,.35);outline:none}
-.plot-taken .favicon{width:44%;height:44%;border-radius:6px;object-fit:contain}
+.plot-taken .favicon{position:absolute;inset:0;width:100% !important;height:100% !important;border-radius:inherit;object-fit:cover;display:block}
 .plot-initial{position:absolute;font-size:18px;font-weight:600;color:#131316}
 .plot-taken .favicon.is-loaded+.plot-initial{display:none}
 .plot-name{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,4px);padding:4px 10px;border-radius:999px;background:#131316;color:#fff;font-size:12px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:2}

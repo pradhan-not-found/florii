@@ -437,3 +437,10 @@
 /* install command: copy icon and a quiet label, no green */
 .copyIcon { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; background: rgba(19, 19, 22, .06); color: #131316; }
 .installCommand:hover .copyIcon { background: rgba(19, 19, 22, .1); }
+
+/* hero fills the whole first screen on every device: text centred in the sky, the meadow on the bottom edge */
+.hero { min-height: 100vh; min-height: 100svh; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hero > .tag, .hero > .lede, .hero > .actions, .hero > .hint, .hero > h1 { flex-shrink: 0; }
+/* on tall screens the meadow grows with the screen, so the sky never looks empty */
+@media (min-width: 721px) and (min-height: 1100px) { .fieldWide { transform: scale(1.3); transform-origin: bottom center; } }
+@media (min-width: 721px) and (min-height: 1300px) { .fieldWide { transform: scale(1.6); transform-origin: bottom center; } }
