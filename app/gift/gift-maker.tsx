@@ -271,7 +271,8 @@ ${showLetter ? `<rect x="${letterX}" y="110" width="520" height="580" rx="10" fi
 <text x="${letterX + 50}" y="200" font-size="32" font-weight="600">${esc(gift.to ? `dear ${gift.to},` : "dear you,")}</text>
 ${lines.slice(0, Math.floor(room / lineHeight)).map((l, i) => `<text x="${letterX + 50}" y="${250 + i * lineHeight}" font-size="${fontSize}" fill="#44444d">${esc(l)}</text>`).join("")}
 <text x="${letterX + 50}" y="${Math.max(560, 250 + Math.min(lines.length, Math.floor(room / lineHeight)) * lineHeight + 40)}" font-size="22" font-weight="600">${esc(gift.from ? `with love, ${gift.from}` : "with love")}</text>` : ""}
-<text x="1150" y="770" font-size="16" text-anchor="end" fill="#8a8a93">made with florii</text></svg>`;
+<text x="1090" y="769" font-size="16" text-anchor="end" fill="#8a8a93">made with</text>
+<g transform="translate(1096 750) scale(0.78)" fill="none" stroke="#131316" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 26V10C10 5.5 12.8 3 17 4.2"/><path d="M5.5 14H15"/><path d="M22 4V22C22 25 23.8 26.2 26.2 25.2"/><path d="M33 14C29.2 14 27 16.8 27 20.2C27 23.8 29.6 26 33 26C36.8 26 39 23.2 39 19.8C39 16.2 36.4 14 33 14Z"/><path d="M45 14.5V26"/><path d="M45 19.5C46.2 15.6 49 14 52.4 15"/><path d="M57.5 15V26"/><path d="M64.5 15V26"/><circle cx="57.5" cy="8.2" r="0.6"/><circle cx="64.5" cy="8.2" r="0.6"/></g></svg>`;
   const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
   const image = new Image();
   await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error("render failed")); image.src = url; });
