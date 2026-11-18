@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import QRCode from "qrcode";
 import type { FormEvent } from "react";
 import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
@@ -22,9 +21,14 @@ const LIMITS: Record<Method, [number, number]> = { card: [4999, 500000], upi: [4
 const money = (minor: number, method: Method) => new Intl.NumberFormat(method === "upi" ? "en-IN" : "en-US", { style: "currency", currency: method === "upi" ? "INR" : "USD", minimumFractionDigits: method === "upi" || minor % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(minor / 100);
 const REGIONS = ["India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Netherlands", "Singapore", "United Arab Emirates", "Japan", "Brazil", "Other"];
 
+/** A country's flag, served from /public/flags (emoji flags don't show on Windows). */
+// eslint-disable-next-line @next/next/no-img-element
+const Flag = ({ code }: { code: string }) => <img className="flag" src={`/flags/${code.toLowerCase()}.svg`} alt="" width={20} height={14} />;
+const REGION_FLAGS: Record<string, string> = { India: "in", "United States": "us", "United Kingdom": "gb", Canada: "ca", Australia: "au", Germany: "de", France: "fr", Netherlands: "nl", Singapore: "sg", "United Arab Emirates": "ae", Japan: "jp", Brazil: "br" };
+
 /** A small, styled dropdown (the browser's own select list can't be styled). */
 function Dropdown<T extends string>({ value, options, onChange, label, className = "", disabled, show }: {
-  value: T; options: { value: T; label: string; hint?: string }[]; onChange: (value: T) => void; label: string; className?: string; disabled?: boolean; show?: (option: { value: T; label: string }) => string;
+  value: T; options: { value: T; label: string; hint?: string; flag?: string }[]; onChange: (value: T) => void; label: string; className?: string; disabled?: boolean; show?: (option: { value: T; label: string }) => string;
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -48,12 +52,12 @@ function Dropdown<T extends string>({ value, options, onChange, label, className
   const current = options[index];
   return <div className={"dd " + className} ref={box}>
     <button type="button" className="dd-button" aria-haspopup="listbox" aria-expanded={open} aria-label={label} disabled={disabled} onClick={() => { setOpen(o => !o); setActive(index); }} onKeyDown={key}>
-      <span>{show ? show(current) : current.label}</span>
+      {current.flag && <Flag code={current.flag} />}<span>{show ? show(current) : current.label}</span>
       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
     </button>
     {open && <ul className="dd-list" role="listbox" aria-label={label}>
       {options.map((option, i) => <li key={option.value} role="option" aria-selected={option.value === value} className={i === active ? "is-active" : ""} onMouseEnter={() => setActive(i)} onMouseDown={event => { event.preventDefault(); onChange(option.value); setOpen(false); }}>
-        <span>{option.label}</span>{option.hint && <em>{option.hint}</em>}
+        {option.flag && <Flag code={option.flag} />}<span>{option.label}</span>{option.hint && <em>{option.hint}</em>}
         {option.value === value && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>}
       </li>)}
     </ul>}
@@ -88,7 +92,6 @@ function loadScript(src: string): Promise<boolean> {
   });
 }
 const loadHosted = () => loadScript("https://checkout.razorpay.com/v1/checkout.js");
-const loadCustom = () => loadScript("https://checkout.razorpay.com/v1/razorpay.js");
 
 async function createOrder(details: SponsorDetails, method: Method, contact: { name: string; phone: string; country: string; address: string; amount: number }) {
   const response = await fetch("/api/razorpay/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, ...contact, method }) });
@@ -171,13 +174,13 @@ export function SponsorForm({ onSubmit, initial }: { onSubmit: (details: Sponsor
   </form>;
 }
 
-/** The UPI QR: drawn on our page from the payment link, with the florii mark in the middle. */
-function UpiQr({ link }: { link: string }) {
-  const [svg, setSvg] = useState("");
-  useEffect(() => { QRCode.toString(link, { type: "svg", margin: 0, errorCorrectionLevel: "H", color: { dark: "#131316", light: "#ffffff" } }).then(setSvg).catch(() => setSvg("")); }, [link]);
+/** The UPI QR: a single-use code for the exact amount, made by our server and shown right here. */
+function UpiQr({ image }: { image: string }) {
+  const [loaded, setLoaded] = useState(false);
   return <div className="qr-frame">
-    {svg ? <span className="qr-code" dangerouslySetInnerHTML={{ __html: svg }} /> : <span className="qr-code qr-wait" />}
-    <span className="qr-mark" aria-hidden="true"><Botanical name="Daisy" size={34} title="" /></span>
+    {!loaded && <span className="qr-code qr-wait" />}
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img className="qr-image" src={image} alt="UPI QR code" onLoad={() => setLoaded(true)} style={loaded ? undefined : { position: "absolute", opacity: 0 }} />
   </div>;
 }
 
@@ -196,7 +199,7 @@ export function SponsorCheckout() {
   const [custom, setCustom] = useState("");
   const [status, setStatus] = useState<"idle" | "working" | "qr" | "paid" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [qrLink, setQrLink] = useState("");
+  const [qr, setQr] = useState<{ id: string; image: string } | null>(null);
   const [seconds, setSeconds] = useState(0);
   const session = useRef(0);
 
@@ -234,7 +237,7 @@ export function SponsorCheckout() {
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
         name: "florii", description: "Sponsor spot · " + details.product,
         image: window.location.origin + "/logo.png",
-        prefill: { email: details.email, name: name.trim() }, theme: { color: "#131316", backdrop_color: "rgba(212,239,255,.85)" },
+        prefill: { email: details.email, name: name.trim() }, theme: { color: "#131316", backdrop_color: "rgba(255,255,255,.92)" },
         config: { display: { blocks: { card: { name: "Pay by card", instruments: [{ method: "card" }] } }, sequence: ["block.card"], preferences: { show_default_blocks: false } } },
         handler: (result: RazorpayResponse) => { unlockScroll(); settle(result); },
         modal: { ondismiss: () => { unlockScroll(); setStatus(current => (current === "working" ? "idle" : current)); } },
@@ -244,53 +247,32 @@ export function SponsorCheckout() {
     } catch (error) { fail(error instanceof Error ? error.message : "Something went wrong."); }
   }
 
-  /** UPI: we create the payment ourselves and draw its QR on this page. */
+  /** UPI: our server makes a single-use QR for this amount; we show it and check every few seconds until it's paid. */
   async function payByUpi() {
     if (!details) return;
     if (!name.trim()) { fail("Add your full name."); return; }
     if (!address.trim()) { fail("Add your billing address."); return; }
     if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
-    const contact = phone.replace(/\D/g, "").slice(-10);
-    if (contact.length !== 10) { fail("Add your 10-digit mobile number. It's only used for the payment receipt."); return; }
     const mine = ++session.current;
-    setStatus("working"); setMessage(""); setQrLink("");
+    setStatus("working"); setMessage(""); setQr(null);
     try {
-      if (!(await loadCustom()) || !window.Razorpay) throw new Error("Couldn't reach the payment service. Check your connection and try again.");
-      const order = await createOrder(details, "upi", { name: name.trim(), phone: dial(phone), country: region, address: address.trim(), amount });
-      const gateway = new window.Razorpay({ key: order.keyId, image: window.location.origin + "/logo.png" });
-      if (!gateway.createPayment) throw new Error("UPI isn't available right now. Try paying by card.");
-      let qrArrived = false;
-      gateway.on("payment.upi.intent_url_generated", data => {
+      const response = await fetch("/api/razorpay/upi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...details, name: name.trim(), phone: dial(phone), country: region, address: address.trim(), amount }) });
+      const made = await response.json();
+      if (!response.ok) throw new Error(made.error || "Couldn't make the QR code. Please try again.");
+      if (session.current !== mine) return;
+      setQr({ id: made.id, image: made.image }); setSeconds(Math.max(60, made.closeBy - Math.floor(Date.now() / 1000))); setStatus("qr");
+      const check = async () => {
         if (session.current !== mine) return;
-        qrArrived = true;
-        const link = String(data.intent_url || "");
-        if (link) { setQrLink(link); setSeconds(600); setStatus("qr"); }
-      });
-      gateway.on("payment.success", data => { if (session.current === mine) settle(data as unknown as RazorpayResponse); });
-      gateway.on("payment.error", data => { if (session.current === mine) fail(data.error?.description || "The payment didn't go through. No money was taken."); });
-      gateway.createPayment({ amount: order.amount, currency: order.currency, order_id: order.orderId, email: details.email, contact, method: "upi", "_[flow]": "intent" });
-      // if the QR link doesn't arrive, finish the same UPI payment in the secure window instead
-      window.setTimeout(() => { if (session.current === mine && !qrArrived) { session.current++; upiWindow(order); } }, 12000);
-    } catch (error) { fail(error instanceof Error ? error.message : "Something went wrong."); }
+        const result = await fetch(`/api/razorpay/upi?id=${encodeURIComponent(made.id)}`, { cache: "no-store" }).then(r => r.json()).catch(() => null);
+        if (session.current !== mine) return;
+        if (result?.paid) { done(result.paymentId); return; }
+        window.setTimeout(check, 3000);
+      };
+      window.setTimeout(check, 4000);
+    } catch (error) { if (session.current === mine) fail(error instanceof Error ? error.message : "Something went wrong."); }
   }
 
-  /** Fallback for UPI: the secure window, styled as florii and limited to UPI. */
-  async function upiWindow(order: { orderId: string; amount: number; currency: string; keyId: string }) {
-    if (!details) return;
-    if (!(await loadHosted()) || !window.Razorpay) { fail("Couldn't reach the payment service. Try paying by card."); return; }
-    const checkout = new window.Razorpay({
-      key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
-      name: "florii", description: "Sponsor spot · " + details.product, image: window.location.origin + "/logo.png",
-      prefill: { email: details.email, contact: phone.replace(/\D/g, "").slice(-10) }, theme: { color: "#131316", backdrop_color: "rgba(212,239,255,.85)" },
-      config: { display: { blocks: { upi: { name: "Pay with UPI", instruments: [{ method: "upi" }] } }, sequence: ["block.upi"], preferences: { show_default_blocks: false } } },
-      handler: (result: RazorpayResponse) => { unlockScroll(); settle(result); },
-      modal: { ondismiss: () => { unlockScroll(); setStatus(current => (current === "working" ? "idle" : current)); } },
-    });
-    checkout.on("payment.failed", data => { unlockScroll(); fail(data.error?.description || "The payment didn't go through. No money was taken."); });
-    checkout.open();
-  }
-
-  function cancelQr() { session.current++; setStatus("idle"); setQrLink(""); }
+  function cancelQr() { session.current++; setStatus("idle"); setQr(null); }
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0"), ss = String(seconds % 60).padStart(2, "0");
   const dialCode = COUNTRIES.find(c => c[0] === country)?.[2] ?? "+1";
@@ -354,10 +336,9 @@ export function SponsorCheckout() {
   </>;
   else if (status === "qr") panel = <div className="qr-panel" aria-live="polite">
     <div className="qr-top"><h1 className="co-title">Scan to pay</h1><strong>{price}</strong></div>
-    <UpiQr link={qrLink} />
+    {qr && <UpiQr image={qr.image} />}
     <p className="qr-hint">Open any UPI app, scan the code and approve the payment.</p>
     <div className="qr-apps" aria-hidden="true"><span>Google Pay</span><span>PhonePe</span><span>Paytm</span><span>BHIM</span></div>
-    <a className="co-pay-btn co-pay-ghost qr-open" href={qrLink}>Open a UPI app on this phone</a>
     <div className="qr-status"><span className="qr-pulse" /> Waiting for your payment · {mm}:{ss}</div>
     <button className="co-link" onClick={cancelQr}>Use another method</button>
   </div>;
@@ -368,7 +349,7 @@ export function SponsorCheckout() {
       <label className="co-field"><span>Email <i>*</i></span><input type="email" value={details.email} title={details.email} autoComplete="email" onChange={e => setDetails({ ...details, email: e.target.value })} onBlur={() => setDetails(saveSponsorDetails(details))} /></label>
       <div className="co-field"><span>Phone {method === "upi" ? <i>*</i> : <em>(optional)</em>}</span>
         <span className="co-phone">
-          <Dropdown className="dd-code" label="Country code" value={country} onChange={setCountry} disabled={method === "upi"} show={o => o.value} options={COUNTRIES.map(([code, label, prefix]) => ({ value: code as string, label, hint: prefix }))} />
+          <Dropdown className="dd-code" label="Country code" value={country} onChange={setCountry} disabled={method === "upi"} show={o => o.value} options={COUNTRIES.map(([code, label, prefix]) => ({ value: code as string, label, hint: prefix, flag: code }))} />
           <b>{dialCode}</b>
           <input aria-label="Phone number" inputMode="tel" autoComplete="tel-national" maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder={method === "upi" ? "98765 43210" : ""} />
         </span>
@@ -377,18 +358,24 @@ export function SponsorCheckout() {
 
     <div className="co-field"><span>Billing address <i>*</i></span>
       <div className="co-address">
-        <Dropdown className="dd-region" label="Country or region" value={region} onChange={setRegion} options={REGIONS.map(r => ({ value: r, label: r }))} />
+        <Dropdown className="dd-region" label="Country or region" value={region} onChange={setRegion} options={REGIONS.map(r => ({ value: r, label: r, flag: REGION_FLAGS[r] }))} />
         <input aria-label="Address" value={address} onChange={e => setAddress(e.target.value)} maxLength={200} autoComplete="street-address" placeholder="Address, city, postal code" />
       </div>
     </div>
 
     <div className="co-field"><span>Amount</span>
-      <div className="co-amount-box">
-        {choice === -1
-          ? <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value)} placeholder={(LIMITS[method][0] / 100).toFixed(method === "upi" ? 0 : 2)} aria-label="Custom amount" /><em>min {money(LIMITS[method][0], method)}</em></span>
-          : <strong>{money(LIMITS[method][0], method)}</strong>}
-        <button className="co-link" onClick={() => { setChoice(choice === -1 ? 0 : -1); setCustom(""); }}>{choice === -1 ? "Standard price" : "Custom amount"}</button>
-      </div>
+      {choice === -1
+        ? <>
+          <div className="co-amount-box is-custom">
+            <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value)} placeholder={(LIMITS[method][0] / 100).toFixed(method === "upi" ? 0 : 2)} aria-label="Custom amount" /></span>
+            <button className="co-link" onClick={() => { setChoice(0); setCustom(""); }}>Standard price</button>
+          </div>
+          <small className={"co-hint" + (custom && !amountOk ? " is-error" : "")}>Minimum {money(LIMITS[method][0], method)}</small>
+        </>
+        : <div className="co-amount-box">
+          <strong>{money(LIMITS[method][0], method)}</strong>
+          <button className="co-link" onClick={() => { setChoice(-1); setCustom(""); }}>Custom amount</button>
+        </div>}
     </div>
 
     <div className="co-field"><span>Payment method</span>

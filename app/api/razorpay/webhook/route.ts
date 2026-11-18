@@ -10,7 +10,7 @@ import { supabasePatch } from "@/lib/supabase";
 export const runtime = "nodejs";
 
 type Entity = { id?: string; order_id?: string; payment_id?: string; status?: string; amount?: number; currency?: string; method?: string };
-type Event = { event?: string; payload?: { payment?: { entity?: Entity }; order?: { entity?: Entity }; refund?: { entity?: Entity } } };
+type Event = { event?: string; payload?: { payment?: { entity?: Entity }; order?: { entity?: Entity }; refund?: { entity?: Entity }; qr_code?: { entity?: Entity } } };
 
 export async function POST(request: Request) {
   const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
@@ -35,6 +35,12 @@ export async function POST(request: Request) {
         ...(payment.amount ? { amount: payment.amount } : {}), ...(payment.currency ? { currency: payment.currency } : {}),
       });
       break;
+    case "qr_code.credited": {
+      // a UPI payment to one of our single-use QR codes (the QR id is stored as the reference)
+      const qrId = encodeURIComponent(event.payload?.qr_code?.entity?.id || "");
+      if (qrId && payment?.id) await supabasePatch("florii_sponsors", `razorpay_order_id=eq.${qrId}&status=in.(created,failed)`, { status: "paid", razorpay_payment_id: payment.id, paid_at: new Date().toISOString(), ...(payment.amount ? { amount: payment.amount } : {}) });
+      break;
+    }
     case "payment.failed":
       if (orderId) await supabasePatch("florii_sponsors", `razorpay_order_id=eq.${orderId}&status=eq.created`, { status: "failed" });
       break;
