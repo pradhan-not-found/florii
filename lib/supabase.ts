@@ -1,5 +1,5 @@
 /**
- * Minimal server-only Supabase client over the REST API, matching the Meowdration setup.
+ * Minimal server-only Supabase client over the REST API.
  * Uses SUPABASE_URL and SUPABASE_SECRET_KEY. Never import this from a client component.
  */
 

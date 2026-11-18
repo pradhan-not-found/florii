@@ -1,7 +1,6 @@
 -- florii · Supabase schema
 -- Paste this whole file into Supabase → SQL Editor → New query → Run.
--- It is safe to run more than once. It only creates florii_* tables and the shared
--- dashboard_apps table, so Meowdration's orders / sponsors / waitlist are untouched.
+-- It is safe to run more than once. It only creates and changes florii_* tables.
 --
 -- Row Level Security is on with no policies: nothing is readable from a browser.
 -- Only the server, using the secret key, can read or write these tables.
@@ -23,7 +22,7 @@ create table if not exists public.florii_sponsors (
                        check (status in ('created', 'paid', 'failed', 'featured', 'rejected', 'refunded')),
   featured             boolean not null default false,   -- shown in the sponsor section on the site
   logo_url             text,
-  note                 text,                              -- your private note from the dashboard
+  note                 text,                              -- private notes about the sponsor
   created_at           timestamptz not null default now(),
   paid_at              timestamptz,
   updated_at           timestamptz not null default now()
@@ -34,7 +33,7 @@ create index if not exists florii_sponsors_created_idx on public.florii_sponsors
 
 -- ─────────────────────────────────────────────────────────────
 -- Visits: one row per page view. Powers the visitors counter
--- and the traffic charts in the dashboard. No personal data.
+-- and traffic charts. No personal data.
 -- ─────────────────────────────────────────────────────────────
 create table if not exists public.florii_visits (
   id          bigint generated always as identity primary key,
@@ -48,27 +47,6 @@ create table if not exists public.florii_visits (
 
 create index if not exists florii_visits_created_idx on public.florii_visits (created_at desc);
 create index if not exists florii_visits_path_idx    on public.florii_visits (path);
-
--- ─────────────────────────────────────────────────────────────
--- Dashboard apps: the apps your dashboard can switch between.
--- Shared by every app, so it has no florii_ prefix.
--- ─────────────────────────────────────────────────────────────
-create table if not exists public.dashboard_apps (
-  id          uuid primary key default gen_random_uuid(),
-  slug        text unique not null,     -- e.g. 'florii', 'meowdration'
-  name        text not null,
-  url         text,
-  logo_url    text,
-  accent      text default '#131316',
-  table_prefix text,                    -- e.g. 'florii_' ; empty for Meowdration's own tables
-  created_at  timestamptz not null default now()
-);
-
-insert into public.dashboard_apps (slug, name, url, table_prefix)
-values
-  ('florii', 'florii', 'https://floriii.vercel.app', 'florii_'),
-  ('meowdration', 'Meowdration', null, '')
-on conflict (slug) do nothing;
 
 -- ─────────────────────────────────────────────────────────────
 -- Keep updated_at fresh on sponsor changes.
@@ -90,7 +68,6 @@ create trigger florii_sponsors_touch
 -- ─────────────────────────────────────────────────────────────
 alter table public.florii_sponsors enable row level security;
 alter table public.florii_visits   enable row level security;
-alter table public.dashboard_apps  enable row level security;
 
 -- ─────────────────────────────────────────────────────────────
 -- Checkout contact details (added later; safe to run more than once).
