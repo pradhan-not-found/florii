@@ -26,7 +26,8 @@ const PRICES = { card: "$49.99", upi: "₹4,199" } as const;
 type Method = keyof typeof PRICES;
 /** Amount choices in the smallest unit. The first is the minimum; the server checks the bounds again. */
 const AMOUNTS: Record<Method, number[]> = { card: [4999, 9900, 19900], upi: [419900, 829900, 1659900] };
-const LIMITS: Record<Method, [number, number]> = { card: [4999, 500000], upi: [419900, 42000000] };
+// any amount from the gateway's own minimum ($1 or ₹1) up to a cap that stops typos becoming huge charges
+const LIMITS: Record<Method, [number, number]> = { card: [100, 500000], upi: [100, 42000000] };
 const money = (minor: number, method: Method) => new Intl.NumberFormat(method === "upi" ? "en-IN" : "en-US", { style: "currency", currency: method === "upi" ? "INR" : "USD", minimumFractionDigits: method === "upi" || minor % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(minor / 100);
 /** A country's flag, served from /public/flags (emoji flags don't show on Windows). */
 // eslint-disable-next-line @next/next/no-img-element
@@ -185,7 +186,7 @@ export function SponsorForm({ onSubmit, initial }: { onSubmit: (details: Sponsor
   return <form className="sponsor-form" onSubmit={submit}>
     <div className="pay-fields">
       <label><span className="pay-label">product</span><input required maxLength={80} value={product} onChange={event => setProduct(event.target.value)} placeholder="e.g. Acme Studio" /></label>
-      <label><span className="pay-label">link <em>where it points</em></span><span className="link-field"><Favicon link={link} /><input required maxLength={200} value={link} onChange={event => setLink(event.target.value)} placeholder="example.com" inputMode="url" autoComplete="url" /></span></label>
+      <label><span className="pay-label">link <em>where it points</em></span><span className="link-field"><input required maxLength={200} value={link} onChange={event => setLink(event.target.value)} placeholder="example.com" inputMode="url" autoComplete="url" /></span></label>
       <label><span className="pay-label">description <em>up to 200 characters</em></span><textarea maxLength={200} rows={2} value={description} onChange={event => setDescription(event.target.value)} placeholder="Short description highlighting what your product does." /><span className="pay-count">{description.length}/200</span></label>
       <label><span className="pay-label">email <em>where we reach you</em></span><input required type="email" maxLength={160} value={email} onChange={event => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" /></label>
     </div>
@@ -250,7 +251,7 @@ export function SponsorCheckout() {
     if (!name.trim()) { fail("Add your full name."); return; }
     if (!address.trim() || !city.trim()) { fail("Add your billing address and city."); return; }
     if (phone.trim() && !isValidPhoneNumber(phone, country)) { fail(`That doesn't look like a ${countryName(country)} phone number.`); return; }
-    if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
+    if (!amountOk) { fail(`Choose an amount between ${money(LIMITS[method][0], method)} and ${money(LIMITS[method][1], method)}.`); return; }
     setStatus("working"); setMessage("");
     await openSecureWindow("card");
   }
@@ -288,7 +289,7 @@ export function SponsorCheckout() {
     if (!name.trim()) { fail("Add your full name."); return; }
     if (!address.trim() || !city.trim()) { fail("Add your billing address and city."); return; }
     if (phone.trim() && !isValidPhoneNumber(phone, country)) { fail(`That doesn't look like a ${countryName(country)} phone number.`); return; }
-    if (!amountOk) { fail(`Choose an amount of at least ${money(LIMITS[method][0], method)}.`); return; }
+    if (!amountOk) { fail(`Choose an amount between ${money(LIMITS[method][0], method)} and ${money(LIMITS[method][1], method)}.`); return; }
     const mine = ++session.current;
     setStatus("working"); setMessage(""); setQr(null);
     try {
@@ -322,7 +323,7 @@ export function SponsorCheckout() {
   const customMinor = Math.round((Number(custom.replace(/[^\d.]/g, "")) || 0) * 100);
   const amount = choice >= 0 ? AMOUNTS[method][choice] : customMinor;
   const amountOk = amount >= LIMITS[method][0] && amount <= LIMITS[method][1];
-  const price = money(amountOk ? amount : LIMITS[method][0], method);
+  const price = money(amountOk ? amount : AMOUNTS[method][0], method);
 
   const order = <aside className="co-order">
     <div className="co-order-inner">
@@ -340,7 +341,7 @@ export function SponsorCheckout() {
 
       <div className="co-item">
         <span className="co-item-art" aria-hidden="true"><Botanical name="Sunflower" size={58} title="" /></span>
-        <div className="co-item-text"><b>Sponsor spot</b><p>{amountOk && amount > LIMITS[method][0] ? `Lifetime listing and a shoutout on X, plus ${money(amount - LIMITS[method][0], method)} extra support` : "Lifetime listing on florii and a shoutout on X"}</p></div>
+        <div className="co-item-text"><b>Sponsor spot</b><p>{amountOk && amount > AMOUNTS[method][0] ? `Lifetime listing and a shoutout on X, plus ${money(amount - AMOUNTS[method][0], method)} extra support` : "Lifetime listing on florii and a shoutout on X"}</p></div>
         <strong>{price}</strong>
       </div>
 
@@ -348,7 +349,7 @@ export function SponsorCheckout() {
         <div className="co-details-head"><span>Your listing</span>{status !== "paid" && <button className="co-link" onClick={() => { cancelQr(); setEditing(true); }}>Edit</button>}</div>
         <dl>
           <div><dt>Product</dt><dd className="co-product"><Favicon link={details.link} />{details.product}</dd></div>
-          <div><dt>Link</dt><dd>{details.link}</dd></div>
+          <div><dt>Link</dt><dd><a className="co-listing-link" href={details.link} target="_blank" rel="noreferrer">{details.link.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "")}</a></dd></div>
           {details.description && <div><dt>About</dt><dd>{details.description}</dd></div>}
         </dl>
       </div>}
@@ -411,7 +412,7 @@ export function SponsorCheckout() {
     <div className="co-field"><span>Amount</span>
       <div className="co-amount-box">
         {choice === -1
-          ? <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value.replace(/[^\d.]/g, ""))} placeholder={(LIMITS[method][0] / 100).toFixed(method === "upi" ? 0 : 2)} aria-label="Custom amount" /><em className={custom && !amountOk ? "is-error" : ""}>min {money(LIMITS[method][0], method)}</em></span>
+          ? <span className="co-custom-in"><b>{method === "upi" ? "₹" : "$"}</b><input autoFocus inputMode="decimal" value={custom} onChange={e => setCustom(e.target.value.replace(/[^\d.]/g, ""))} placeholder="Any amount" aria-label="Custom amount" />{custom && !amountOk && <em className="is-error">{amount < LIMITS[method][0] ? `at least ${money(LIMITS[method][0], method)}` : `at most ${money(LIMITS[method][1], method)}`}</em>}</span>
           : <strong>{money(LIMITS[method][0], method)}</strong>}
         <button className="co-link" onClick={() => { setChoice(choice === -1 ? 0 : -1); setCustom(""); }}>{choice === -1 ? "Standard price" : "Custom amount"}</button>
       </div>

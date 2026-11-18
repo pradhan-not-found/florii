@@ -1,7 +1,6 @@
 "use client";
 
 import { projectLinks } from "@/config/project";
-import { useEffect, useRef, useState } from "react";
 import { formatCount as format, useCounts } from "./use-counts";
 import { Icon } from "./icons";
 
@@ -10,12 +9,14 @@ const compactCount = (value: number) => new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 }).format(value);
 
-/** Shows a number; when it changes, the new one lifts in out of a soft blur. */
+/** Shows a number; when it changes, each digit that changed rolls to its new value, like a counter. */
 function LiveCount({ value }: { value: number }) {
-  const last = useRef(value);
-  const [tick, setTick] = useState(0);
-  useEffect(() => { if (value !== last.current) { last.current = value; setTick(t => t + 1); } }, [value]);
-  return <span key={tick} className={"live-count" + (tick ? " is-new" : "")}>{compactCount(value)}</span>;
+  const text = compactCount(value);
+  return <span className="odo" aria-label={text}>
+    {[...text].map((char, i) => /\d/.test(char)
+      ? <span key={text.length - i} className="odo-digit" aria-hidden="true"><span style={{ transform: `translateY(-${Number(char) * 10}%)` }}>{"0123456789".split("").map(d => <span key={d}>{d}</span>)}</span></span>
+      : <span key={"c" + (text.length - i)} aria-hidden="true">{char}</span>)}
+  </span>;
 }
 
 export function SiteHeader() {

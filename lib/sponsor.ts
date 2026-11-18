@@ -1,6 +1,6 @@
 /** Shared server-side handling of a sponsor checkout: validating input and saving the row. */
 import { supabaseInsert, supabasePatch } from "./supabase";
-import { SPONSOR_MAX, SPONSOR_PRICES } from "./prices";
+import { SPONSOR_MAX, SPONSOR_MIN, SPONSOR_PRICES } from "./prices";
 
 export type Method = "card" | "upi";
 const clean = (value: unknown, max: number) => (typeof value === "string" ? value.trim().slice(0, max) : "");
@@ -22,7 +22,7 @@ export function readSponsor(body: Record<string, unknown> | null, method: Method
   if (!name) return { error: "Add your full name." };
   if (!address) return { error: "Add your billing address." };
   const requested = Number(body?.amount);
-  const amount = Number.isInteger(requested) && requested >= price.amount && requested <= SPONSOR_MAX[method] ? requested : price.amount;
+  const amount = Number.isInteger(requested) && requested >= SPONSOR_MIN[method] && requested <= SPONSOR_MAX[method] ? requested : price.amount;
   return { method, amount, currency: price.currency, product, link, description, email, name, phone, country, address, leadId };
 }
 
