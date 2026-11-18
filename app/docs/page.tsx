@@ -9,6 +9,7 @@ import { UseCases } from "../components/landing-sections";
 import { Botanical } from "@/packages/florii/src";
 import type { BotanicalName } from "@/packages/florii/src";
 import { FlowerPreview } from "../components/flower-preview";
+import { FlowerPot } from "../components/flower-pot";
 import s from "./docs.module.css";
 
 const managers = { npm: "npm install florii", pnpm: "pnpm add florii", yarn: "yarn add florii", bun: "bun add florii" } as const;
@@ -62,6 +63,7 @@ export default function DocsPage() {
             <p>Every flower is also a plain SVG on this site. Drop it into any page, email, Notion or slide. Add <code>color</code>, <code>secondary</code>, <code>size</code> or <code>variant=filled</code> to the link.</p>
             <div className="code-line"><code>{'<img src="https://floriii.vercel.app/f/tulip.svg" alt="Tulip">'}</code><button onClick={() => copy('<img src="https://floriii.vercel.app/f/tulip.svg?size=160" width="160" alt="Tulip">', "Image code copied")} aria-label="Copy image code"><Icon name="copy" size={14} /></button></div>
           </div>
+          <FlowerPot />
         </div>
       </section>
       <UseCases copy={copy} />

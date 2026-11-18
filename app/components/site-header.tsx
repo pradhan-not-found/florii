@@ -1,6 +1,7 @@
 "use client";
 
 import { projectLinks } from "@/config/project";
+import { useEffect, useRef, useState } from "react";
 import { formatCount as format, useCounts } from "./use-counts";
 import { Icon } from "./icons";
 
@@ -8,6 +9,14 @@ const compactCount = (value: number) => new Intl.NumberFormat("en-US", {
   notation: value >= 10000 ? "compact" : "standard",
   maximumFractionDigits: 1,
 }).format(value);
+
+/** Shows a number; when it changes, the new one lifts in out of a soft blur. */
+function LiveCount({ value }: { value: number }) {
+  const last = useRef(value);
+  const [tick, setTick] = useState(0);
+  useEffect(() => { if (value !== last.current) { last.current = value; setTick(t => t + 1); } }, [value]);
+  return <span key={tick} className={"live-count" + (tick ? " is-new" : "")}>{compactCount(value)}</span>;
+}
 
 export function SiteHeader() {
   const { stars, visitors } = useCounts();
@@ -44,9 +53,9 @@ export function SiteHeader() {
         <a href="/#sponsors">sponsor</a>
       </nav>
       <div className="header-actions">
-        <span className="visitors" title={visitors === null ? "Visitor statistics are currently unavailable" : `${format(visitors)} total visitors`}>
+        <span className="visitors" title={visitors === null ? "Loading visitors" : `${format(visitors)} total visitors`} aria-live="polite">
           <i className="visitors-dot" aria-hidden="true" />
-          <strong>{visitors === null ? "—" : compactCount(visitors)}</strong>
+          <strong>{visitors === null ? <span className="live-count-wait" aria-label="Loading" /> : <LiveCount value={visitors} />}</strong>
           <span>visitors</span>
         </span>
         {projectLinks.github

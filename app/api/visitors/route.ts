@@ -21,14 +21,18 @@ async function supabaseVisitors() {
   return (await supabaseCount("florii_visits", "first_visit=eq.true")) ?? (await supabaseCount("florii_visits"));
 }
 
+// every open tab asks every few seconds, so one answer is shared for a moment
+let recent: { count: number; at: number } | null = null;
+
 export async function GET() {
+  if (recent && Date.now() - recent.at < 3000) return json({ count: recent.count });
   const redis = analyticsRedis();
   if (redis) {
     try { return json({ count: await redis.pfcount(`${analyticsKey}:visitors`) }); } catch { /* fall through */ }
   }
   if (supabaseReady()) {
     const count = await supabaseVisitors();
-    if (count !== null) return json({ count });
+    if (count !== null) { recent = { count, at: Date.now() }; return json({ count }); }
   }
   return json({ count: null });
 }
@@ -70,7 +74,7 @@ export async function POST(request: NextRequest) {
   const country = request.headers.get("x-vercel-ip-country") || fromTz || fromLang || null;
   // daily totals: one counter row per day, page, country, device and source
   const total = await supabaseRpc<number>("florii_track_visit", { p_path: path, p_country: country ?? "", p_device: device, p_referrer: referrer ?? "", p_new: data.first === true });
-  if (typeof total === "number") return json({ count: total });
+  if (typeof total === "number") { recent = { count: total, at: Date.now() }; return json({ count: total }); }
   // older setup, until the daily-totals function exists: one row per page view
   const row = { path, referrer, device, country, visitor: data.visitorId };
   if (!(await supabaseInsert("florii_visits", { ...row, first_visit: data.first === true }))) await supabaseInsert("florii_visits", row);

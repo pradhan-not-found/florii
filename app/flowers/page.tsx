@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Botanical, botanicalCatalog, FlowerCorner, BotanicalDivider, VineBorder, Petals, LeafConfetti, FlowerWreath, FlowerGarland } from "@/packages/florii/src";
 import type { BotanicalName, BotanicalVariant } from "@/packages/florii/src";
 import { FlowerPreview } from "../components/flower-preview";
@@ -61,6 +61,12 @@ export default function FlowersPage() {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<BotanicalName | null>(null);
+  // a link like /flowers#Rose opens that flower straight away
+  useEffect(() => {
+    const open = () => { const name = decodeURIComponent(window.location.hash.slice(1)); if (botanicalCatalog.some(item => item.id === name)) setSelected(name as BotanicalName); };
+    open(); window.addEventListener("hashchange", open);
+    return () => window.removeEventListener("hashchange", open);
+  }, []);
   const needle = query.trim().toLowerCase();
   const flowers = botanicalCatalog.filter(item => (category === "all" || item.category === category) && item.name.toLowerCase().includes(needle));
   const decorationList = decorations.filter(item => item.name.toLowerCase().includes(needle));
