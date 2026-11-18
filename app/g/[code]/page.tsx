@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { SiteHeader } from "../../components/site-header";
 import { GardenFooter } from "../../components/garden-footer";
 import { GiftMaker } from "../../gift/gift-maker";
-import { describe, unpack } from "../../gift/codec";
+import { describe } from "../../gift/codec";
+import { notFound } from "next/navigation";
+import { isStoredId, resolveGift } from "@/lib/gifts";
 
 type Props = { params: Promise<{ code: string }> };
 
-/** A shared gift. The whole gift lives in the short code, so nothing is looked up or stored. */
+/** A shared gift, from a short stored link or a packed link. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const gift = await unpack(decodeURIComponent((await params).code));
+  const gift = await resolveGift(decodeURIComponent((await params).code));
   const line = gift ? describe(gift) : "a little something";
   const title = line.charAt(0).toUpperCase() + line.slice(1);
   const description = "Someone sent you hand-painted flowers. Open the envelope to see them.";
@@ -22,6 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharedGift({ params }: Props) {
   const code = decodeURIComponent((await params).code);
+  const gift = await resolveGift(code);
+  if (!gift && isStoredId(code)) notFound();
   return <>
     <SiteHeader />
     <main className="gift-page">
@@ -30,7 +34,7 @@ export default async function SharedGift({ params }: Props) {
         <h1>something for you.</h1>
         <p>someone picked these flowers for you.</p>
       </section>
-      <GiftMaker code={code} />
+      <GiftMaker shared={gift} />
     </main>
     <GardenFooter />
   </>;

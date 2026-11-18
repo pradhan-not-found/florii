@@ -35,10 +35,17 @@ export function useCounts() {
     const applyCount = (count: number) => setVisitors(current => Math.max(current ?? visitorBase, visitorBase + count));
     const update = (event: Event) => applyCount((event as CustomEvent<number>).detail);
     window.addEventListener("florii-visitors", update);
-    fetch("/api/visitors", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {
-      if (typeof data?.count === "number") applyCount(data.count);
-    }).catch(() => {});
-    return () => { window.removeEventListener("florii-visitors", update); window.removeEventListener("focus", refreshStars); window.clearInterval(timer); };
+    // live: read the count now, then every 30 seconds while the tab is visible
+    const refreshVisitors = () => {
+      if (document.visibilityState !== "visible") return;
+      fetch("/api/visitors", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {
+        if (typeof data?.count === "number") applyCount(data.count);
+      }).catch(() => {});
+    };
+    refreshVisitors();
+    const visitorTimer = window.setInterval(refreshVisitors, 30_000);
+    window.addEventListener("focus", refreshVisitors);
+    return () => { window.removeEventListener("florii-visitors", update); window.removeEventListener("focus", refreshStars); window.removeEventListener("focus", refreshVisitors); window.clearInterval(timer); window.clearInterval(visitorTimer); };
   }, []);
 
   return { stars, visitors };

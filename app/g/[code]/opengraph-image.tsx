@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { renderToStaticMarkup } from "react-dom/server.edge";
 import { Bouquet } from "../../gift/bouquet";
-import { unpack } from "../../gift/codec";
+import { resolveGift } from "@/lib/gifts";
 
 // The link preview for a shared gift: the sender's own bouquet, who it's for and who it's from.
 export const alt = "A hand-painted bouquet sent with florii";
@@ -17,7 +17,7 @@ const LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 30" width=
 const ENVELOPE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 300" width="440" height="300"><rect x="4" y="4" width="432" height="292" rx="14" fill="#efe4cf"/><path d="M4 18 220 176 436 18v264a14 14 0 0 1-14 14H18a14 14 0 0 1-14-14Z" fill="#ecdfc6"/><path d="M18 4h404a14 14 0 0 1 10 4L220 176 8 8a14 14 0 0 1 10-4Z" fill="#e2cfab"/><circle cx="220" cy="172" r="30" fill="#c2415d"/><circle cx="220" cy="172" r="22" fill="none" stroke="#e57a93" stroke-width="2"/></svg>`;
 
 export default async function Image({ params }: { params: Promise<{ code: string }> }) {
-  const gift = await unpack(decodeURIComponent((await params).code));
+  const gift = await resolveGift(decodeURIComponent((await params).code));
   const [regular, medium, semibold] = await Promise.all([font(400), font(500), font(600)]);
 
   const hasBouquet = gift && gift.mode !== "letter" && gift.flowers.length > 0;

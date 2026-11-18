@@ -6,7 +6,7 @@ import type { BotanicalName } from "@/packages/florii/src";
 import { Icon } from "../components/icons";
 import { useCopy } from "../components/copy";
 import { BH, BW, Bouquet, Crayon, stalkTones, wraps } from "./bouquet";
-import { MAX_BOUQUET, MAX_MESSAGE, MAX_SPRIG, choices, decode, pack, unpack } from "./codec";
+import { MAX_BOUQUET, MAX_MESSAGE, MAX_SPRIG, choices, decode, encode, pack } from "./codec";
 import type { Gift, Mode } from "./codec";
 
 const stamps = [
@@ -173,7 +173,7 @@ function Picker({ selected, max, onAdd, onRemove, onClear }: { selected: Botanic
   </>;
 }
 
-export function GiftMaker({ code }: { code?: string } = {}) {
+export function GiftMaker({ shared }: { shared?: Gift | null } = {}) {
   const { copy, toast } = useCopy();
   const [gift, setGift] = useState<Gift>(empty);
   const [received, setReceived] = useState(false);
@@ -182,13 +182,21 @@ export function GiftMaker({ code }: { code?: string } = {}) {
 
   useEffect(() => {
     const open = (found: Gift | null) => { if (found) { setGift(found); setReceived(true); } };
-    if (code) { unpack(code).then(open); return; }
+    if (shared) { open(shared); return; }
     const token = new URLSearchParams(window.location.hash.slice(1)).get("g"); // older long links
     if (token) open(decode(token));
   }, []);
 
   const [linking, setLinking] = useState(false);
-  async function makeLink() { setLinking(true); try { return `${window.location.origin}/g/${await pack(gift)}`; } finally { setLinking(false); } }
+  async function makeLink() {
+    setLinking(true);
+    try {
+      // a short, readable link (/g/maya-k3f9qz) when possible; otherwise the gift packed into the link
+      const response = await fetch("/api/gift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: encode(gift) }) }).catch(() => null);
+      const made = response?.ok ? await response.json().catch(() => null) as { id?: string } | null : null;
+      return `${window.location.origin}/g/${made?.id ?? await pack(gift)}`;
+    } finally { setLinking(false); }
+  }
   const set = (patch: Partial<Gift>) => setGift(current => ({ ...current, ...patch }));
   const ready = (gift.mode === "letter" || gift.flowers.length > 0) && (gift.mode === "bouquet" || gift.message.trim().length > 0);
 

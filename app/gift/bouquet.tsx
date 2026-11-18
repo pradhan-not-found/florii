@@ -37,16 +37,31 @@ const GATHER: [number, number] = [210, 436];
  */
 function arrange(n: number): [number, number, number, number][] {
   if (n === 0) return [];
-  const spread = Math.min(1, 0.5 + 0.06 * n);
-  const rx = 138 * spread, ry = 100 * spread, cx = 210, cy = 188;
-  const size = Math.min(230, Math.max(104, Math.sqrt((Math.PI * Math.max(rx, 80) * Math.max(ry, 64)) / n) * 2.05));
+  // the dome grows with the bunch; each bloom gets its own circle of space inside it
+  const spread = Math.min(1, 0.55 + 0.05 * n);
+  const rx = 150 * spread, ry = 112 * spread, cx = 210, cy = 192;
+  const VISIBLE = 0.4; // a bloom's painted head covers about 40% of its box from the centre
+  const radius = Math.min(80, Math.sqrt((rx * ry * 0.86) / n)); // circles fill ~86% of the dome
+  const size = Math.min(200, radius / VISIBLE);
   const golden = Math.PI * (3 - Math.sqrt(5));
-  return Array.from({ length: n }, (_, i) => {
-    const t = n === 1 ? 0 : Math.sqrt((i + 0.35) / n);
-    const a = i * golden - Math.PI / 2;
-    const tilt = ((i * 37) % 17) - 8;
-    return [cx + Math.cos(a) * rx * t, cy + Math.sin(a) * ry * t, size * (1 - 0.1 * t), tilt];
+  const pts = Array.from({ length: n }, (_, i) => {
+    const t = n === 1 ? 0 : Math.sqrt((i + 0.5) / n), a = i * golden - Math.PI / 2;
+    return { x: cx + Math.cos(a) * rx * t * 0.85, y: cy + Math.sin(a) * ry * t * 0.85 };
   });
+  // relax: push touching blooms apart, keep everyone inside the dome (deterministic, so the same flowers look the same every time)
+  const gap = radius * 2 * 0.94, ex = Math.max(1, rx - radius * 0.55), ey = Math.max(1, ry - radius * 0.55);
+  for (let step = 0; step < 120; step++) {
+    for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) {
+      const dx = pts[b].x - pts[a].x, dy = pts[b].y - pts[a].y, d = Math.hypot(dx, dy) || 0.01;
+      if (d < gap) { const push = (gap - d) / 2, ux = dx / d, uy = dy / d; pts[a].x -= ux * push; pts[a].y -= uy * push; pts[b].x += ux * push; pts[b].y += uy * push; }
+    }
+    for (const pt of pts) {
+      const ox = (pt.x - cx) / ex, oy = (pt.y - cy) / ey, k = Math.hypot(ox, oy);
+      if (k > 1) { pt.x = cx + (ox / k) * ex; pt.y = cy + (oy / k) * ey; }
+      pt.y = Math.max(pt.y, 92); // never above the top of the paper
+    }
+  }
+  return pts.map((pt, i) => [pt.x, pt.y, size * (1 - 0.06 * ((i * 7) % 3)), ((i * 37) % 13) - 6]);
 }
 export const stalkTones = ["#4f9a3f", "#5fa94a", "#468f39", "#6cb456"];
 const RIBBON = { fill: "#f6dccb", shade: "#e6bfa6", edge: "#d4a487" };

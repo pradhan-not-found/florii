@@ -79,7 +79,7 @@ export function Hero() {
         a&nbsp;loading screen. they sway, bloom and wear your colors.
       </p>
       <div className={s.actions}>
-        <button className={`${s.installCommand} ${copied ? s.isCopied : ""}`} onClick={() => { copy("npm i florii@latest", "Install command copied"); setCopied(true); window.setTimeout(() => setCopied(false), 1600); }} aria-label={copied ? "Copied" : "Copy npm install command"}><code>npm i florii@latest</code><span className={s.copyIcon} key={copied ? "done" : "idle"}><Icon name={copied ? "check" : "copy"} size={16} /><span className={s.copyLabel}>{copied ? "Copied" : "Copy"}</span></span></button>
+        <button className={`${s.installCommand} ${copied ? s.isCopied : ""}`} onClick={() => { copy("npm i florii@latest", "Install command copied"); setCopied(true); window.setTimeout(() => setCopied(false), 1600); }} aria-label={copied ? "Copied" : "Copy npm install command"}><code>npm i florii@latest</code><span className={s.copyIcon} key={copied ? "done" : "idle"}><Icon name={copied ? "check" : "copy"} size={16} /></span></button>
         <a className={`${s.btn} ${s.wash}`} href="/flowers">browse the flowers <span className={s.cycle} aria-hidden="true">{cycleFlowers.map((name, i) => <span key={name} style={{ animationDelay: `${i * 1.2}s` }}><Botanical name={name} size={20} title="" /></span>)}</span></a>
       </div>
       <p className={s.hint}>free forever. one npm install, nothing else to add.</p>
