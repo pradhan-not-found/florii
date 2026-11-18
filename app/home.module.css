@@ -444,3 +444,12 @@
 /* on tall screens the meadow grows with the screen, so the sky never looks empty */
 @media (min-width: 721px) and (min-height: 1100px) { .fieldWide { transform: scale(1.3); transform-origin: bottom center; } }
 @media (min-width: 721px) and (min-height: 1300px) { .fieldWide { transform: scale(1.6); transform-origin: bottom center; } }
+
+/* questions: the plus button sits centred beside one- or two-line questions */
+.faqList summary { align-items: center; }
+.faqList summary::after { margin: -6px 0 !important; }
+/* phones: the little meadow ends above the first card instead of running into it */
+@media (max-width: 720px) {
+  .faqArt { overflow: hidden !important; margin-bottom: 8px !important; }
+  .faq { row-gap: 16px !important; }
+}

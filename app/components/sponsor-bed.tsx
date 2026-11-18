@@ -14,7 +14,8 @@ type Sponsor = { name: string; link: string };
 /** Sponsor garden: a meadow with open plots at its centre. Each plot takes a logo and opens checkout. */
 export function SponsorBed() {
   const dialog = useRef<HTMLDialogElement>(null);
-  const open = () => dialog.current?.showModal();
+  // lock the page behind while the pop-up is open (older browsers ignore the CSS :has() lock)
+  const open = () => { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; dialog.current?.showModal(); };
   // paid sponsors appear here on their own, a few seconds after the payment goes through
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   useEffect(() => {

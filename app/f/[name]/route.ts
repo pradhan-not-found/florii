@@ -24,7 +24,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ name
     color: colour(query.get("color")), secondaryColor: colour(query.get("secondary")),
     variant: query.get("variant") === "filled" ? "filled" : "doodle", filterId: `f-${file}`,
   }));
-  const svg = markup.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+  // add the namespace only when the markup doesn't already carry it (a duplicate attribute is invalid XML)
+  const svg = /^<svg[^>]*\sxmlns=/.test(markup) ? markup : markup.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8", "Cache-Control": "public, max-age=86400, s-maxage=2592000, immutable",
