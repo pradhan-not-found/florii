@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 
 export const metadata: Metadata = {
-  title: "Contact · florii", description: "How to reach the people behind florii.",
+  title: "Contact", description: "How to reach the people behind florii.",
   alternates: { canonical: "/contact" },
   openGraph: { title: "Contact · florii", description: "How to reach the people behind florii.", images: [{ url: "/og/about.png", width: 1200, height: 630, alt: "florii" }] },
 };

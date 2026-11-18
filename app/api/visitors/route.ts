@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { analyticsKey, analyticsRedis, recordVisit, retentionSeconds } from "@/lib/analytics";
 import { supabaseCount, supabaseInsert, supabaseReady, supabaseRpc } from "@/lib/supabase";
 import { MINUTE, guard } from "@/lib/guard";
+import { TZ_COUNTRY } from "@/lib/tz-country";
 
 /**
  * The visitor counter. Uses Upstash Redis when it is connected, otherwise Supabase. In Supabase every
@@ -63,7 +64,10 @@ export async function POST(request: NextRequest) {
   let referrer: string | null = null;
   try { const host = new URL(String(data.referrer || "")).hostname; referrer = host && host !== request.nextUrl.hostname ? host : null; } catch { /* no referrer */ }
   const device = /ipad|tablet/i.test(agent) ? "tablet" : /mobi|android|iphone/i.test(agent) ? "mobile" : "desktop";
-  const country = request.headers.get("x-vercel-ip-country") || null;
+  // country: the hosting network's lookup when present, else the browser's time zone, else its language region
+  const fromTz = typeof data.tz === "string" ? TZ_COUNTRY[data.tz.slice(0, 64)] : undefined;
+  const fromLang = typeof data.lang === "string" ? /-([A-Za-z]{2})$/.exec(data.lang.slice(0, 20))?.[1]?.toUpperCase() : undefined;
+  const country = request.headers.get("x-vercel-ip-country") || fromTz || fromLang || null;
   // daily totals: one counter row per day, page, country, device and source
   const total = await supabaseRpc<number>("florii_track_visit", { p_path: path, p_country: country ?? "", p_device: device, p_referrer: referrer ?? "", p_new: data.first === true });
   if (typeof total === "number") return json({ count: total });

@@ -31,7 +31,7 @@ export default function DocsPage() {
           <span className={s.cmdDivider} />
           <a className={s.cmdGithub} href="https://github.com/pradhan-not-found/florii" target="_blank" rel="noreferrer" aria-label="View on GitHub"><Icon name="github" size={17} /></a>
         </div>
-        <div className={s.links}><a href="#quickstart">quick start <Icon name="arrow" size={15} /></a><a href="#props">props reference</a></div>
+        <div className={s.links}><a href="#quickstart">quick start <Icon name="arrow" size={15} /></a><a href="/flowers">browse the flowers</a></div>
       </section>
       <section className="container docs-page" aria-labelledby="docs-title">
         <div className="section-head" id="quickstart"><div><span className={s.eyebrow}>01 / getting started</span><h2>from install to bloom.</h2><p>Three small steps. Your first flower is just a few lines away.</p></div></div>
@@ -61,38 +61,6 @@ export default function DocsPage() {
             <h3>Not using React?</h3>
             <p>Every flower is also a plain SVG on this site. Drop it into any page, email, Notion or slide. Add <code>color</code>, <code>secondary</code>, <code>size</code> or <code>variant=filled</code> to the link.</p>
             <div className="code-line"><code>{'<img src="https://floriii.vercel.app/f/tulip.svg" alt="Tulip">'}</code><button onClick={() => copy('<img src="https://floriii.vercel.app/f/tulip.svg?size=160" width="160" alt="Tulip">', "Image code copied")} aria-label="Copy image code"><Icon name="copy" size={14} /></button></div>
-          </div>
-          <div className="docs-stalk" aria-hidden="true">
-            <svg viewBox="0 0 200 420" className="docs-stalk-stem">
-              <path d="M104 418C98 340 112 270 100 196C94 156 100 128 108 104" stroke="#4f9a3f" strokeWidth="5" fill="none" strokeLinecap="round" />
-              <path d="M101 300C76 282 52 286 36 300C58 318 84 316 101 300Z" fill="#5fa94a" />
-              <path d="M101 300C88 296 64 296 40 300" stroke="#3f8a35" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity=".6" />
-              <path d="M103 232C126 210 152 210 170 222C150 244 124 246 103 232Z" fill="#6cb456" />
-              <path d="M103 232C120 226 146 222 166 223" stroke="#3f8a35" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity=".6" />
-            </svg>
-            <span className="docs-stalk-bloom"><Botanical name="Sunflower" size={190} animate="sway" speed={6} title="" /></span>
-          </div>
-        </div>
-        <div className="docs-props">
-          <div className="props-plain" id="props">
-            <div className="props-head"><h3>Props</h3><p>Every flower and decoration takes the same props.</p></div>
-            <dl className="props-list">
-              {([
-                ["variant", '"doodle" or "filled"', "Painted and vivid (default), or clean flat pastels."],
-                ["color", "string", "Main colour. Any CSS colour."],
-                ["secondaryColor", "string", "Accent colour for centres, leaves and stems."],
-                ["size", "number or string", "Width and height. Default 120."],
-                ["animate", "preset name", "bloom, sway, float, rotate, pulse or fall."],
-                ["speed", "number", "Seconds per animation cycle. Default 4."],
-                ["interactive", "boolean", "Animate only on hover or keyboard focus."],
-                ["title", "string", "Accessible name. Pass \"\" for decorative art."],
-              ] as const).map(([name, type, text]) => <div key={name}>
-                <dt><code>{name}</code></dt>
-                <dd className="props-type">{type}</dd>
-                <dd>{text}</dd>
-              </div>)}
-            </dl>
-            <p className="note">Motion stops automatically for people who prefer reduced motion.</p>
           </div>
         </div>
       </section>

@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 
 export const metadata: Metadata = {
-  title: "Terms of Service · florii", description: "The terms for using the florii website, the open-source package, and buying a sponsor spot.",
+  title: "Terms of service", description: "The terms for using the florii website, the open-source package, and buying a sponsor spot.",
   alternates: { canonical: "/terms" },
   openGraph: { title: "Terms of Service · florii", description: "The terms for using the florii website, the open-source package, and buying a sponsor spot.", images: [{ url: "/og/privacy.png", width: 1200, height: 630, alt: "florii" }] },
 };

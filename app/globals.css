@@ -1228,3 +1228,19 @@ a.star-button:hover{background:#2a2a30 !important;border-color:#2a2a30 !importan
 .docs-stalk{grid-column:2;grid-row:1 / span 2}
 .anywhere{grid-row:2}
 @media (max-width:900px){.docs-stalk{grid-column:auto;grid-row:auto}.anywhere{grid-row:auto}}
+
+/* docs: one centred column for the steps, less empty space */
+.docs-page .docs{display:block !important;max-width:640px}
+.anywhere{margin-top:28px}
+.docs-page .section{padding-top:56px !important}
+.docs-page .section-head{margin-bottom:24px !important}
+
+/* use-case previews: a 404 that matches the real one, and a card corner with room to breathe */
+.mock-404{gap:.04em;font-size:72px !important;line-height:.9 !important}
+.mock-404-bloom{display:grid;place-items:center;width:.8em;height:.8em}
+.mock-404-bloom svg{width:100%;height:100%}
+.mock-404+b{margin-top:14px}
+.mock-card{padding-right:96px !important;padding-bottom:22px !important}
+.mock-card-footer{justify-content:flex-start;gap:6px}
+.mock-card-footer .mock-pill{margin-left:8px}
+.mock-corner{position:absolute;right:-2px;bottom:-2px;line-height:0;pointer-events:none}

@@ -22,8 +22,8 @@ const cases: UseCase[] = [
   },
   {
     id: "404", label: "404 page", blurb: "Soften a dead end with a small surprise.",
-    code: `import { Mushroom } from "florii";\n\n<main className="not-found">\n  <h1>4<Mushroom size={72} animate="pulse" />4</h1>\n  <p>This page wandered off.</p>\n</main>`,
-    preview: <div className="mock mock-center"><div className="mock-404">4<Botanical name="Mushroom" size={64} animate="pulse" title="" />4</div><b>This page wandered off.</b></div>,
+    code: `import { Sunflower } from "florii";\n\n<main className="not-found">\n  <h1>4<Sunflower size="0.8em" animate="rotate" speed={24} />4</h1>\n  <p>This page wandered off.</p>\n</main>`,
+    preview: <div className="mock mock-center"><div className="mock-404"><span>4</span><span className="mock-404-bloom"><Botanical name="Sunflower" size="100%" animate="rotate" speed={24} title="" /></span><span>4</span></div><b>This page wandered off.</b><span className="mock-muted">Try the home page instead.</span></div>,
   },
   {
     id: "loading", label: "Loading", blurb: "A spinning flower beats a grey spinner.",
@@ -49,7 +49,7 @@ const cases: UseCase[] = [
           <span className="mock-avatar" /><span className="mock-avatar" /><span className="mock-avatar" />
           <span className="mock-pill">3 updates</span>
         </div>
-        <span className="mock-corner"><FlowerCorner size={76} position="bottom-right" title="" /></span>
+        <span className="mock-corner"><FlowerCorner size={118} position="bottom-right" title="" /></span>
       </div>
     ),
   },

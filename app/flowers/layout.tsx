@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { JsonLd, breadcrumbs, flowerList } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Flowers",
-  description:
-    "Browse all 36+ hand-painted florii flowers and decorations. Customize sizes and colors, switch between painted and flat styles, copy React code, or download SVGs.",
+  title: "Hand-painted flower SVGs: browse every flower",
+  description: "Browse every hand-painted florii flower, leaf and decoration. Recolor and resize them, preview animations, then copy the React code or download the SVG. Free and open source.",
   alternates: {
     canonical: "/flowers",
   },

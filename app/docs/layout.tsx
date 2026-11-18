@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { JsonLd, breadcrumbs, installHowTo } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Docs",
-  description:
-    "Quickstart guide, installation options (npm, pnpm, yarn, bun), and complete props reference for florii React botanical components.",
+  title: "Docs: install florii and add flowers to React",
+  description: "Install florii with npm, pnpm, yarn or bun, import the styles, and add hand-painted flower components to any React or Next.js app. Plus plain SVG links for any other site.",
   alternates: {
     canonical: "/docs",
   },

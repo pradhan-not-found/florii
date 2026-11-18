@@ -4,7 +4,7 @@ import { SiteHeader } from "../components/site-header";
 import { GardenFooter } from "../components/garden-footer";
 
 export const metadata: Metadata = {
-  title: "Refund Policy · florii", description: "When and how you can get your money back for a florii sponsor spot.",
+  title: "Refund policy", description: "When and how you can get your money back for a florii sponsor spot.",
   alternates: { canonical: "/refunds" },
   openGraph: { title: "Refund Policy · florii", description: "When and how you can get your money back for a florii sponsor spot.", images: [{ url: "/og/sponsor.png", width: 1200, height: 630, alt: "florii" }] },
 };
