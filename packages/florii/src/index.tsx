@@ -21,6 +21,8 @@ export interface BotanicalProps {
   title?: string;
   /** "doodle" paints vivid, hand-cut shapes with a light grain (default). "filled" draws clean, flat pastel shapes. */
   variant?: BotanicalVariant;
+  /** A fixed id for the paint filter. Only needed when rendering outside React's normal tree (for example, image generation); otherwise one is made for you. */
+  filterId?: string;
 }
 
 export interface BotanicalItem {
@@ -99,8 +101,10 @@ function vivid(hex: string): string {
 
 
 /** Shared doodle plumbing: a class and a painted filter (hand-cut edges with a light gouache grain). */
-function useDoodle(variant: BotanicalVariant) {
-  const id = "florii-doodle-" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
+function useDoodle(variant: BotanicalVariant, fixedId?: string) {
+  // a given id is stable for the life of the component, so the hook is either always or never called
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const id = "florii-doodle-" + (fixedId ?? useId()).replace(/[^a-zA-Z0-9_-]/g, "");
   if (variant !== "doodle") return { className: "", filter: null, filterUrl: undefined };
   return {
     className: " florii--doodle",
@@ -266,11 +270,11 @@ function ProteaArt({ color, secondary }: ArtProps) {
 
 const artwork: Record<BotanicalName, (props: ArtProps) => ReactNode> = { Daisy: DaisyArt, Tulip: TulipArt, Rose: RoseArt, Sunflower: SunflowerArt, Poppy: PoppyArt, CherryBlossom: CherryBlossomArt, Lotus: LotusArt, Lavender: LavenderArt, Daffodil: DaffodilArt, Cosmos: CosmosArt, Marigold: MarigoldArt, Anemone: AnemoneArt, Hibiscus: HibiscusArt, Dahlia: DahliaArt, Peony: PeonyArt, ForgetMeNot: ForgetMeNotArt, Plumeria: PlumeriaArt, Lily: LilyArt, Bluebell: BluebellArt, Hydrangea: HydrangeaArt, Iris: IrisArt, Camellia: CamelliaArt, Zinnia: ZinniaArt, Orchid: OrchidArt, Carnation: CarnationArt, Magnolia: MagnoliaArt, Pansy: PansyArt, Protea: ProteaArt, Leaf: LeafArt, Fern: FernArt, Monstera: MonsteraArt, Sprig: SprigArt, Vine: VineArt, Butterfly: ButterflyArt, Mushroom: MushroomArt, Clover: CloverArt };
 
-export function Botanical({ name, size = 120, color, secondaryColor, speed = 4, animate = "none", interactive = false, className = "", style, title, variant = "doodle" }: BotanicalProps & { name: BotanicalName }) {
+export function Botanical({ name, size = 120, color, secondaryColor, speed = 4, animate = "none", interactive = false, className = "", style, title, variant = "doodle", filterId }: BotanicalProps & { name: BotanicalName }) {
   const item = catalogByName[name] || catalogByName.Daisy;
   const Art = artwork[item.id];
   const label = title === undefined ? item.name : title;
-  const doodle = useDoodle(variant);
+  const doodle = useDoodle(variant, filterId);
   const styles = { "--florii-duration": `${duration(speed)}s`, ...style } as CSSProperties;
   const paint = variant === "doodle";
   const art = { color: color || (paint ? vivid(item.color) : item.color), secondary: secondaryColor || (paint ? vivid(item.secondaryColor) : item.secondaryColor) };
@@ -323,9 +327,9 @@ export interface DecorativeProps extends BotanicalProps {
   direction?: "horizontal" | "vertical";
 }
 
-function Decoration({ children, viewBox, defaultTitle, width, height, animate = "none", speed, interactive, className = "", style, title, variant = "doodle" }: BotanicalProps & { children: ReactNode; viewBox: string; defaultTitle: string; width: number | string; height: number | string }) {
+function Decoration({ children, viewBox, defaultTitle, width, height, animate = "none", speed, interactive, className = "", style, title, variant = "doodle", filterId }: BotanicalProps & { children: ReactNode; viewBox: string; defaultTitle: string; width: number | string; height: number | string }) {
   const label = title === undefined ? defaultTitle : title;
-  const doodle = useDoodle(variant);
+  const doodle = useDoodle(variant, filterId);
   return <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width={width} height={height} fill="none" role={label ? "img" : undefined} aria-label={label || undefined} aria-hidden={label ? undefined : true} tabIndex={interactive && label ? 0 : undefined} className={`florii-botanical florii-decoration florii--${animate}${interactive ? " florii--interactive" : ""}${doodle.className} ${className}`.trim()} style={{ "--florii-duration": `${duration(speed)}s`, ...style } as CSSProperties}>{label && <title>{label}</title>}{doodle.filter}<g filter={doodle.filterUrl}><g className="florii-art">{children}</g></g></svg>;
 }
 
