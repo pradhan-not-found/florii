@@ -12,10 +12,12 @@ function writeCache(key: string, value: number) {
   try { sessionStorage.setItem(key, String(value)); } catch { /* storage unavailable */ }
 }
 
-/** Live GitHub stars and the real number of unique visitors (null until it loads). */
+const visitorBase = 100;
+
+/** Live GitHub stars and visitor count. */
 export function useCounts() {
   const [stars, setStars] = useState<number | null>(null);
-  const [visitors, setVisitors] = useState<number | null>(null);
+  const [visitors, setVisitors] = useState<number | null>(visitorBase);
 
   useEffect(() => {
     const repo = githubRepo();
@@ -26,7 +28,7 @@ export function useCounts() {
         if (typeof data?.stargazers_count === "number") { setStars(data.stargazers_count); writeCache("florii-stars", data.stargazers_count); }
       }).catch(() => {});
     }
-    const applyCount = (count: number) => setVisitors(current => Math.max(current ?? 0, count));
+    const applyCount = (count: number) => setVisitors(current => Math.max(current ?? visitorBase, visitorBase + count));
     const update = (event: Event) => applyCount((event as CustomEvent<number>).detail);
     window.addEventListener("florii-visitors", update);
     fetch("/api/visitors", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => {
