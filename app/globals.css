@@ -298,7 +298,6 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
   .header-inner{gap:24px}
   .header-nav{gap:22px}
   .star-label-detail{display:none}
-  .header-nav a:nth-child(3){display:none}
   .use-panel{grid-template-columns:1fr}
   .use-code{border-left:0;border-top:1px solid var(--line)}
 
@@ -322,7 +321,6 @@ h2{font-size:clamp(28px,3.2vw,36px);line-height:1.15;letter-spacing:-.02em;font-
 
   .container{width:calc(100% - 32px)}
   .header-nav{gap:16px;font-size:14px}
-  .header-nav a:nth-child(3){display:none}
   .star-button{padding:0 5px 0 12px}
   .section-head{flex-direction:column;align-items:flex-start}
   .search{width:100%}
