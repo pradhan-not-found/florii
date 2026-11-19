@@ -19,3 +19,7 @@ supabase/
 
 # brand kit: logos, promo images and captions, kept locally
 brand/
+
+# local video files (reference clips, renders)
+*.mp4
+*.mov
