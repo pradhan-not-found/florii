@@ -1359,3 +1359,23 @@ html:has(dialog.checkout[open]) body{overflow:hidden}
 .tray-name{top:auto;bottom:9px;left:10px;color:#8a8a93}
 .tray-meter{left:auto;right:10px;bottom:13px;transform:none}
 @media (max-width:420px){.tray-cell{height:140px}.tray-name{font-size:10px}}
+
+/* tray v2: seeds that grow over time, watered and fed */
+.tray-tools{display:flex;gap:6px}
+.tray-tool{height:36px;padding:0 13px 0 11px;font-size:13px}
+.tray-tool.is-feed svg{color:#b58c63}
+.tray-tool.is-on.is-feed svg{color:#e3c29d}
+.tray-plant{transform:translateX(-50%) !important;height:6px;bottom:70px;transition:height .35s linear !important}
+.tray-stem{transition:opacity .4s ease}
+.tray-leaf{position:absolute;left:50%;width:15px;height:8px;margin-left:-15px;border-radius:0 100% 0 100%;background:linear-gradient(135deg,#6cb456,#3f8a35);transform-origin:right center;transition:transform .35s linear}
+.tray-leaf.is-right{margin-left:0;border-radius:100% 0 100% 0;transform-origin:left center}
+.tray-bud{position:absolute;left:50%;top:0;width:12px;height:14px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 40% 35%,#9fd38a,#4f9a3f);transition:transform .35s linear}
+.tray-bloom{transition:transform .35s linear,opacity .2s ease !important}
+.tray-bloom svg{width:50px !important;height:50px !important}
+.tray-meter{display:none}
+.tray-progress{position:absolute;right:10px;bottom:13px;width:34px;height:4px;border-radius:999px;background:#ececea;overflow:hidden;z-index:2}
+.tray-progress i{display:block;height:100%;border-radius:inherit;background:#6cb456;transition:width .35s linear}
+.tray-thirst{position:absolute;right:8px;top:8px;padding:2px 7px;border-radius:999px;background:#eef5fb;color:#5b8fb8;font-size:10px;font-weight:500;opacity:0;transform:translateY(-3px);transition:opacity .3s,transform .3s;z-index:2}
+.tray-thirst.is-on{opacity:1;transform:none}
+.tray-grain{position:absolute;top:8px;width:5px;height:5px;border-radius:40%;background:#8a6342;opacity:0;z-index:3;animation:tray-drop .7s ease-in forwards;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.tray-plant,.tray-leaf,.tray-bud,.tray-bloom,.tray-progress i{transition:none !important}.tray-grain{display:none}}
