@@ -1365,7 +1365,7 @@ html:has(dialog.checkout[open]) body{overflow:hidden}
 .tray-tool{height:36px;padding:0 13px 0 11px;font-size:13px}
 .tray-tool.is-feed svg{color:#b58c63}
 .tray-tool.is-on.is-feed svg{color:#e3c29d}
-.tray-plant{transform:translateX(-50%) !important;height:6px;bottom:70px;transition:height .35s linear !important}
+.tray-plant{transform:translateX(-50%) !important;height:6px;bottom:72px;transition:height .35s linear !important}
 .tray-stem{transition:opacity .4s ease}
 .tray-leaf{position:absolute;left:50%;width:15px;height:8px;margin-left:-15px;border-radius:0 100% 0 100%;background:linear-gradient(135deg,#6cb456,#3f8a35);transform-origin:right center;transition:transform .35s linear}
 .tray-leaf.is-right{margin-left:0;border-radius:100% 0 100% 0;transform-origin:left center}
@@ -1379,3 +1379,11 @@ html:has(dialog.checkout[open]) body{overflow:hidden}
 .tray-thirst.is-on{opacity:1;transform:none}
 .tray-grain{position:absolute;top:8px;width:5px;height:5px;border-radius:40%;background:#8a6342;opacity:0;z-index:3;animation:tray-drop .7s ease-in forwards;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.tray-plant,.tray-leaf,.tray-bud,.tray-bloom,.tray-progress i{transition:none !important}.tray-grain{display:none}}
+/* drops and grains fall from the spout (where the cursor is) onto the soil */
+.tray-drop,.tray-grain{animation:tray-fall .55s cubic-bezier(.45,0,.9,.6) forwards !important}
+@keyframes tray-fall{0%{opacity:0;transform:translate(-50%,0) scale(.7)}15%{opacity:.95}85%{opacity:.9}100%{opacity:0;transform:translate(-50%,var(--fall)) scale(1)}}
+/* rolling digits: whole-pixel rows, so every digit (a 9 rolls nine rows) lands exactly on the baseline */
+.visitors strong{font-size:14px !important}
+.odo-digit,.odo-digit>span>span{height:1em;line-height:1em}
+.odo-digit{vertical-align:top}
+.odo{align-items:flex-start}
